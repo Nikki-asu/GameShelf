@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}The Board — GameShelf{% endblock %}
+
+{% macro star_display(rating) %}
+{% if rating %}
+{% set r = rating|float %}
+{% set full = r|int %}
+{% set has_half = (r - full) >= 0.3 %}
+<span class="stars">
+    {% for i in range(full) %}★{% endfor %}
+    {% if has_half %}½{% endif %}
+    {% for i in range(5 - full - (1 if has_half else 0)) %}<span class="empty">★</span>{% endfor %}
+    <span style="font-family:'Barlow Condensed',sans-serif;font-size:0.82rem;margin-left:3px;">{{ rating }}</span>
+</span>
+{% endif %}
+{% endmacro %}
+
+{% block content %}
+
+<div style="margin-bottom:2rem;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:0.1em;color:var(--accent);line-height:1;">The Board</div>
+    <p style="margin-top:0.3rem;">What the GameShelf community is playing, rating, and talking about.</p>
+</div>
+
+<!-- THREE COLUMNS: top rated, most reviewed, recent activity -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2.5rem;">
+
+    <!-- TOP RATED ON GAMESHELF -->
+    <div class="card">
+        <div class="card-header">Top Rated on GameShelf</div>
+        <div class="card-body" style="padding:0;">
+            {% if top_rated %}
+            {% for g in top_rated[:8] %}
+            <a href="/game/{{ g.game_id }}" style="display:flex;align-items:center;gap:0.8rem;padding:0.7rem 1rem;border-bottom:1px solid var(--border);text-decoration:none;transition:background 0.15s;"
+               onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+                <span style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--text2);width:20px;text-align:center;">{{ loop.index }}</span>
+                {% if g.cover_url %}
+                <img src="{{ g.cover_url }}" alt="{{ g.title }}" style="width:36px;height:50px;object-fit:cover;border-radius:2px;flex-shrink:0;">
+                {% else %}
+                <div style="width:36px;height:50px;background:var(--surface2);border-radius:2px;flex-shrink:0;"></div>
+                {% endif %}
+                <div style="flex:1;min-width:0;">
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);">{{ g.title }}</div>
+                    <div>{{ star_display(g.avg) }}</div>
+                </div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;color:var(--text2);flex-shrink:0;">{{ g.count }} rating{% if g.count != 1 %}s{% endif %}</div>
+            </a>
+            {% endfor %}
+            {% else %}
+            <p style="padding:1.5rem;text-align:center;font-style:italic;">No ratings yet. Be the first to rate a game.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- MOST DISCUSSED -->
+    <div class="card">
+        <div class="card-header">Most Discussed</div>
+        <div class="card-body" style="padding:0;">
+            {% if most_reviewed %}
+            {% for g in most_reviewed[:8] %}
+            <a href="/game/{{ g.game_id }}" style="display:flex;align-items:center;gap:0.8rem;padding:0.7rem 1rem;border-bottom:1px solid var(--border);text-decoration:none;transition:background 0.15s;"
+               onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
+                <span style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--text2);width:20px;text-align:center;">{{ loop.index }}</span>
+                {% if g.cover_url %}
+                <img src="{{ g.cover_url }}" alt="{{ g.title }}" style="width:36px;height:50px;object-fit:cover;border-radius:2px;flex-shrink:0;">
+                {% else %}
+                <div style="width:36px;height:50px;background:var(--surface2);border-radius:2px;flex-shrink:0;"></div>
+                {% endif %}
+                <div style="flex:1;min-width:0;">
+                    <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);">{{ g.title }}</div>
+                    {% if g.avg %}<div>{{ star_display(g.avg) }}</div>{% endif %}
+                </div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;color:var(--text2);flex-shrink:0;">{{ g.review_count }} review{% if g.review_count != 1 %}s{% endif %}</div>
+            </a>
+            {% endfor %}
+            {% else %}
+            <p style="padding:1.5rem;text-align:center;font-style:italic;">No reviews yet. Write the first one.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<!-- RECENT REVIEWS FEED -->
+<div class="shelf-label" style="margin-bottom:1.2rem;">Recent Reviews</div>
+
+{% if recent_reviews %}
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+{% for r in recent_reviews %}
+<div class="card" style="margin:0;">
+    <div class="card-body" style="padding:1rem;">
+        <div style="display:flex;gap:0.8rem;margin-bottom:0.7rem;">
+            {% if r.cover_url %}
+            <a href="/game/{{ r.game_id }}">
+                <img src="{{ r.cover_url }}" alt="{{ r.game_title }}"
+                     style="width:48px;height:66px;object-fit:cover;border-radius:2px;flex-shrink:0;display:block;">
+            </a>
+            {% endif %}
+            <div style="flex:1;min-width:0;">
+                <a href="/game/{{ r.game_id }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">{{ r.game_title }}</a>
+                <div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.2rem;flex-wrap:wrap;">
+                    <a href="/user/{{ r.username }}" style="font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;color:var(--accent);">{{ r.username }}</a>
+                    {% if r.rating %}{{ star_display(r.rating) }}{% endif %}
+                    {% if r.platform %}<span style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;color:var(--text2);">{{ r.platform }}</span>{% endif %}
+                </div>
+                <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;color:var(--text2);margin-top:0.1rem;">{{ r.added_date }}</div>
+            </div>
+        </div>
+        <p style="font-size:0.85rem;line-height:1.5;color:var(--text2);">
+            {{ r.review[:200] }}{% if r.review|length > 200 %}… <a href="/game/{{ r.game_id }}" style="font-size:0.8rem;">read more</a>{% endif %}
+        </p>
+    </div>
+</div>
+{% endfor %}
+</div>
+{% else %}
+<div style="text-align:center;padding:3rem;color:var(--text2);">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.08em;margin-bottom:0.5rem;">No reviews yet</div>
+    <p>Be the first to write one. Search for a game and leave your thoughts.</p>
+    <br>
+    <a href="/search" class="btn btn-solid">Find a Game</a>
+</div>
+{% endif %}
+
+{% endblock %}

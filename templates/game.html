@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}{{ info.title }} — GameShelf{% endblock %}
+
+{% macro star_display(rating) %}
+{% set r = rating|float %}
+{% set full = r|int %}
+{% set has_half = (r - full) >= 0.3 %}
+<span class="stars">
+    {% for i in range(full) %}★{% endfor %}
+    {% if has_half %}½{% endif %}
+    {% for i in range(5 - full - (1 if has_half else 0)) %}<span class="empty">★</span>{% endfor %}
+    <span style="font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;margin-left:4px;">{{ rating }}</span>
+</span>
+{% endmacro %}
+
+{% block content %}
+<div style="display:flex;gap:2rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:2rem;">
+    <!-- COVER -->
+    <div style="flex-shrink:0;">
+        {% if info.cover_url %}
+            <img src="{{ info.cover_url }}" alt="{{ info.title }}"
+                 style="width:180px;border-radius:4px;box-shadow:var(--card-shadow);display:block;">
+        {% else %}
+            <div style="width:180px;height:240px;background:var(--surface2);border-radius:4px;display:flex;align-items:center;justify-content:center;">
+                <span style="color:var(--text2);font-size:0.8rem;text-align:center;padding:1rem;">{{ info.title }}</span>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- INFO -->
+    <div style="flex:1;min-width:200px;">
+        <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:0.05em;color:var(--text);line-height:1;margin-bottom:0.4rem;">{{ info.title }}</h1>
+        <div style="font-family:'Barlow Condensed',sans-serif;color:var(--text2);font-size:0.9rem;margin-bottom:0.8rem;letter-spacing:0.04em;">
+            {% if info.released %}{{ info.released }}{% endif %}
+            {% if info.genres %} · {{ info.genres }}{% endif %}
+            {% if info.developers %} · {{ info.developers }}{% endif %}
+        </div>
+        {% if info.rating %}<div style="margin-bottom:0.8rem;">{{ star_display(info.rating) }} <span class="text-muted">community rating</span></div>{% endif %}
+        {% if info.description %}<p style="max-width:560px;">{{ info.description }}{% if info.description|length == 600 %}…{% endif %}</p>{% endif %}
+    </div>
+</div>
+
+<!-- USER SHELF ACTION -->
+{% if session.get('username') %}
+<div class="card" style="margin-bottom:2rem;">
+    <div class="card-header">
+        {% if user_entry %}Edit Your Entry{% else %}Add to Your Shelf{% endif %}
+    </div>
+    <div class="card-body">
+        {% if user_entry %}
+        <p style="margin-bottom:1rem;">Currently on your <strong>{{ user_entry.shelf }}</strong> shelf.</p>
+        {% endif %}
+        <form method="POST" action="/game/{{ info.id }}/add">
+            <input type="hidden" name="game_title" value="{{ info.title }}">
+            <input type="hidden" name="cover_url" value="{{ info.cover_url }}">
+            <div class="row">
+                <div class="form-group">
+                    <label>Shelf</label>
+                    <select name="shelf" required>
+                        {% for s in shelves %}
+                        <option value="{{ s }}" {% if user_entry and user_entry.shelf == s %}selected{% endif %}>{{ s }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Rating (1.0 – 5.0)</label>
+                    <input type="number" name="rating" min="0.1" max="5" step="0.1"
+                           placeholder="e.g. 4.3"
+                           value="{{ user_entry.rating if user_entry and user_entry.rating else '' }}">
+                </div>
+                <div class="form-group">
+                    <label>Platform</label>
+                    <select name="platform">
+                        <option value="">— optional —</option>
+                        {% for p in platforms %}
+                        <option value="{{ p }}" {% if user_entry and user_entry.platform == p %}selected{% endif %}>{{ p }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Public Review</label>
+                <textarea name="review" rows="3" placeholder="What did you think?">{{ user_entry.review if user_entry else '' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Private Notes (only you see this)</label>
+                <textarea name="private_notes" rows="2" placeholder="Personal reminders, spoilers, etc.">{{ user_entry.private_notes if user_entry else '' }}</textarea>
+            </div>
+            <div style="display:flex;gap:0.8rem;align-items:center;">
+                <button type="submit" class="btn btn-solid">{% if user_entry %}Update{% else %}Add to Shelf{% endif %}</button>
+                {% if user_entry %}
+                <form method="POST" action="/game/{{ info.id }}/remove" style="display:inline">
+                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                </form>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% else %}
+<div style="margin-bottom:2rem;">
+    <a href="/login" class="btn">Log in to add to your shelf</a>
+</div>
+{% endif %}
+
+<!-- PUBLIC REVIEWS -->
+{% if reviews %}
+<div class="shelf-label" style="margin-bottom:1rem;">Member Reviews</div>
+{% for r in reviews %}
+<div class="card" style="margin-bottom:1rem;">
+    <div class="card-body">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;">
+            <a href="/user/{{ r.username }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.04em;">{{ r.username }}</a>
+            <div style="display:flex;gap:0.8rem;align-items:center;">
+                {% if r.rating %}{{ star_display(r.rating) }}{% endif %}
+                {% if r.platform %}<span class="text-muted">{{ r.platform }}</span>{% endif %}
+                <span class="text-muted">{{ r.added_date }}</span>
+            </div>
+        </div>
+        <p>{{ r.review }}</p>
+    </div>
+</div>
+{% endfor %}
+{% endif %}
+
+{% endblock %}

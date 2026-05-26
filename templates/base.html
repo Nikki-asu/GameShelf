@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{ 'light' if request.cookies.get('ThemeMode') == 'Light' else 'dark' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}GameShelf{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:          #1a1008;
+            --bg2:         #231508;
+            --shelf-wood:  #3d1f00;
+            --shelf-edge:  #5c3100;
+            --shelf-shadow:#0d0800;
+            --surface:     #2a1a08;
+            --surface2:    #3a2510;
+            --border:      #5a3a18;
+            --accent:      #f0a030;
+            --accent2:     #e06010;
+            --text:        #f0d8b0;
+            --text2:       #a08060;
+            --danger:      #e05040;
+            --success:     #60c060;
+            --glow:        rgba(240,160,48,0.15);
+            --card-shadow: 0 8px 24px rgba(0,0,0,0.7);
+        }
+        [data-theme="light"] {
+            --bg:          #f5efe0;
+            --bg2:         #ede3d0;
+            --shelf-wood:  #8b5e2a;
+            --shelf-edge:  #6b4020;
+            --shelf-shadow:#3a2008;
+            --surface:     #fff8ee;
+            --surface2:    #ede3d0;
+            --border:      #c8a878;
+            --accent:      #c07010;
+            --accent2:     #a04800;
+            --text:        #2a1800;
+            --text2:       #6a4820;
+            --danger:      #c03020;
+            --success:     #207820;
+            --glow:        rgba(192,112,16,0.12);
+            --card-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 40px,
+                    rgba(255,255,255,0.01) 40px,
+                    rgba(255,255,255,0.01) 41px
+                );
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        header {
+            background: linear-gradient(180deg, var(--shelf-wood) 0%, var(--bg2) 100%);
+            border-bottom: 4px solid var(--shelf-edge);
+            box-shadow: 0 4px 20px var(--shelf-shadow);
+            padding: 1.2rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.2rem;
+            letter-spacing: 0.08em;
+            color: var(--accent);
+            text-decoration: none;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+        .logo span { color: var(--text2); font-size: 1rem; letter-spacing: 0.15em; display: block; margin-top: -0.4rem; font-family: 'Barlow Condensed', sans-serif; }
+
+        /* NAV */
+        nav { display: flex; align-items: center; gap: 0.5rem; }
+        nav a, nav button {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text2);
+            text-decoration: none;
+            padding: 0.4rem 0.9rem;
+            border: 1px solid transparent;
+            border-radius: 3px;
+            background: none;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        nav a:hover, nav button:hover { color: var(--accent); border-color: var(--border); }
+        nav a.active { color: var(--accent); }
+        .nav-user {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.85rem;
+            color: var(--accent);
+            letter-spacing: 0.06em;
+            padding: 0.4rem 0.8rem;
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            text-decoration: none;
+        }
+
+        /* SEARCH BAR */
+        .search-bar {
+            display: flex;
+            gap: 0;
+            max-width: 360px;
+        }
+        .search-bar input {
+            flex: 1;
+            padding: 0.45rem 0.8rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-right: none;
+            border-radius: 3px 0 0 3px;
+            color: var(--text);
+            font-family: 'Barlow', sans-serif;
+            font-size: 0.9rem;
+        }
+        .search-bar input:focus { outline: none; border-color: var(--accent); }
+        .search-bar button {
+            padding: 0.45rem 1rem;
+            background: var(--accent);
+            border: 1px solid var(--accent);
+            border-radius: 0 3px 3px 0;
+            color: var(--bg);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        .search-bar button:hover { background: var(--accent2); border-color: var(--accent2); }
+
+        /* MAIN */
+        main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+        /* SHELF SECTION — the physical shelf look */
+        .shelf-section { margin-bottom: 3rem; }
+        .shelf-label {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .shelf-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border), transparent);
+        }
+        .shelf-count {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.85rem;
+            color: var(--text2);
+            letter-spacing: 0.06em;
+        }
+
+        /* THE SHELF PLANK */
+        .shelf-plank {
+            background: linear-gradient(180deg, var(--shelf-wood) 0%, var(--shelf-edge) 60%, var(--shelf-shadow) 100%);
+            border-radius: 2px;
+            padding: 1rem 1.2rem 0.6rem;
+            box-shadow: 0 6px 20px var(--shelf-shadow), inset 0 1px 0 rgba(255,255,255,0.1);
+            position: relative;
+            min-height: 160px;
+            display: flex;
+            align-items: flex-end;
+            gap: 6px;
+            overflow-x: auto;
+            overflow-y: visible;
+        }
+        .shelf-plank::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0; right: 0;
+            height: 8px;
+            background: var(--shelf-edge);
+            border-radius: 0 0 2px 2px;
+        }
+        .shelf-plank::-webkit-scrollbar { height: 4px; }
+        .shelf-plank::-webkit-scrollbar-track { background: var(--shelf-shadow); }
+        .shelf-plank::-webkit-scrollbar-thumb { background: var(--shelf-edge); border-radius: 2px; }
+
+        /* GAME CASE — the spine/box on the shelf */
+        .game-case {
+            flex-shrink: 0;
+            width: 72px;
+            height: 110px;
+            border-radius: 3px 1px 1px 3px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: var(--card-shadow), inset -2px 0 4px rgba(0,0,0,0.4);
+            text-decoration: none;
+        }
+        .game-case:hover {
+            transform: translateY(-12px) scale(1.05);
+            box-shadow: 0 16px 32px rgba(0,0,0,0.8), inset -2px 0 4px rgba(0,0,0,0.4);
+            z-index: 10;
+        }
+        .game-case img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .game-case .no-cover {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(160deg, var(--surface2), var(--surface));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            text-align: center;
+        }
+        .game-case .no-cover span {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text2);
+            letter-spacing: 0.04em;
+            line-height: 1.3;
+        }
+        .game-case .case-shine {
+            position: absolute;
+            top: 0; left: 0;
+            width: 30%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0.12), transparent);
+            pointer-events: none;
+        }
+        .game-case .rating-badge {
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            background: rgba(0,0,0,0.75);
+            color: var(--accent);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 1px 4px;
+            border-radius: 2px;
+        }
+
+        .empty-shelf {
+            color: var(--text2);
+            font-size: 0.85rem;
+            font-style: italic;
+            padding: 1rem;
+            align-self: center;
+        }
+
+        /* GAME CARD (search results grid) */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 1.2rem;
+        }
+        .game-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            text-decoration: none;
+            color: var(--text);
+            transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+            display: block;
+        }
+        .game-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        .game-card-cover {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            display: block;
+            background: var(--surface2);
+        }
+        .game-card-cover-placeholder {
+            width: 100%;
+            aspect-ratio: 3/4;
+            background: linear-gradient(160deg, var(--surface2), var(--surface));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .game-card-info {
+            padding: 0.6rem 0.7rem;
+        }
+        .game-card-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.02em;
+            margin-bottom: 0.2rem;
+            line-height: 1.2;
+        }
+        .game-card-meta {
+            font-size: 0.75rem;
+            color: var(--text2);
+        }
+
+        /* FLASH */
+        .flash-container { margin-bottom: 1.5rem; }
+        .flash {
+            padding: 0.65rem 1rem;
+            border-radius: 3px;
+            margin-bottom: 0.4rem;
+            font-size: 0.88rem;
+            border-left: 3px solid;
+            font-family: 'Barlow Condensed', sans-serif;
+            letter-spacing: 0.03em;
+        }
+        .flash.success { background: rgba(96,192,96,0.1); border-color: var(--success); color: var(--success); }
+        .flash.danger  { background: rgba(224,80,64,0.1); border-color: var(--danger); color: var(--danger); }
+        .flash.info    { background: rgba(240,160,48,0.1); border-color: var(--accent); color: var(--accent); }
+        .flash.warning { background: rgba(240,160,48,0.1); border-color: var(--accent); color: var(--accent); }
+
+        /* FORMS */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1.5rem;
+        }
+        .card-header {
+            background: var(--surface2);
+            border-bottom: 1px solid var(--border);
+            padding: 0.7rem 1.2rem;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 0.1em;
+            color: var(--accent);
+        }
+        .card-body { padding: 1.2rem 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label {
+            display: block;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text2);
+            margin-bottom: 0.3rem;
+        }
+        input[type="text"], input[type="password"], input[type="number"],
+        textarea, select {
+            width: 100%;
+            padding: 0.55rem 0.8rem;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            color: var(--text);
+            font-family: 'Barlow', sans-serif;
+            font-size: 0.9rem;
+            transition: border-color 0.15s;
+        }
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        select option { background: var(--surface); }
+
+        .btn {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.5rem 1.3rem;
+            border-radius: 3px;
+            border: 1px solid var(--accent);
+            background: transparent;
+            color: var(--accent);
+            cursor: pointer;
+            transition: all 0.15s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn:hover { background: var(--accent); color: var(--bg); }
+        .btn-solid { background: var(--accent); color: var(--bg); }
+        .btn-solid:hover { background: var(--accent2); border-color: var(--accent2); }
+        .btn-danger { border-color: var(--danger); color: var(--danger); }
+        .btn-danger:hover { background: var(--danger); color: var(--bg); }
+        .btn-sm { padding: 0.3rem 0.7rem; font-size: 0.78rem; }
+
+        /* STAR RATING DISPLAY */
+        .stars {
+            color: var(--accent);
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+        }
+        .stars .empty { color: var(--border); }
+
+        hr { border: none; border-top: 1px solid var(--border); margin: 1.2rem 0; }
+        p { line-height: 1.65; color: var(--text2); font-size: 0.92rem; }
+        a { color: var(--accent); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .text-muted { color: var(--text2); font-size: 0.85rem; }
+        .row { display: flex; gap: 1rem; }
+        .row > * { flex: 1; }
+    </style>
+</head>
+<body>
+<header>
+    <a href="/" class="logo">GameShelf<span>Your personal game library</span></a>
+
+    <form action="/search" method="GET" class="search-bar">
+        <input type="text" name="q" placeholder="Search games..." value="{{ request.args.get('q', '') }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <nav>
+        <a href="/arcade">The Arcade</a>
+        <a href="/board">The Board</a>
+        {% if session.get('username') %}
+            <a href="/user/{{ session.username }}" class="nav-user">{{ session.username }}</a>
+            <form action="/logout" method="GET" style="display:inline">
+                <button type="button" onclick="location.href='/logout'">Logout</button>
+            </form>
+        {% else %}
+            <a href="/login">Login</a>
+            <a href="/register">Join</a>
+        {% endif %}
+        <form action="/theme/toggle" method="POST" style="display:inline">
+            <button type="submit">{% if request.cookies.get('ThemeMode') == 'Light' %}◑ Dark{% else %}☀ Light{% endif %}</button>
+        </form>
+    </nav>
+</header>
+
+<main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container">
+            {% for cat, msg in messages %}
+            <div class="flash {{ cat }}">{{ msg }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+</main>
+</body>
+</html>

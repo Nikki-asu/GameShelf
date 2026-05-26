@@ -1,0 +1,568 @@
+{% extends "base.html" %}
+{% block title %}The Arcade — GameShelf{% endblock %}
+
+{% block content %}
+<div style="text-align:center;margin-bottom:1.5rem;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:0.12em;color:var(--accent);">The Arcade</div>
+    <p style="font-size:0.88rem;">Browse by genre. Click an aisle to explore. Click any game to add it to your shelf.</p>
+</div>
+
+<div id="store-container">
+
+    <!-- TOP-DOWN STORE MAP -->
+    <div id="store-map">
+        <!-- Store shell -->
+        <svg id="store-svg" viewBox="0 0 900 620" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;display:block;margin:0 auto;cursor:default;">
+
+            <!-- Floor -->
+            <rect x="0" y="0" width="900" height="620" fill="var(--store-floor)"/>
+
+            <!-- Floor tile grid -->
+            <defs>
+                <pattern id="tiles" width="40" height="40" patternUnits="userSpaceOnUse">
+                    <rect width="40" height="40" fill="none" stroke="var(--store-tile-line)" stroke-width="0.5"/>
+                </pattern>
+                <!-- Glow filter for signs -->
+                <filter id="sign-glow">
+                    <feGaussianBlur stdDeviation="3" result="blur"/>
+                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <filter id="hover-glow">
+                    <feGaussianBlur stdDeviation="6" result="blur"/>
+                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+            </defs>
+            <rect x="0" y="0" width="900" height="620" fill="url(#tiles)"/>
+
+            <!-- Walls -->
+            <rect x="0" y="0" width="900" height="18" fill="var(--store-wall)"/>
+            <rect x="0" y="602" width="900" height="18" fill="var(--store-wall)"/>
+            <rect x="0" y="0" width="18" height="620" fill="var(--store-wall)"/>
+            <rect x="882" y="0" width="18" height="620" fill="var(--store-wall)"/>
+
+            <!-- Entrance sign -->
+            <rect x="380" y="585" width="140" height="20" fill="var(--store-wall)" rx="2"/>
+            <text x="450" y="599" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="11" fill="var(--accent)" letter-spacing="2">ENTRANCE</text>
+
+            <!-- Counter at top -->
+            <rect x="300" y="28" width="300" height="55" fill="var(--store-counter)" rx="3" stroke="var(--store-counter-border)" stroke-width="1.5"/>
+            <text x="450" y="52" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="13" fill="var(--accent)" letter-spacing="3">THE ARCADE</text>
+            <text x="450" y="68" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-size="9" fill="var(--text2)" letter-spacing="2">BROWSE · DISCOVER · COLLECT</text>
+
+            <!-- AISLE DEFINITIONS: 4 columns x 2 rows = 8 aisles -->
+            <!-- Each aisle: shelf unit (top-down view = rectangle with shelving lines) + hanging sign -->
+
+            <!-- ROW 1 (y=110 to 270) -->
+
+            <!-- AISLE 1: Action -->
+            <g class="aisle-group" data-genre="action" data-slug="action" style="cursor:pointer;">
+                <rect class="aisle-shelf" x="40" y="110" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
+                <!-- Shelf dividers (top-down view of shelf rows) -->
+                <line x1="40" y1="142" x2="215" y2="142" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="40" y1="174" x2="215" y2="174" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="40" y1="206" x2="215" y2="206" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="40" y1="238" x2="215" y2="238" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <!-- Game spines on shelf (decorative) -->
+                <rect x="48" y="116" width="10" height="22" rx="1" fill="#c03020" opacity="0.7"/>
+                <rect x="62" y="116" width="8" height="22" rx="1" fill="#e05030" opacity="0.7"/>
+                <rect x="74" y="116" width="12" height="22" rx="1" fill="#a02010" opacity="0.7"/>
+                <rect x="90" y="116" width="9" height="22" rx="1" fill="#d04020" opacity="0.7"/>
+                <rect x="103" y="116" width="11" height="22" rx="1" fill="#f06040" opacity="0.7"/>
+                <rect x="118" y="116" width="8" height="22" rx="1" fill="#b03010" opacity="0.7"/>
+                <rect x="130" y="116" width="13" height="22" rx="1" fill="#e04030" opacity="0.7"/>
+                <rect x="48" y="148" width="9" height="22" rx="1" fill="#d03020" opacity="0.6"/>
+                <rect x="61" y="148" width="11" height="22" rx="1" fill="#a01010" opacity="0.6"/>
+                <rect x="76" y="148" width="8" height="22" rx="1" fill="#f05040" opacity="0.6"/>
+                <!-- Hanging sign string -->
+                <line x1="127" y1="96" x2="127" y2="110" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
+                <!-- Ceiling sign -->
+                <rect class="aisle-sign" x="72" y="72" width="110" height="30" rx="4" fill="var(--sign-action)" stroke="var(--sign-action-border)" stroke-width="2" filter="url(#sign-glow)"/>
+                <text x="127" y="92" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">ACTION</text>
+            </g>
+
+            <!-- AISLE 2: RPG -->
+            <g class="aisle-group" data-genre="rpg" data-slug="role-playing-games-rpg" style="cursor:pointer;">
+                <rect class="aisle-shelf" x="245" y="110" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
+                <line x1="245" y1="142" x2="420" y2="142" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="245" y1="174" x2="420" y2="174" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="245" y1="206" x2="420" y2="206" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="245" y1="238" x2="420" y2="238" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <rect x="253" y="116" width="11" height="22" rx="1" fill="#6040c0" opacity="0.7"/>
+                <rect x="268" y="116" width="9" height="22" rx="1" fill="#8060d0" opacity="0.7"/>
+                <rect x="281" y="116" width="13" height="22" rx="1" fill="#5030b0" opacity="0.7"/>
+                <rect x="298" y="116" width="8" height="22" rx="1" fill="#9070e0" opacity="0.7"/>
+                <rect x="310" y="116" width="10" height="22" rx="1" fill="#7050c0" opacity="0.7"/>
+                <rect x="324" y="116" width="12" height="22" rx="1" fill="#4020a0" opacity="0.7"/>
+                <rect x="253" y="148" width="10" height="22" rx="1" fill="#7055c5" opacity="0.6"/>
+                <rect x="267" y="148" width="9" height="22" rx="1" fill="#5535b5" opacity="0.6"/>
+                <line x1="332" y1="96" x2="332" y2="110" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
+                <rect class="aisle-sign" x="277" y="72" width="110" height="30" rx="4" fill="var(--sign-rpg)" stroke="var(--sign-rpg-border)" stroke-width="2" filter="url(#sign-glow)"/>
+                <text x="332" y="92" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">RPG</text>
+            </g>
+
+            <!-- AISLE 3: Horror -->
+            <g class="aisle-group" data-genre="horror" data-slug="action" style="cursor:pointer;" data-rawg-genre="horror">
+                <rect class="aisle-shelf" x="450" y="110" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
+                <line x1="450" y1="142" x2="625" y2="142" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="450" y1="174" x2="625" y2="174" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="450" y1="206" x2="625" y2="206" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="450" y1="238" x2="625" y2="238" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <rect x="458" y="116" width="10" height="22" rx="1" fill="#1a1a2e" opacity="0.9"/>
+                <rect x="472" y="116" width="8" height="22" rx="1" fill="#2d0a0a" opacity="0.9"/>
+                <rect x="484" y="116" width="12" height="22" rx="1" fill="#1a0a1a" opacity="0.9"/>
+                <rect x="500" y="116" width="9" height="22" rx="1" fill="#2a0808" opacity="0.9"/>
+                <rect x="513" y="116" width="11" height="22" rx="1" fill="#0d0d1a" opacity="0.9"/>
+                <rect x="528" y="116" width="8" height="22" rx="1" fill="#1e0a0a" opacity="0.9"/>
+                <rect x="458" y="148" width="9" height="22" rx="1" fill="#150510" opacity="0.9"/>
+                <rect x="471" y="148" width="11" height="22" rx="1" fill="#200808" opacity="0.9"/>
+                <line x1="537" y1="96" x2="537" y2="110" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
+                <rect class="aisle-sign" x="482" y="72" width="110" height="30" rx="4" fill="var(--sign-horror)" stroke="var(--sign-horror-border)" stroke-width="2" filter="url(#sign-glow)"/>
+                <text x="537" y="92" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">HORROR</text>
+            </g>
+
+            <!-- AISLE 4: Indie -->
+            <g class="aisle-group" data-genre="indie" data-slug="indie" style="cursor:pointer;">
+                <rect class="aisle-shelf" x="655" y="110" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
+                <line x1="655" y1="142" x2="830" y2="142" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="655" y1="174" x2="830" y2="174" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="655" y1="206" x2="830" y2="206" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="655" y1="238" x2="830" y2="238" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <rect x="663" y="116" width="9" height="22" rx="1" fill="#20a060" opacity="0.7"/>
+                <rect x="676" y="116" width="11" height="22" rx="1" fill="#f0c040" opacity="0.7"/>
+                <rect x="691" y="116" width="8" height="22" rx="1" fill="#4090e0" opacity="0.7"/>
+                <rect x="703" y="116" width="13" height="22" rx="1" fill="#e05090" opacity="0.7"/>
+                <rect x="720" y="116" width="9" height="22" rx="1" fill="#a0d040" opacity="0.7"/>
+                <rect x="733" y="116" width="10" height="22" rx="1" fill="#40c0a0" opacity="0.7"/>
+                <rect x="663" y="148" width="11" height="22" rx="1" fill="#f08030" opacity="0.6"/>
+                <rect x="678" y="148" width="9" height="22" rx="1" fill="#8040d0" opacity="0.6"/>
+                <line x1="742" y1="96" x2="742" y2="110" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
+                <rect class="aisle-sign" x="687" y="72" width="110" height="30" rx="4" fill="var(--sign-indie)" stroke="var(--sign-indie-border)" stroke-width="2" filter="url(#sign-glow)"/>
+                <text x="742" y="92" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">INDIE</text>
+            </g>
+
+            <!-- ROW 2 (y=310 to 470) -->
+
+            <!-- AISLE 5: Adventure -->
+            <g class="aisle-group" data-genre="adventure" data-slug="adventure" style="cursor:pointer;">
+                <rect class="aisle-shelf" x="40" y="320" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
+                <line x1="40" y1="352" x2="215" y2="352" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="40" y1="384" x2="215" y2="384" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="40" y1="416" x2="215" y2="416" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="40" y1="448" x2="215" y2="448" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <rect x="48" y="326" width="10" height="22" rx="1" fill="#20a040" opacity="0.7"/>
+                <rect x="62" y="326" width="9" height="22" rx="1" fill="#3080c0" opacity="0.7"/>
+                <rect x="75" y="326" width="12" height="22" rx="1" fill="#c08020" opacity="0.7"/>
+                <rect x="91" y="326" width="8" height="22" rx="1" fill="#208040" opacity="0.7"/>
+                <rect x="103" y="326" width="11" height="22" rx="1" fill="#4060a0" opacity="0.7"/>
+                <rect x="118" y="326" width="9" height="22" rx="1" fill="#a06020" opacity="0.7"/>
+                <rect x="48" y="358" width="10" height="22" rx="1" fill="#308050" opacity="0.6"/>
+                <rect x="62" y="358" width="8" height="22" rx="1" fill="#205090" opacity="0.6"/>
+                <line x1="127" y1="306" x2="127" y2="320" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
+                <rect class="aisle-sign" x="60" y="282" width="134" height="30" rx="4" fill="var(--sign-adventure)" stroke="var(--sign-adventure-border)" stroke-width="2" filter="url(#sign-glow)"/>
+                <text x="127" y="302" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">ADVENTURE</text>
+            </g>
+
+            <!-- AISLE 6: Racing -->
+            <g class="aisle-group" data-genre="racing" data-slug="racing" style="cursor:pointer;">
+                <rect class="aisle-shelf" x="245" y="320" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
+                <line x1="245" y1="352" x2="420" y2="352" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="245" y1="384" x2="420" y2="384" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="245" y1="416" x2="420" y2="416" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="245" y1="448" x2="420" y2="448" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <rect x="253" y="326" width="11" height="22" rx="1" fill="#f0a000" opacity="0.8"/>
+                <rect x="268" y="326" width="9" height="22" rx="1" fill="#e08000" opacity="0.8"/>
+                <rect x="281" y="326" width="13" height="22" rx="1" fill="#f0c000" opacity="0.8"/>
+                <rect x="298" y="326" width="8" height="22" rx="1" fill="#d06000" opacity="0.8"/>
+                <rect x="310" y="326" width="10" height="22" rx="1" fill="#f0b000" opacity="0.8"/>
+                <rect x="324" y="326" width="12" height="22" rx="1" fill="#c05000" opacity="0.8"/>
+                <rect x="253" y="358" width="10" height="22" rx="1" fill="#e09010" opacity="0.7"/>
+                <rect x="267" y="358" width="9" height="22" rx="1" fill="#f0a020" opacity="0.7"/>
+                <line x1="332" y1="306" x2="332" y2="320" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
+                <rect class="aisle-sign" x="277" y="282" width="110" height="30" rx="4" fill="var(--sign-racing)" stroke="var(--sign-racing-border)" stroke-width="2" filter="url(#sign-glow)"/>
+                <text x="332" y="302" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">RACING</text>
+            </g>
+
+            <!-- AISLE 7: Puzzle -->
+            <g class="aisle-group" data-genre="puzzle" data-slug="puzzle" style="cursor:pointer;">
+                <rect class="aisle-shelf" x="450" y="320" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
+                <line x1="450" y1="352" x2="625" y2="352" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="450" y1="384" x2="625" y2="384" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="450" y1="416" x2="625" y2="416" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="450" y1="448" x2="625" y2="448" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <rect x="458" y="326" width="10" height="22" rx="1" fill="#00c0c0" opacity="0.7"/>
+                <rect x="472" y="326" width="9" height="22" rx="1" fill="#0080a0" opacity="0.7"/>
+                <rect x="485" y="326" width="12" height="22" rx="1" fill="#00a0b0" opacity="0.7"/>
+                <rect x="501" y="326" width="8" height="22" rx="1" fill="#20d0d0" opacity="0.7"/>
+                <rect x="513" y="326" width="11" height="22" rx="1" fill="#0090c0" opacity="0.7"/>
+                <rect x="528" y="326" width="9" height="22" rx="1" fill="#40b0c0" opacity="0.7"/>
+                <rect x="458" y="358" width="10" height="22" rx="1" fill="#10b0b0" opacity="0.6"/>
+                <rect x="472" y="358" width="8" height="22" rx="1" fill="#0070a0" opacity="0.6"/>
+                <line x1="537" y1="306" x2="537" y2="320" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
+                <rect class="aisle-sign" x="482" y="282" width="110" height="30" rx="4" fill="var(--sign-puzzle)" stroke="var(--sign-puzzle-border)" stroke-width="2" filter="url(#sign-glow)"/>
+                <text x="537" y="302" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">PUZZLE</text>
+            </g>
+
+            <!-- AISLE 8: Strategy -->
+            <g class="aisle-group" data-genre="strategy" data-slug="strategy" style="cursor:pointer;">
+                <rect class="aisle-shelf" x="655" y="320" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
+                <line x1="655" y1="352" x2="830" y2="352" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="655" y1="384" x2="830" y2="384" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="655" y1="416" x2="830" y2="416" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <line x1="655" y1="448" x2="830" y2="448" stroke="var(--store-shelf-border)" stroke-width="1"/>
+                <rect x="663" y="326" width="10" height="22" rx="1" fill="#808020" opacity="0.8"/>
+                <rect x="677" y="326" width="9" height="22" rx="1" fill="#606010" opacity="0.8"/>
+                <rect x="690" y="326" width="12" height="22" rx="1" fill="#a0a030" opacity="0.8"/>
+                <rect x="706" y="326" width="8" height="22" rx="1" fill="#707020" opacity="0.8"/>
+                <rect x="718" y="326" width="11" height="22" rx="1" fill="#909028" opacity="0.8"/>
+                <rect x="733" y="326" width="9" height="22" rx="1" fill="#505015" opacity="0.8"/>
+                <rect x="663" y="358" width="10" height="22" rx="1" fill="#787822" opacity="0.7"/>
+                <rect x="677" y="358" width="8" height="22" rx="1" fill="#a0a035" opacity="0.7"/>
+                <line x1="742" y1="306" x2="742" y2="320" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
+                <rect class="aisle-sign" x="679" y="282" width="126" height="30" rx="4" fill="var(--sign-strategy)" stroke="var(--sign-strategy-border)" stroke-width="2" filter="url(#sign-glow)"/>
+                <text x="742" y="302" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">STRATEGY</text>
+            </g>
+
+            <!-- Walking paths between aisles -->
+            <rect x="220" y="100" width="20" height="480" fill="var(--store-path)" opacity="0.3"/>
+            <rect x="425" y="100" width="20" height="480" fill="var(--store-path)" opacity="0.3"/>
+            <rect x="630" y="100" width="20" height="480" fill="var(--store-path)" opacity="0.3"/>
+            <rect x="18" y="285" width="864" height="30" fill="var(--store-path)" opacity="0.3"/>
+
+            <!-- Overhead lights -->
+            <ellipse cx="127" cy="50" rx="18" ry="6" fill="var(--light-glow)" opacity="0.4"/>
+            <ellipse cx="332" cy="50" rx="18" ry="6" fill="var(--light-glow)" opacity="0.4"/>
+            <ellipse cx="537" cy="50" rx="18" ry="6" fill="var(--light-glow)" opacity="0.4"/>
+            <ellipse cx="742" cy="50" rx="18" ry="6" fill="var(--light-glow)" opacity="0.4"/>
+
+        </svg>
+
+        <p style="text-align:center;font-size:0.78rem;color:var(--text2);margin-top:0.5rem;">Click any aisle or sign to browse games</p>
+    </div>
+
+    <!-- AISLE VIEW (hidden until genre clicked) -->
+    <div id="aisle-view" style="display:none;">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+            <button id="back-to-map" class="btn btn-sm">← Back to Store</button>
+            <div id="aisle-title" style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.1em;color:var(--accent);"></div>
+        </div>
+
+        <!-- The physical shelf in aisle view -->
+        <div id="aisle-shelf-container">
+            <div id="aisle-loading" style="text-align:center;padding:3rem;color:var(--text2);font-family:'Barlow Condensed',sans-serif;letter-spacing:0.08em;">
+                Loading shelf...
+            </div>
+            <div id="aisle-shelf" style="display:none;">
+                <div class="shelf-plank" id="aisle-games" style="min-height:180px;flex-wrap:wrap;align-items:flex-end;gap:8px;padding:1.2rem 1.5rem 1rem;"></div>
+            </div>
+            <div id="aisle-pagination" style="display:flex;justify-content:center;gap:0.8rem;margin-top:1rem;"></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- GAME QUICK-ADD MODAL -->
+<div id="game-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;max-width:480px;width:90%;max-height:90vh;overflow-y:auto;">
+        <div style="background:var(--surface2);border-bottom:1px solid var(--border);padding:0.8rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">
+            <span id="modal-title" style="font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:0.08em;color:var(--accent);"></span>
+            <button onclick="closeModal()" style="background:none;border:none;color:var(--text2);font-size:1.2rem;cursor:pointer;">✕</button>
+        </div>
+        <div style="padding:1.2rem 1.5rem;">
+            <div style="display:flex;gap:1rem;margin-bottom:1.2rem;">
+                <img id="modal-cover" src="" alt="" style="width:90px;border-radius:3px;flex-shrink:0;object-fit:cover;">
+                <div>
+                    <div id="modal-meta" style="font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;color:var(--text2);margin-bottom:0.5rem;"></div>
+                    <div id="modal-desc" style="font-size:0.82rem;color:var(--text2);line-height:1.5;"></div>
+                </div>
+            </div>
+            <div id="modal-logged-in">
+                <form id="modal-form" method="POST">
+                    <input type="hidden" id="modal-game-title" name="game_title">
+                    <input type="hidden" id="modal-cover-url" name="cover_url">
+                    <div style="display:flex;gap:0.8rem;margin-bottom:0.8rem;">
+                        <div style="flex:1;">
+                            <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:0.3rem;">Shelf</label>
+                            <select name="shelf" style="width:100%;padding:0.45rem 0.6rem;background:var(--bg2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:'Barlow',sans-serif;font-size:0.88rem;">
+                                <option>Playing</option>
+                                <option>Want to Play</option>
+                                <option>Finished</option>
+                            </select>
+                        </div>
+                        <div style="flex:1;">
+                            <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:0.3rem;">Rating</label>
+                            <input type="number" name="rating" min="0.1" max="5" step="0.1" placeholder="e.g. 4.3" style="width:100%;padding:0.45rem 0.6rem;background:var(--bg2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:'Barlow',sans-serif;font-size:0.88rem;">
+                        </div>
+                    </div>
+                    <div style="margin-bottom:0.8rem;">
+                        <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:0.3rem;">Platform (optional)</label>
+                        <select name="platform" style="width:100%;padding:0.45rem 0.6rem;background:var(--bg2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:'Barlow',sans-serif;font-size:0.88rem;">
+                            <option value="">— optional —</option>
+                            <option>PC</option><option>PlayStation 5</option><option>PlayStation 4</option>
+                            <option>Xbox Series X/S</option><option>Xbox One</option><option>Nintendo Switch</option>
+                            <option>Meta Quest</option><option>iOS</option><option>Android</option><option>Other</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom:1rem;">
+                        <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:0.3rem;">Quick Review (optional)</label>
+                        <textarea name="review" rows="2" placeholder="What do you think?" style="width:100%;padding:0.45rem 0.6rem;background:var(--bg2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:'Barlow',sans-serif;font-size:0.88rem;resize:vertical;"></textarea>
+                    </div>
+                    <div style="display:flex;gap:0.8rem;">
+                        <button type="submit" class="btn btn-solid" style="flex:1;">Add to Shelf</button>
+                        <a id="modal-full-link" href="#" class="btn" style="flex:1;text-align:center;">Full Page</a>
+                    </div>
+                </form>
+            </div>
+            <div id="modal-logged-out" style="display:none;text-align:center;padding:1rem 0;">
+                <p style="margin-bottom:1rem;">Log in to add this game to your shelf.</p>
+                <a href="/login" class="btn btn-solid">Log In</a>
+                <a href="/register" class="btn" style="margin-left:0.5rem;">Join</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --store-floor:          #2a2010;
+        --store-tile-line:      rgba(255,255,255,0.04);
+        --store-wall:           #1a1008;
+        --store-counter:        #3a2a10;
+        --store-counter-border: #6a4a20;
+        --store-shelf-fill:     #2a1a08;
+        --store-shelf-border:   #5a3a18;
+        --store-path:           rgba(255,220,150,0.08);
+        --store-string:         #8a6a40;
+        --light-glow:           #fff8e0;
+        --sign-action:          #8b1a1a;
+        --sign-action-border:   #ff4040;
+        --sign-rpg:             #2a1a6b;
+        --sign-rpg-border:      #9060ff;
+        --sign-horror:          #0a0a0a;
+        --sign-horror-border:   #600000;
+        --sign-indie:           #1a4a1a;
+        --sign-indie-border:    #40d080;
+        --sign-adventure:       #1a3a1a;
+        --sign-adventure-border:#60a040;
+        --sign-racing:          #4a2a00;
+        --sign-racing-border:   #f0a000;
+        --sign-puzzle:          #003a4a;
+        --sign-puzzle-border:   #00c0d0;
+        --sign-strategy:        #2a2a00;
+        --sign-strategy-border: #a0a020;
+    }
+    [data-theme="light"] {
+        --store-floor:          #d4c4a0;
+        --store-tile-line:      rgba(0,0,0,0.06);
+        --store-wall:           #8b6a3a;
+        --store-counter:        #c4a870;
+        --store-counter-border: #8b6030;
+        --store-shelf-fill:     #e8d8b0;
+        --store-shelf-border:   #a08040;
+        --store-path:           rgba(255,255,200,0.4);
+        --store-string:         #806030;
+        --light-glow:           #fffbe0;
+    }
+
+    .aisle-group .aisle-shelf {
+        transition: fill 0.2s, filter 0.2s;
+    }
+    .aisle-group:hover .aisle-shelf {
+        fill: var(--surface2);
+        filter: brightness(1.3);
+    }
+    .aisle-group .aisle-sign {
+        transition: filter 0.2s;
+    }
+    .aisle-group:hover .aisle-sign {
+        filter: url(#hover-glow);
+    }
+
+    .game-case-aisle {
+        flex-shrink: 0;
+        width: 80px;
+        height: 120px;
+        border-radius: 3px 1px 1px 3px;
+        overflow: hidden;
+        cursor: pointer;
+        position: relative;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.6), inset -2px 0 4px rgba(0,0,0,0.4);
+        border: none;
+        background: none;
+        padding: 0;
+    }
+    .game-case-aisle:hover {
+        transform: translateY(-14px) scale(1.06);
+        box-shadow: 0 18px 36px rgba(0,0,0,0.8), inset -2px 0 4px rgba(0,0,0,0.4);
+        z-index: 10;
+    }
+    .game-case-aisle img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        pointer-events: none;
+    }
+    .game-case-aisle .no-cover-aisle {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(160deg, var(--surface2), var(--surface));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        text-align: center;
+        pointer-events: none;
+    }
+    .game-case-aisle .no-cover-aisle span {
+        font-family: 'Barlow Condensed', sans-serif;
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: var(--text2);
+        line-height: 1.3;
+    }
+    .case-shine-aisle {
+        position: absolute;
+        top: 0; left: 0;
+        width: 30%;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
+        pointer-events: none;
+    }
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+const IS_LOGGED_IN = {{ 'true' if session.get('username') else 'false' }};
+let currentPage = 1;
+let currentGenre = '';
+let currentGenreLabel = '';
+
+// Genre → RAWG genre slug mapping
+const GENRE_SLUGS = {
+    action: 'action',
+    rpg: 'role-playing-games-rpg',
+    horror: 'action', // will use tags for horror
+    indie: 'indie',
+    adventure: 'adventure',
+    racing: 'racing',
+    puzzle: 'puzzle',
+    strategy: 'strategy'
+};
+
+const HORROR_OVERRIDE = { horror: true };
+
+document.querySelectorAll('.aisle-group').forEach(el => {
+    el.addEventListener('click', () => {
+        const genre = el.dataset.genre;
+        const label = genre.toUpperCase();
+        openAisle(genre, label, 1);
+    });
+});
+
+document.getElementById('back-to-map').addEventListener('click', () => {
+    document.getElementById('store-map').style.display = '';
+    document.getElementById('aisle-view').style.display = 'none';
+});
+
+async function openAisle(genre, label, page) {
+    currentGenre = genre;
+    currentGenreLabel = label;
+    currentPage = page;
+    document.getElementById('store-map').style.display = 'none';
+    document.getElementById('aisle-view').style.display = '';
+    document.getElementById('aisle-title').textContent = label + ' AISLE';
+    document.getElementById('aisle-loading').style.display = '';
+    document.getElementById('aisle-shelf').style.display = 'none';
+    document.getElementById('aisle-pagination').innerHTML = '';
+
+    try {
+        const url = `/arcade/genre?genre=${genre}&page=${page}`;
+        const r = await fetch(url);
+        const data = await r.json();
+        renderAisle(data.results, data.total, page);
+    } catch(e) {
+        document.getElementById('aisle-loading').textContent = 'Could not load games. Try again.';
+    }
+}
+
+function renderAisle(games, total, page) {
+    document.getElementById('aisle-loading').style.display = 'none';
+    const shelf = document.getElementById('aisle-shelf');
+    const gamesEl = document.getElementById('aisle-games');
+    shelf.style.display = '';
+    gamesEl.innerHTML = '';
+
+    if (!games.length) {
+        gamesEl.innerHTML = '<span style="color:var(--text2);font-style:italic;font-size:0.9rem;padding:1rem;">No games found for this genre.</span>';
+    } else {
+        games.forEach(g => {
+            const btn = document.createElement('button');
+            btn.className = 'game-case-aisle';
+            btn.title = g.title;
+            btn.onclick = () => openGameModal(g);
+            if (g.cover_url) {
+                btn.innerHTML = `<img src="${g.cover_url}" alt="${g.title}" loading="lazy"><div class="case-shine-aisle"></div>`;
+            } else {
+                btn.innerHTML = `<div class="no-cover-aisle"><span>${g.title}</span></div><div class="case-shine-aisle"></div>`;
+            }
+            gamesEl.appendChild(btn);
+        });
+    }
+
+    // Pagination
+    const pag = document.getElementById('aisle-pagination');
+    if (total > 12) {
+        if (page > 1) {
+            const prev = document.createElement('button');
+            prev.className = 'btn btn-sm';
+            prev.textContent = '← Prev';
+            prev.onclick = () => openAisle(currentGenre, currentGenreLabel, page - 1);
+            pag.appendChild(prev);
+        }
+        const info = document.createElement('span');
+        info.style.cssText = 'padding:0.3rem 0.7rem;color:var(--text2);font-family:Barlow Condensed,sans-serif;font-size:0.85rem;';
+        info.textContent = `Page ${page}`;
+        pag.appendChild(info);
+        if (games.length === 12) {
+            const next = document.createElement('button');
+            next.className = 'btn btn-sm';
+            next.textContent = 'Next →';
+            next.onclick = () => openAisle(currentGenre, currentGenreLabel, page + 1);
+            pag.appendChild(next);
+        }
+    }
+}
+
+function openGameModal(g) {
+    document.getElementById('modal-title').textContent = g.title;
+    document.getElementById('modal-cover').src = g.cover_url || '';
+    document.getElementById('modal-cover').style.display = g.cover_url ? '' : 'none';
+    document.getElementById('modal-meta').textContent = [g.released, g.genres].filter(Boolean).join(' · ');
+    document.getElementById('modal-desc').textContent = g.description || '';
+    document.getElementById('modal-game-title').value = g.title;
+    document.getElementById('modal-cover-url').value = g.cover_url || '';
+    document.getElementById('modal-form').action = `/game/${g.id}/add`;
+    document.getElementById('modal-full-link').href = `/game/${g.id}`;
+
+    if (IS_LOGGED_IN) {
+        document.getElementById('modal-logged-in').style.display = '';
+        document.getElementById('modal-logged-out').style.display = 'none';
+    } else {
+        document.getElementById('modal-logged-in').style.display = 'none';
+        document.getElementById('modal-logged-out').style.display = '';
+    }
+    document.getElementById('game-modal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('game-modal').style.display = 'none';
+}
+
+document.getElementById('game-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('game-modal')) closeModal();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}{{ user.username }}'s Shelf — GameShelf{% endblock %}
+
+{% macro shelf_case(entry) %}
+<a href="/game/{{ entry.game_id }}" class="game-case" title="{{ entry.game_title }}{% if entry.rating %} — ★ {{ entry.rating }}{% endif %}">
+    {% if entry.cover_url %}
+        <img src="{{ entry.cover_url }}" alt="{{ entry.game_title }}" loading="lazy">
+    {% else %}
+        <div class="no-cover"><span>{{ entry.game_title }}</span></div>
+    {% endif %}
+    <div class="case-shine"></div>
+    {% if entry.rating %}
+        <div class="rating-badge">★ {{ entry.rating }}</div>
+    {% endif %}
+</a>
+{% endmacro %}
+
+{% block content %}
+
+<!-- PROFILE HEADER -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
+    <div>
+        <h1 style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:0.06em;color:var(--text);line-height:1;">{{ user.username }}</h1>
+        <div style="font-family:'Barlow Condensed',sans-serif;color:var(--text2);font-size:0.85rem;letter-spacing:0.06em;margin-top:0.2rem;">
+            Member since {{ user.joined }} ·
+            {% set total = shelves['Playing']|length + shelves['Want to Play']|length + shelves['Finished']|length %}
+            {{ total }} game{% if total != 1 %}s{% endif %} tracked
+        </div>
+    </div>
+    {% if is_owner %}
+    <a href="/search" class="btn btn-solid">+ Add Games</a>
+    {% endif %}
+</div>
+
+<!-- SHELF STATS -->
+<div style="display:flex;gap:1rem;margin-bottom:2.5rem;flex-wrap:wrap;">
+    {% for shelf_name in shelf_names %}
+    {% set count = shelves[shelf_name]|length %}
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:0.8rem 1.4rem;text-align:center;">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;color:var(--accent);line-height:1;">{{ count }}</div>
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.8rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text2);">{{ shelf_name }}</div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- EACH SHELF -->
+{% for shelf_name in shelf_names %}
+{% set entries = shelves[shelf_name] %}
+<div class="shelf-section">
+    <div class="shelf-label">
+        {{ shelf_name }}
+        <span class="shelf-count">{{ entries|length }}</span>
+    </div>
+    <div class="shelf-plank">
+        {% if entries %}
+            {% for entry in entries %}
+                {{ shelf_case(entry) }}
+            {% endfor %}
+        {% else %}
+            <span class="empty-shelf">{% if is_owner %}Nothing here yet — <a href="/search" style="color:var(--accent)">search for games</a> to add.{% else %}Empty.{% endif %}</span>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}

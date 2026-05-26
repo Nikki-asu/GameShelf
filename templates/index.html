@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% block title %}GameShelf — Your Personal Game Library{% endblock %}
+
+{% macro shelf_case(entry) %}
+<a href="/game/{{ entry.game_id }}" class="game-case" title="{{ entry.game_title }} — {{ entry.username }}">
+    {% if entry.cover_url %}
+        <img src="{{ entry.cover_url }}" alt="{{ entry.game_title }}" loading="lazy">
+    {% else %}
+        <div class="no-cover"><span>{{ entry.game_title }}</span></div>
+    {% endif %}
+    <div class="case-shine"></div>
+    {% if entry.rating %}<div class="rating-badge">★ {{ entry.rating }}</div>{% endif %}
+</a>
+{% endmacro %}
+
+{% block content %}
+
+<!-- THREE ENTRY POINTS -->
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.2rem;margin-bottom:3rem;">
+
+    <!-- THE ARCADE -->
+    <a href="/arcade" style="text-decoration:none;">
+        <div class="entry-card"
+             onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.5)'"
+             onmouseout="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow=''">
+            <div style="display:flex;justify-content:center;gap:4px;margin-bottom:1rem;height:56px;align-items:flex-end;">
+                {% for c in ['#c03020','#6040c0','#20a060','#f0a000','#0090c0','#e05090','#808020','#1a1a2e'] %}
+                <div style="width:13px;height:{% if loop.index % 3 == 0 %}56px{% elif loop.index % 2 == 0 %}46px{% else %}42px{% endif %};background:{{ c }};border-radius:2px 1px 1px 2px;opacity:0.85;box-shadow:2px 0 4px rgba(0,0,0,0.4);"></div>
+                {% endfor %}
+            </div>
+            <div class="entry-title">The Arcade</div>
+            <div class="entry-sub">Browse by Genre</div>
+        </div>
+    </a>
+
+    <!-- MY SHELF -->
+    <a href="{% if session.get('username') %}/user/{{ session.username }}{% else %}/login{% endif %}" style="text-decoration:none;">
+        <div class="entry-card"
+             onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.5)'"
+             onmouseout="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow=''">
+            <div style="margin-bottom:1rem;height:56px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;">
+                <div style="display:flex;gap:3px;align-items:flex-end;">
+                    {% for h in [36,50,44,48,38,50,42,35] %}
+                    <div style="width:11px;height:{{ h }}px;background:var(--surface2);border:1px solid var(--border);border-radius:2px 1px 1px 2px;"></div>
+                    {% endfor %}
+                </div>
+                <div style="width:120px;height:4px;background:var(--shelf-wood);border-radius:1px;"></div>
+            </div>
+            <div class="entry-title">My Shelf</div>
+            <div class="entry-sub">{% if session.get('username') %}Playing · Want to Play · Finished{% else %}Log in to view your shelf{% endif %}</div>
+        </div>
+    </a>
+
+    <!-- THE BOARD -->
+    <a href="/board" style="text-decoration:none;">
+        <div class="entry-card"
+             onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.5)'"
+             onmouseout="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow=''">
+            <!-- Bulletin board icon -->
+            <div style="margin-bottom:1rem;height:56px;display:flex;align-items:center;justify-content:center;">
+                <div style="width:90px;height:52px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;position:relative;display:flex;flex-direction:column;gap:5px;padding:7px 8px;justify-content:center;">
+                    {% for w in ['70%','50%','80%','45%'] %}
+                    <div style="height:4px;width:{{ w }};background:var(--border);border-radius:2px;"></div>
+                    {% endfor %}
+                    <!-- Pin -->
+                    <div style="position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:8px;height:8px;background:var(--accent);border-radius:50%;"></div>
+                </div>
+            </div>
+            <div class="entry-title">The Board</div>
+            <div class="entry-sub">Community Reviews</div>
+        </div>
+    </a>
+
+</div>
+
+<!-- RECENTLY FINISHED -->
+<div class="shelf-section">
+    <div class="shelf-label">
+        Recently Finished
+        <span class="shelf-count">{{ recent_finished|length }} reviews</span>
+    </div>
+    <div class="shelf-plank">
+        {% if recent_finished %}
+            {% for entry in recent_finished %}{{ shelf_case(entry) }}{% endfor %}
+        {% else %}
+            <span class="empty-shelf">No finished games yet. Be the first.</span>
+        {% endif %}
+    </div>
+</div>
+
+<!-- CURRENTLY PLAYING -->
+<div class="shelf-section">
+    <div class="shelf-label">
+        Currently Playing
+        <span class="shelf-count">{{ recent_playing|length }} active</span>
+    </div>
+    <div class="shelf-plank">
+        {% if recent_playing %}
+            {% for entry in recent_playing %}{{ shelf_case(entry) }}{% endfor %}
+        {% else %}
+            <span class="empty-shelf">Nobody's playing anything yet.</span>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.entry-card {
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    transition: all 0.2s;
+    cursor: pointer;
+    height: 100%;
+}
+.entry-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.6rem;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    line-height: 1;
+}
+.entry-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    color: var(--text2);
+    margin-top: 0.3rem;
+    text-transform: uppercase;
+}
+</style>
+
+{% endblock %}

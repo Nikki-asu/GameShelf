@@ -1,0 +1,43 @@
+<!-- search.html -->
+{% extends "base.html" %}
+{% block title %}{% if query %}{{ query }} — {% endif %}Search — GameShelf{% endblock %}
+{% block content %}
+<div style="margin-bottom:1.5rem;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.08em;color:var(--accent);">
+        {% if query %}Results for "{{ query }}"{% else %}Search for a game{% endif %}
+    </div>
+    {% if total %}<p>{{ total }} games found</p>{% endif %}
+</div>
+
+{% if results %}
+<div class="game-grid">
+    {% for g in results %}
+    <a href="/game/{{ g.id }}" class="game-card">
+        {% if g.cover_url %}
+            <img src="{{ g.cover_url }}" alt="{{ g.title }}" class="game-card-cover" loading="lazy">
+        {% else %}
+            <div class="game-card-cover-placeholder">
+                <span style="color:var(--text2);font-size:0.75rem;padding:0.5rem;text-align:center;">{{ g.title }}</span>
+            </div>
+        {% endif %}
+        <div class="game-card-info">
+            <div class="game-card-title">{{ g.title }}</div>
+            <div class="game-card-meta">{{ g.released }}{% if g.genres %} · {{ g.genres }}{% endif %}</div>
+            {% if g.rating %}<div class="game-card-meta">★ {{ g.rating }}</div>{% endif %}
+        </div>
+    </a>
+    {% endfor %}
+</div>
+
+{% if total > 12 %}
+<div style="margin-top:2rem;display:flex;gap:0.8rem;justify-content:center;">
+    {% if page > 1 %}<a href="?q={{ query }}&page={{ page - 1 }}" class="btn btn-sm">← Prev</a>{% endif %}
+    <span style="padding:0.3rem 0.7rem;color:var(--text2);font-family:'Barlow Condensed',sans-serif;">Page {{ page }}</span>
+    {% if results|length == 12 %}<a href="?q={{ query }}&page={{ page + 1 }}" class="btn btn-sm">Next →</a>{% endif %}
+</div>
+{% endif %}
+
+{% elif query %}
+<p>No results for "{{ query }}". Try a different title.</p>
+{% endif %}
+{% endblock %}
