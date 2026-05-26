@@ -13,8 +13,6 @@ PLATFORMS = ['PC', 'PlayStation 5', 'PlayStation 4', 'Xbox Series X/S',
              'Xbox One', 'Nintendo Switch', 'Meta Quest', 'iOS', 'Android', 'Other']
 SHELVES = ['Playing', 'Want to Play', 'Finished']
 
-with app.app_context():
-    db.seed_demo_user()
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 
@@ -169,6 +167,10 @@ def game(game_id):
         else:
             flash('Game not found.', 'danger')
             return redirect(url_for('search'))
+
+    # Backfill cover URL into any existing XML entries that are missing it
+    if info and info.get('cover_url'):
+        db.backfill_cover(game_id, info['cover_url'])
 
     user_entry = None
     if session.get('username'):
