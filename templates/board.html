@@ -22,14 +22,14 @@
     <p style="margin-top:0.3rem;">What the GameShelf community is playing, rating, and talking about.</p>
 </div>
 
-<!-- THREE COLUMNS: top rated, most reviewed, recent activity -->
+{% if top_rated or most_reviewed %}
+<!-- COMMUNITY RANKINGS -->
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2.5rem;">
 
     <!-- TOP RATED ON GAMESHELF -->
     <div class="card">
         <div class="card-header">Top Rated on GameShelf</div>
         <div class="card-body" style="padding:0;">
-            {% if top_rated %}
             {% for g in top_rated[:8] %}
             <a href="/game/{{ g.game_id }}" style="display:flex;align-items:center;gap:0.8rem;padding:0.7rem 1rem;border-bottom:1px solid var(--border);text-decoration:none;transition:background 0.15s;"
                onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
@@ -46,9 +46,6 @@
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;color:var(--text2);flex-shrink:0;">{{ g.count }} rating{% if g.count != 1 %}s{% endif %}</div>
             </a>
             {% endfor %}
-            {% else %}
-            <p style="padding:1.5rem;text-align:center;font-style:italic;">No ratings yet. Be the first to rate a game.</p>
-            {% endif %}
         </div>
     </div>
 
@@ -56,7 +53,6 @@
     <div class="card">
         <div class="card-header">Most Discussed</div>
         <div class="card-body" style="padding:0;">
-            {% if most_reviewed %}
             {% for g in most_reviewed[:8] %}
             <a href="/game/{{ g.game_id }}" style="display:flex;align-items:center;gap:0.8rem;padding:0.7rem 1rem;border-bottom:1px solid var(--border);text-decoration:none;transition:background 0.15s;"
                onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
@@ -73,19 +69,14 @@
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;color:var(--text2);flex-shrink:0;">{{ g.review_count }} review{% if g.review_count != 1 %}s{% endif %}</div>
             </a>
             {% endfor %}
-            {% else %}
-            <p style="padding:1.5rem;text-align:center;font-style:italic;">No reviews yet. Write the first one.</p>
-            {% endif %}
         </div>
     </div>
-
 </div>
 
-<!-- RECENT REVIEWS FEED -->
+<!-- RECENT REVIEWS -->
 <div class="shelf-label" style="margin-bottom:1.2rem;">Recent Reviews</div>
-
 {% if recent_reviews %}
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:3rem;">
 {% for r in recent_reviews %}
 <div class="card" style="margin:0;">
     <div class="card-body" style="padding:1rem;">
@@ -113,13 +104,110 @@
 </div>
 {% endfor %}
 </div>
-{% else %}
-<div style="text-align:center;padding:3rem;color:var(--text2);">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.5rem;letter-spacing:0.08em;margin-bottom:0.5rem;">No reviews yet</div>
-    <p>Be the first to write one. Search for a game and leave your thoughts.</p>
-    <br>
-    <a href="/search" class="btn btn-solid">Find a Game</a>
-</div>
 {% endif %}
 
+{% endif %}
+
+<!-- FEATURED GAMES — always shown, populated from IGDB -->
+<div style="margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
+    <div class="shelf-label" style="margin:0;flex:1;">
+        Highly Rated Games
+        <span style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;color:var(--text2);font-weight:400;letter-spacing:0.04em;text-transform:none;margin-left:0.5rem;">via IGDB — click any to be the first to review on GameShelf</span>
+    </div>
+    <div id="featured-genres" style="display:flex;gap:0.4rem;flex-wrap:wrap;"></div>
+</div>
+
+<div id="featured-loading" style="text-align:center;padding:2rem;color:var(--text2);font-family:'Barlow Condensed',sans-serif;letter-spacing:0.06em;">
+    Loading featured games...
+</div>
+
+<div id="featured-shelf" style="display:none;">
+    <div class="shelf-plank" id="featured-games" style="min-height:160px;flex-wrap:wrap;gap:8px;padding:1.2rem 1.5rem 1rem;align-items:flex-end;"></div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+let allFeatured = [];
+let activeGenre = 'all';
+
+async function loadFeatured() {
+    try {
+        const r = await fetch('/board/featured');
+        const data = await r.json();
+        allFeatured = data.results || [];
+
+        // Build genre filter buttons
+        const genres = new Set();
+        allFeatured.forEach(g => {
+            if (g.genres) g.genres.split(', ').forEach(genre => genres.add(genre));
+        });
+
+        const genreEl = document.getElementById('featured-genres');
+        const allBtn = makeGenreBtn('All', 'all', true);
+        genreEl.appendChild(allBtn);
+        genres.forEach(genre => {
+            genreEl.appendChild(makeGenreBtn(genre, genre, false));
+        });
+
+        renderFeatured('all');
+    } catch(e) {
+        document.getElementById('featured-loading').textContent = 'Could not load featured games.';
+    }
+}
+
+function makeGenreBtn(label, value, active) {
+    const btn = document.createElement('button');
+    btn.textContent = label;
+    btn.dataset.genre = value;
+    btn.style.cssText = `font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;padding:0.25rem 0.6rem;border-radius:3px;border:1px solid ${active ? 'var(--accent)' : 'var(--border)'};background:${active ? 'var(--accent)' : 'transparent'};color:${active ? 'var(--bg)' : 'var(--text2)'};cursor:pointer;transition:all 0.15s;`;
+    btn.onclick = () => {
+        document.querySelectorAll('#featured-genres button').forEach(b => {
+            b.style.borderColor = 'var(--border)';
+            b.style.background = 'transparent';
+            b.style.color = 'var(--text2)';
+        });
+        btn.style.borderColor = 'var(--accent)';
+        btn.style.background = 'var(--accent)';
+        btn.style.color = 'var(--bg)';
+        renderFeatured(value);
+    };
+    return btn;
+}
+
+function renderFeatured(genre) {
+    activeGenre = genre;
+    const filtered = genre === 'all'
+        ? allFeatured
+        : allFeatured.filter(g => g.genres && g.genres.includes(genre));
+
+    document.getElementById('featured-loading').style.display = 'none';
+    const shelf = document.getElementById('featured-shelf');
+    const gamesEl = document.getElementById('featured-games');
+    shelf.style.display = '';
+    gamesEl.innerHTML = '';
+
+    filtered.forEach(g => {
+        const a = document.createElement('a');
+        a.href = `/game/${g.id}`;
+        a.className = 'game-case';
+        a.title = `${g.title}${g.released ? ' ('+g.released+')' : ''}`;
+        a.style.cssText = 'flex-shrink:0;width:72px;height:110px;';
+
+        if (g.cover_url) {
+            a.innerHTML = `<img src="${g.cover_url}" alt="${g.title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;"><div class="case-shine"></div>`;
+        } else {
+            a.innerHTML = `<div class="no-cover"><span>${g.title}</span></div><div class="case-shine"></div>`;
+        }
+        gamesEl.appendChild(a);
+    });
+
+    if (!filtered.length) {
+        gamesEl.innerHTML = '<span style="color:var(--text2);font-style:italic;font-size:0.9rem;padding:1rem;">No games found for this genre.</span>';
+    }
+}
+
+loadFeatured();
+</script>
 {% endblock %}
