@@ -377,7 +377,7 @@ def board_featured_genre(genre_name):
             fields name, cover.image_id, genres.name, aggregated_rating, first_release_date;
             where {where};
             sort aggregated_rating desc;
-            limit 10;
+            limit 20;
         '''
         r = http.post(f'{IGDB_BASE}/games', headers=igdb_headers(), data=body, timeout=6)
         results = []
