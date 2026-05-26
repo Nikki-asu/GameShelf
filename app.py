@@ -353,3 +353,32 @@ def board():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+@app.route('/board/featured')
+def board_featured():
+    """Returns top rated games from IGDB per genre for the featured strip."""
+    try:
+        body = '''
+            fields name, cover.image_id, genres.name, aggregated_rating, first_release_date;
+            where aggregated_rating > 85 & version_parent = null & cover != null;
+            sort aggregated_rating desc;
+            limit 24;
+        '''
+        r = http.post(f'{IGDB_BASE}/games', headers=igdb_headers(), data=body, timeout=8)
+        games = r.json()
+        results = []
+        for g in games:
+            year = ''
+            if g.get('first_release_date'):
+                year = str(time.strftime('%Y', time.gmtime(g['first_release_date'])))
+            results.append({
+                'id':       g['id'],
+                'title':    g['name'],
+                'cover_url': igdb_cover_url(g.get('cover', {}).get('image_id') if g.get('cover') else None),
+                'released': year,
+                'genres':   ', '.join(x['name'] for x in g.get('genres', [])[:2]),
+                'rating':   round(g.get('aggregated_rating', 0) / 20, 1),
+            })
+        return jsonify({'results': results})
+    except Exception as ex:
+        return jsonify({'results': [], 'error': str(ex)})
