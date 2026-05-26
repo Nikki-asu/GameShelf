@@ -99,23 +99,56 @@
 {% endblock %}
 
 {% block scripts %}
+<style>
+.netflix-row::-webkit-scrollbar { display: none; }
+.scroll-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-size: 1.8rem;
+    line-height: 1;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    padding: 0;
+    flex-shrink: 0;
+}
+.scroll-btn:hover {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+}
+.game-case:hover {
+    transform: translateY(-16px) scale(1.06) !important;
+}
+</style>
 <script>
 const GENRES = ['Adventure','RPG','Puzzle','Shooter','Horror','Indie','Strategy','Racing'];
 
 function buildRow(genre, games) {
     const section = document.createElement('div');
-    section.style.cssText = 'margin-bottom:2.5rem;';
+    section.style.cssText = 'margin-bottom:2.8rem;';
 
-    // Label
-    const label = document.createElement('div');
-    label.style.cssText = 'font-family:"Bebas Neue",sans-serif;font-size:1.4rem;letter-spacing:0.1em;color:var(--accent);margin-bottom:0.6rem;display:flex;align-items:center;gap:0.8rem;';
-    label.innerHTML = `${genre} <span style="flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);display:inline-block;"></span>`;
-    section.appendChild(label);
+    // Label row with scroll arrows
+    const labelRow = document.createElement('div');
+    labelRow.style.cssText = 'display:flex;align-items:center;gap:0.8rem;margin-bottom:0.7rem;';
+    labelRow.innerHTML = `
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.1em;color:var(--accent);flex-shrink:0;">${genre}</div>
+        <div style="flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);"></div>
+        <button class="scroll-btn" onclick="scrollRow(this,-1)" style="flex-shrink:0;">&#8249;</button>
+        <button class="scroll-btn" onclick="scrollRow(this,1)" style="flex-shrink:0;">&#8250;</button>
+    `;
+    section.appendChild(labelRow);
 
     // Shelf plank
     const plank = document.createElement('div');
-    plank.className = 'shelf-plank';
-    plank.style.cssText = 'flex-wrap:nowrap;overflow-x:auto;gap:6px;align-items:flex-end;padding:1rem 1.2rem 0.6rem;';
+    plank.className = 'shelf-plank netflix-row';
+    plank.style.cssText = 'flex-wrap:nowrap;overflow-x:auto;gap:10px;align-items:flex-end;padding:1.4rem 1.5rem 1rem;scroll-behavior:smooth;-ms-overflow-style:none;scrollbar-width:none;';
 
     if (!games.length) {
         const empty = document.createElement('span');
@@ -128,17 +161,27 @@ function buildRow(genre, games) {
             a.href = `/game/${g.id}`;
             a.className = 'game-case';
             a.title = `${g.title}${g.released ? ' ('+g.released+')' : ''}`;
-            a.style.cssText = 'flex-shrink:0;width:72px;height:110px;';
+            a.style.cssText = 'flex-shrink:0;width:130px;height:190px;border-radius:4px;';
             if (g.cover_url) {
-                a.innerHTML = `<img src="${g.cover_url}" alt="${g.title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;"><div class="case-shine"></div>`;
+                a.innerHTML = `<img src="${g.cover_url}" alt="${g.title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:4px;"><div class="case-shine"></div>`;
             } else {
-                a.innerHTML = `<div class="no-cover"><span>${g.title}</span></div><div class="case-shine"></div>`;
+                a.innerHTML = `<div class="no-cover" style="height:100%;"><span style="font-size:0.8rem;">${g.title}</span></div><div class="case-shine"></div>`;
             }
             plank.appendChild(a);
         });
     }
     section.appendChild(plank);
+
+    // Link arrow buttons to this plank
+    const arrows = labelRow.querySelectorAll('.scroll-btn');
+    arrows.forEach(btn => btn._plank = plank);
+
     return section;
+}
+
+function scrollRow(btn, dir) {
+    const plank = btn._plank || btn.closest('div').nextElementSibling;
+    plank.scrollBy({ left: dir * 600, behavior: 'smooth' });
 }
 
 function buildSkeletonRow(genre) {
