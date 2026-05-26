@@ -138,19 +138,31 @@ def _entry_dict(e):
         'added_date':    e.findtext('AddedDate', ''),
     }
 
+
+def backfill_cover(game_id, cover_url):
+    """Update cover URL for all entries of a game that are missing it."""
+    tree = _entries_tree()
+    updated = False
+    for e in tree.getroot().findall('Entry'):
+        if e.findtext('GameId') == str(game_id) and not e.findtext('CoverUrl', '').strip():
+            e.find('CoverUrl').text = cover_url
+            updated = True
+    if updated:
+        _save(tree, 'Entries.xml')
+
 # ── SEED ──────────────────────────────────────────────────────────────────────
 
 def seed_demo_user():
     from hash_util import hash_password
     if not find_user('demo'):
         add_user('demo', hash_password('demo123'))
-        # IGDB IDs and cover URLs
+        # IGDB IDs — covers fetched dynamically from API on game page
         games = [
-            (1020,  'Grand Theft Auto V',    'https://images.igdb.com/igdb/image/upload/t_cover_big/co1tgl.jpg', 'Finished',     '4.2', 'PC', 'A classic. The open world still holds up years later.', ''),
-            (12249, 'Portal 2',              'https://images.igdb.com/igdb/image/upload/t_cover_big/co1rs6.jpg', 'Finished',     '5.0', 'PC', 'Perfect game. The co-op alone is worth it.',             ''),
-            (12248, 'Portal',                'https://images.igdb.com/igdb/image/upload/t_cover_big/co1rse.jpg', 'Finished',     '4.8', 'PC', 'Short but absolutely flawless.',                        ''),
-            (25076, 'Red Dead Redemption 2', 'https://images.igdb.com/igdb/image/upload/t_cover_big/co1q1f.jpg', 'Playing',      '',    'PC', '',                                                      'Act 2 currently. Taking my time.'),
-            (34783, 'Celeste',               'https://images.igdb.com/igdb/image/upload/t_cover_big/co1tfl.jpg', 'Want to Play', '',    '',  '',                                                      ''),
+            (1020,  'Grand Theft Auto V',    '', 'Finished',     '4.2', 'PC', 'A classic. The open world still holds up years later.', ''),
+            (12249, 'Portal 2',              '', 'Finished',     '5.0', 'PC', 'Perfect game. The co-op alone is worth it.',             ''),
+            (12248, 'Portal',                '', 'Finished',     '4.8', 'PC', 'Short but absolutely flawless.',                        ''),
+            (25076, 'Red Dead Redemption 2', '', 'Playing',      '',    'PC', '',                                                      'Act 2 currently. Taking my time.'),
+            (34783, 'Celeste',               '', 'Want to Play', '',    '',  '',                                                      ''),
         ]
         for gid, title, cover, shelf, rating, platform, review, notes in games:
             add_entry('demo', gid, title, cover, shelf, rating or None, platform or None, review or None, notes or None)
