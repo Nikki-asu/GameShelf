@@ -23,10 +23,7 @@
 </div>
 
 {% if top_rated or most_reviewed %}
-<!-- COMMUNITY RANKINGS -->
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2.5rem;">
-
-    <!-- TOP RATED ON GAMESHELF -->
     <div class="card">
         <div class="card-header">Top Rated on GameShelf</div>
         <div class="card-body" style="padding:0;">
@@ -34,11 +31,8 @@
             <a href="/game/{{ g.game_id }}" style="display:flex;align-items:center;gap:0.8rem;padding:0.7rem 1rem;border-bottom:1px solid var(--border);text-decoration:none;transition:background 0.15s;"
                onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
                 <span style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--text2);width:20px;text-align:center;">{{ loop.index }}</span>
-                {% if g.cover_url %}
-                <img src="{{ g.cover_url }}" alt="{{ g.title }}" style="width:36px;height:50px;object-fit:cover;border-radius:2px;flex-shrink:0;">
-                {% else %}
-                <div style="width:36px;height:50px;background:var(--surface2);border-radius:2px;flex-shrink:0;"></div>
-                {% endif %}
+                {% if g.cover_url %}<img src="{{ g.cover_url }}" alt="{{ g.title }}" style="width:36px;height:50px;object-fit:cover;border-radius:2px;flex-shrink:0;">
+                {% else %}<div style="width:36px;height:50px;background:var(--surface2);border-radius:2px;flex-shrink:0;"></div>{% endif %}
                 <div style="flex:1;min-width:0;">
                     <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);">{{ g.title }}</div>
                     <div>{{ star_display(g.avg) }}</div>
@@ -48,8 +42,6 @@
             {% endfor %}
         </div>
     </div>
-
-    <!-- MOST DISCUSSED -->
     <div class="card">
         <div class="card-header">Most Discussed</div>
         <div class="card-body" style="padding:0;">
@@ -57,11 +49,8 @@
             <a href="/game/{{ g.game_id }}" style="display:flex;align-items:center;gap:0.8rem;padding:0.7rem 1rem;border-bottom:1px solid var(--border);text-decoration:none;transition:background 0.15s;"
                onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''">
                 <span style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:var(--text2);width:20px;text-align:center;">{{ loop.index }}</span>
-                {% if g.cover_url %}
-                <img src="{{ g.cover_url }}" alt="{{ g.title }}" style="width:36px;height:50px;object-fit:cover;border-radius:2px;flex-shrink:0;">
-                {% else %}
-                <div style="width:36px;height:50px;background:var(--surface2);border-radius:2px;flex-shrink:0;"></div>
-                {% endif %}
+                {% if g.cover_url %}<img src="{{ g.cover_url }}" alt="{{ g.title }}" style="width:36px;height:50px;object-fit:cover;border-radius:2px;flex-shrink:0;">
+                {% else %}<div style="width:36px;height:50px;background:var(--surface2);border-radius:2px;flex-shrink:0;"></div>{% endif %}
                 <div style="flex:1;min-width:0;">
                     <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:0.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text);">{{ g.title }}</div>
                     {% if g.avg %}<div>{{ star_display(g.avg) }}</div>{% endif %}
@@ -73,20 +62,14 @@
     </div>
 </div>
 
-<!-- RECENT REVIEWS -->
-<div class="shelf-label" style="margin-bottom:1.2rem;">Recent Reviews</div>
 {% if recent_reviews %}
+<div class="shelf-label" style="margin-bottom:1.2rem;">Recent Reviews</div>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:3rem;">
 {% for r in recent_reviews %}
 <div class="card" style="margin:0;">
     <div class="card-body" style="padding:1rem;">
         <div style="display:flex;gap:0.8rem;margin-bottom:0.7rem;">
-            {% if r.cover_url %}
-            <a href="/game/{{ r.game_id }}">
-                <img src="{{ r.cover_url }}" alt="{{ r.game_title }}"
-                     style="width:48px;height:66px;object-fit:cover;border-radius:2px;flex-shrink:0;display:block;">
-            </a>
-            {% endif %}
+            {% if r.cover_url %}<a href="/game/{{ r.game_id }}"><img src="{{ r.cover_url }}" alt="{{ r.game_title }}" style="width:48px;height:66px;object-fit:cover;border-radius:2px;flex-shrink:0;display:block;"></a>{% endif %}
             <div style="flex:1;min-width:0;">
                 <a href="/game/{{ r.game_id }}" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:1rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">{{ r.game_title }}</a>
                 <div style="display:flex;align-items:center;gap:0.6rem;margin-top:0.2rem;flex-wrap:wrap;">
@@ -97,126 +80,103 @@
                 <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.72rem;color:var(--text2);margin-top:0.1rem;">{{ r.added_date }}</div>
             </div>
         </div>
-        <p style="font-size:0.85rem;line-height:1.5;color:var(--text2);">
-            {{ r.review[:200] }}{% if r.review|length > 200 %}… <a href="/game/{{ r.game_id }}" style="font-size:0.8rem;">read more</a>{% endif %}
-        </p>
+        <p style="font-size:0.85rem;line-height:1.5;color:var(--text2);">{{ r.review[:200] }}{% if r.review|length > 200 %}… <a href="/game/{{ r.game_id }}" style="font-size:0.8rem;">read more</a>{% endif %}</p>
     </div>
 </div>
 {% endfor %}
 </div>
 {% endif %}
-
 {% endif %}
 
-<!-- FEATURED GAMES — always shown, populated from IGDB -->
-<div style="margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;">
-    <div class="shelf-label" style="margin:0;flex:1;">
-        Highly Rated Games
-        <span style="font-family:'Barlow Condensed',sans-serif;font-size:0.75rem;color:var(--text2);font-weight:400;letter-spacing:0.04em;text-transform:none;margin-left:0.5rem;">via IGDB — click any to be the first to review on GameShelf</span>
-    </div>
-    <div id="featured-genres" style="display:flex;gap:0.4rem;flex-wrap:wrap;"></div>
+<!-- GENRE ROWS — Netflix style -->
+<div style="margin-bottom:0.5rem;display:flex;align-items:baseline;gap:0.8rem;">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.1em;color:var(--accent);">Browse by Genre</div>
+    <span style="font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;color:var(--text2);letter-spacing:0.04em;">via IGDB — click any game to review it on GameShelf</span>
 </div>
 
-<div id="featured-loading" style="text-align:center;padding:2rem;color:var(--text2);font-family:'Barlow Condensed',sans-serif;letter-spacing:0.06em;">
-    Loading featured games...
-</div>
-
-<div id="featured-shelf" style="display:none;">
-    <div class="shelf-plank" id="featured-games" style="min-height:160px;flex-wrap:wrap;gap:8px;padding:1.2rem 1.5rem 1rem;align-items:flex-end;"></div>
-</div>
+<div id="genre-rows"></div>
 
 {% endblock %}
 
 {% block scripts %}
 <script>
-let allFeatured = [];
-let activeGenre = 'all';
+const GENRES = ['Adventure','RPG','Puzzle','Shooter','Horror','Indie','Strategy','Racing'];
 
-async function loadFeatured() {
-    try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 8000);
-        console.log('Fetching /board/featured...');
-        const r = await fetch('/board/featured', { signal: controller.signal });
-        clearTimeout(timeout);
-        console.log('Response status:', r.status);
-        const data = await r.json();
-        console.log('Data received:', data);
-        allFeatured = data.results || [];
+function buildRow(genre, games) {
+    const section = document.createElement('div');
+    section.style.cssText = 'margin-bottom:2.5rem;';
 
-        // Build genre filter buttons
-        const genres = new Set();
-        allFeatured.forEach(g => {
-            if (g.genres) g.genres.split(', ').forEach(genre => genres.add(genre));
+    // Label
+    const label = document.createElement('div');
+    label.style.cssText = 'font-family:"Bebas Neue",sans-serif;font-size:1.4rem;letter-spacing:0.1em;color:var(--accent);margin-bottom:0.6rem;display:flex;align-items:center;gap:0.8rem;';
+    label.innerHTML = `${genre} <span style="flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);display:inline-block;"></span>`;
+    section.appendChild(label);
+
+    // Shelf plank
+    const plank = document.createElement('div');
+    plank.className = 'shelf-plank';
+    plank.style.cssText = 'flex-wrap:nowrap;overflow-x:auto;gap:6px;align-items:flex-end;padding:1rem 1.2rem 0.6rem;';
+
+    if (!games.length) {
+        const empty = document.createElement('span');
+        empty.className = 'empty-shelf';
+        empty.textContent = 'No games found.';
+        plank.appendChild(empty);
+    } else {
+        games.forEach(g => {
+            const a = document.createElement('a');
+            a.href = `/game/${g.id}`;
+            a.className = 'game-case';
+            a.title = `${g.title}${g.released ? ' ('+g.released+')' : ''}`;
+            a.style.cssText = 'flex-shrink:0;width:72px;height:110px;';
+            if (g.cover_url) {
+                a.innerHTML = `<img src="${g.cover_url}" alt="${g.title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;"><div class="case-shine"></div>`;
+            } else {
+                a.innerHTML = `<div class="no-cover"><span>${g.title}</span></div><div class="case-shine"></div>`;
+            }
+            plank.appendChild(a);
         });
-
-        const genreEl = document.getElementById('featured-genres');
-        const allBtn = makeGenreBtn('All', 'all', true);
-        genreEl.appendChild(allBtn);
-        genres.forEach(genre => {
-            genreEl.appendChild(makeGenreBtn(genre, genre, false));
-        });
-
-        renderFeatured('all');
-    } catch(e) {
-        console.error('Featured games error:', e);
-        document.getElementById('featured-loading').textContent = 'Could not load featured games. Try refreshing.';
-        document.getElementById('featured-loading').style.color = 'var(--text2)';
-        document.getElementById('featured-loading').style.fontStyle = 'italic';
     }
+    section.appendChild(plank);
+    return section;
 }
 
-function makeGenreBtn(label, value, active) {
-    const btn = document.createElement('button');
-    btn.textContent = label;
-    btn.dataset.genre = value;
-    btn.style.cssText = `font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:0.75rem;letter-spacing:0.08em;text-transform:uppercase;padding:0.25rem 0.6rem;border-radius:3px;border:1px solid ${active ? 'var(--accent)' : 'var(--border)'};background:${active ? 'var(--accent)' : 'transparent'};color:${active ? 'var(--bg)' : 'var(--text2)'};cursor:pointer;transition:all 0.15s;`;
-    btn.onclick = () => {
-        document.querySelectorAll('#featured-genres button').forEach(b => {
-            b.style.borderColor = 'var(--border)';
-            b.style.background = 'transparent';
-            b.style.color = 'var(--text2)';
-        });
-        btn.style.borderColor = 'var(--accent)';
-        btn.style.background = 'var(--accent)';
-        btn.style.color = 'var(--bg)';
-        renderFeatured(value);
-    };
-    return btn;
+function buildSkeletonRow(genre) {
+    const section = document.createElement('div');
+    section.style.cssText = 'margin-bottom:2.5rem;';
+    section.innerHTML = `
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:0.1em;color:var(--accent);margin-bottom:0.6rem;">${genre}</div>
+        <div class="shelf-plank" style="align-items:center;justify-content:center;">
+            <span style="color:var(--text2);font-family:'Barlow Condensed',sans-serif;font-size:0.85rem;letter-spacing:0.06em;">Loading...</span>
+        </div>`;
+    return section;
 }
 
-function renderFeatured(genre) {
-    activeGenre = genre;
-    const filtered = genre === 'all'
-        ? allFeatured
-        : allFeatured.filter(g => g.genres && g.genres.includes(genre));
+async function loadAllRows() {
+    const container = document.getElementById('genre-rows');
 
-    document.getElementById('featured-loading').style.display = 'none';
-    const shelf = document.getElementById('featured-shelf');
-    const gamesEl = document.getElementById('featured-games');
-    shelf.style.display = '';
-    gamesEl.innerHTML = '';
-
-    filtered.forEach(g => {
-        const a = document.createElement('a');
-        a.href = `/game/${g.id}`;
-        a.className = 'game-case';
-        a.title = `${g.title}${g.released ? ' ('+g.released+')' : ''}`;
-        a.style.cssText = 'flex-shrink:0;width:72px;height:110px;';
-
-        if (g.cover_url) {
-            a.innerHTML = `<img src="${g.cover_url}" alt="${g.title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;"><div class="case-shine"></div>`;
-        } else {
-            a.innerHTML = `<div class="no-cover"><span>${g.title}</span></div><div class="case-shine"></div>`;
-        }
-        gamesEl.appendChild(a);
+    // Build all skeleton rows first so page doesn't jump
+    const sections = {};
+    GENRES.forEach(genre => {
+        const skeleton = buildSkeletonRow(genre);
+        container.appendChild(skeleton);
+        sections[genre] = skeleton;
     });
 
-    if (!filtered.length) {
-        gamesEl.innerHTML = '<span style="color:var(--text2);font-style:italic;font-size:0.9rem;padding:1rem;">No games found for this genre.</span>';
-    }
+    // Fetch each genre in parallel
+    await Promise.all(GENRES.map(async genre => {
+        try {
+            const r = await fetch(`/board/featured/${genre.toLowerCase()}`);
+            const data = await r.json();
+            const row = buildRow(genre, data.results || []);
+            container.replaceChild(row, sections[genre]);
+        } catch(e) {
+            const row = buildRow(genre, []);
+            container.replaceChild(row, sections[genre]);
+        }
+    }));
 }
 
-loadFeatured();
+loadAllRows();
 </script>
 {% endblock %}
