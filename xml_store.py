@@ -141,9 +141,9 @@ def _entry_dict(e):
 # ── SEED ──────────────────────────────────────────────────────────────────────
 
 def seed_demo_user():
-    from hash_util import hash_string
+    from hash_util import hash_password
     if not find_user('demo'):
-        add_user('demo', hash_string('demo123'))
+        add_user('demo', hash_password('demo123'))
         # IGDB IDs and cover URLs
         games = [
             (1020,  'Grand Theft Auto V',    'https://images.igdb.com/igdb/image/upload/t_cover_big/co1tgl.jpg', 'Finished',     '4.2', 'PC', 'A classic. The open world still holds up years later.', ''),
