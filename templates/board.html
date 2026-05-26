@@ -136,9 +136,12 @@ async function loadFeatured() {
     try {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 8000);
+        console.log('Fetching /board/featured...');
         const r = await fetch('/board/featured', { signal: controller.signal });
         clearTimeout(timeout);
+        console.log('Response status:', r.status);
         const data = await r.json();
+        console.log('Data received:', data);
         allFeatured = data.results || [];
 
         // Build genre filter buttons
@@ -156,6 +159,7 @@ async function loadFeatured() {
 
         renderFeatured('all');
     } catch(e) {
+        console.error('Featured games error:', e);
         document.getElementById('featured-loading').textContent = 'Could not load featured games. Try refreshing.';
         document.getElementById('featured-loading').style.color = 'var(--text2)';
         document.getElementById('featured-loading').style.fontStyle = 'italic';
