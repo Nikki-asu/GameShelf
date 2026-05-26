@@ -360,11 +360,11 @@ def board_featured():
     try:
         body = '''
             fields name, cover.image_id, genres.name, aggregated_rating, first_release_date;
-            where aggregated_rating > 85 & version_parent = null & cover != null;
+            where aggregated_rating > 90 & version_parent = null & cover != null & aggregated_rating_count > 5;
             sort aggregated_rating desc;
-            limit 24;
+            limit 12;
         '''
-        r = http.post(f'{IGDB_BASE}/games', headers=igdb_headers(), data=body, timeout=8)
+        r = http.post(f'{IGDB_BASE}/games', headers=igdb_headers(), data=body, timeout=5)
         games = r.json()
         results = []
         for g in games:
