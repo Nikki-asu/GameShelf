@@ -3,7 +3,7 @@ from flask import (Flask, render_template, request, redirect,
 from functools import wraps
 import requests as http
 import os, time
-from hash_util import hash_string
+from hash_util import hash_string, hash_password, check_password
 import xml_store as db
 
 app = Flask(__name__)
@@ -228,7 +228,7 @@ def login():
         username = request.form['username'].strip()
         password = request.form['password'].strip()
         user = db.find_user(username)
-        if user and user['password'].upper() == hash_string(password).upper():
+        if user and check_password(password, user['password']):
             session['username'] = user['username']
             return redirect(request.args.get('next') or url_for('profile', username=user['username']))
         flash('Invalid username or password.', 'danger')
@@ -250,7 +250,7 @@ def register():
         if db.find_user(username):
             flash('Username taken.', 'danger')
             return render_template('register.html')
-        db.add_user(username, hash_string(password))
+        db.add_user(username, hash_password(password))
         session['username'] = username
         flash('Welcome to GameShelf!', 'success')
         return redirect(url_for('profile', username=username))
