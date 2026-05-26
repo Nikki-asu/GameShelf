@@ -354,30 +354,43 @@ def board():
 if __name__ == '__main__':
     app.run(debug=True)
 
-@app.route('/board/featured')
-def board_featured():
-    """Returns top rated games from IGDB per genre for the featured strip."""
+FEATURED_GENRES = [
+    ('Adventure',    'genres = (31) & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('RPG',          'genres = (12) & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('Puzzle',       'genres = (9)  & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('Shooter',      'genres = (5)  & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('Horror',       'themes = (19) & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('Indie',        'genres = (32) & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('Strategy',     'genres = (15) & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('Racing',       'genres = (10) & version_parent = null & cover != null & aggregated_rating_count > 3'),
+]
+
+@app.route('/board/featured/<genre_name>')
+def board_featured_genre(genre_name):
+    """Returns top rated games from IGDB for a specific genre row."""
+    genre_map = {g[0].lower(): g[1] for g in FEATURED_GENRES}
+    where = genre_map.get(genre_name.lower())
+    if not where:
+        return jsonify({'results': []})
     try:
-        body = '''
+        body = f'''
             fields name, cover.image_id, genres.name, aggregated_rating, first_release_date;
-            where aggregated_rating > 90 & version_parent = null & cover != null & aggregated_rating_count > 5;
+            where {where};
             sort aggregated_rating desc;
-            limit 12;
+            limit 10;
         '''
-        r = http.post(f'{IGDB_BASE}/games', headers=igdb_headers(), data=body, timeout=5)
-        games = r.json()
+        r = http.post(f'{IGDB_BASE}/games', headers=igdb_headers(), data=body, timeout=6)
         results = []
-        for g in games:
+        for g in r.json():
             year = ''
             if g.get('first_release_date'):
                 year = str(time.strftime('%Y', time.gmtime(g['first_release_date'])))
             results.append({
-                'id':       g['id'],
-                'title':    g['name'],
-                'cover_url': igdb_cover_url(g.get('cover', {}).get('image_id') if g.get('cover') else None),
-                'released': year,
-                'genres':   ', '.join(x['name'] for x in g.get('genres', [])[:2]),
-                'rating':   round(g.get('aggregated_rating', 0) / 20, 1),
+                'id':        g['id'],
+                'title':     g['name'],
+                'cover_url':  igdb_cover_url(g.get('cover', {}).get('image_id') if g.get('cover') else None),
+                'released':  year,
+                'rating':    round(g.get('aggregated_rating', 0) / 20, 1) if g.get('aggregated_rating') else 0,
             })
         return jsonify({'results': results})
     except Exception as ex:
