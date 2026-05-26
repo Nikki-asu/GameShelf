@@ -144,13 +144,13 @@ def seed_demo_user():
     from hash_util import hash_string
     if not find_user('demo'):
         add_user('demo', hash_string('demo123'))
-        # Add a few shelf entries with real RAWG game ids + covers
+        # IGDB IDs and cover URLs
         games = [
-            (3498,  'Grand Theft Auto V',      'https://media.rawg.io/media/games/456/456dea5e1c7e3cd07060c14e96612001.jpg', 'Finished', '4.2', 'PC',    'A classic. The world still holds up.',  ''),
-            (4200,  'Portal 2',                'https://media.rawg.io/media/games/328/3283617cb7d75d67257fc58339188742.jpg', 'Finished', '5.0', 'PC',    'Perfect game. No notes.',               ''),
-            (13536, 'Portal',                  'https://media.rawg.io/media/games/7fa/7fa0b586293c5861ee32490e953a4996.jpg', 'Finished', '4.8', 'PC',    'Short but flawless.',                   ''),
-            (28,    'Red Dead Redemption 2',   'https://media.rawg.io/media/games/511/5118aff5091cb3efec399c808f8c598f.jpg', 'Playing',  '',    'PC',    '',                                      'Act 2 currently. Taking my time.'),
-            (41494, 'Celeste',                 'https://media.rawg.io/media/games/594/594574c3b1c6de968f83f610b29c5bed.jpg', 'Want to Play', '', '',  '',                                      ''),
+            (1020,  'Grand Theft Auto V',    'https://images.igdb.com/igdb/image/upload/t_cover_big/co1tgl.jpg', 'Finished',     '4.2', 'PC', 'A classic. The open world still holds up years later.', ''),
+            (12249, 'Portal 2',              'https://images.igdb.com/igdb/image/upload/t_cover_big/co1rs6.jpg', 'Finished',     '5.0', 'PC', 'Perfect game. The co-op alone is worth it.',             ''),
+            (12248, 'Portal',                'https://images.igdb.com/igdb/image/upload/t_cover_big/co1rse.jpg', 'Finished',     '4.8', 'PC', 'Short but absolutely flawless.',                        ''),
+            (25076, 'Red Dead Redemption 2', 'https://images.igdb.com/igdb/image/upload/t_cover_big/co1q1f.jpg', 'Playing',      '',    'PC', '',                                                      'Act 2 currently. Taking my time.'),
+            (34783, 'Celeste',               'https://images.igdb.com/igdb/image/upload/t_cover_big/co1tfl.jpg', 'Want to Play', '',    '',  '',                                                      ''),
         ]
         for gid, title, cover, shelf, rating, platform, review, notes in games:
             add_entry('demo', gid, title, cover, shelf, rating or None, platform or None, review or None, notes or None)
