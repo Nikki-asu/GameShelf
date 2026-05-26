@@ -8,6 +8,8 @@ DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')
 def _path(filename):
     return os.path.join(DATA_DIR, filename)
 
+os.makedirs(DATA_DIR, exist_ok=True)
+
 def _load(filename, root_tag):
     p = _path(filename)
     if not os.path.exists(p):
