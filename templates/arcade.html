@@ -1,275 +1,768 @@
 {% extends "base.html" %}
-{% block title %}The Arcade — GameShelf{% endblock %}
+{% block title %}The Game Aisle — GameShelf{% endblock %}
 
 {% block content %}
-<div style="text-align:center;margin-bottom:1.5rem;">
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:2.5rem;letter-spacing:0.12em;color:var(--accent);">The Arcade</div>
-    <p style="font-size:0.88rem;">Browse by genre. Click an aisle to explore. Click any game to add it to your shelf.</p>
-</div>
 
-<div id="store-container">
+<style>
+/* ══════════════════════════════════════════════
+   GAME AISLE — VIDEO STORE FLOOR PLAN
+   ══════════════════════════════════════════════ */
 
-    <!-- TOP-DOWN STORE MAP -->
-    <div id="store-map">
-        <svg id="store-svg" viewBox="0 0 900 620" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;display:block;margin:0 auto;cursor:default;">
+#game-aisle-wrapper {
+    position: relative;
+    margin: -2rem -1.5rem;
+    min-height: calc(100vh - 80px);
+    background: #2a2d24;
+    overflow: hidden;
+}
 
-            <!-- Floor -->
-            <rect x="0" y="0" width="900" height="620" fill="var(--store-floor)"/>
+/* ── STORE FLOOR ── */
+#store-floor {
+    position: relative;
+    width: 100%;
+    min-height: calc(100vh - 80px);
+    background-color: #3a3d30;
+    background-image:
+        /* linoleum tile grid */
+        repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(0,0,0,0.25) 59px, rgba(0,0,0,0.25) 60px),
+        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(0,0,0,0.25) 59px, rgba(0,0,0,0.25) 60px),
+        /* subtle color variation in tiles */
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 30px, transparent 30px, transparent 60px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 30px, transparent 30px, transparent 60px);
+    padding: 0;
+}
 
-            <!-- Floor tile grid -->
-            <defs>
-                <pattern id="tiles" width="40" height="40" patternUnits="userSpaceOnUse">
-                    <rect width="40" height="40" fill="none" stroke="var(--store-tile-line)" stroke-width="0.5"/>
-                </pattern>
-                <filter id="sign-glow">
-                    <feGaussianBlur stdDeviation="3" result="blur"/>
-                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-                <filter id="hover-glow">
-                    <feGaussianBlur stdDeviation="6" result="blur"/>
-                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-            </defs>
-            <rect x="0" y="0" width="900" height="620" fill="url(#tiles)"/>
+/* ── FLUORESCENT CEILING LIGHTS ── */
+.ceiling-lights {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+.light-strip {
+    position: absolute;
+    top: 0;
+    width: 6px;
+    height: 100%;
+    background: linear-gradient(180deg,
+        rgba(220,240,200,0.0) 0%,
+        rgba(220,240,200,0.06) 20%,
+        rgba(220,240,200,0.03) 60%,
+        rgba(220,240,200,0.0) 100%
+    );
+}
+.light-strip::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -20px; right: -20px;
+    height: 100%;
+    background: linear-gradient(180deg,
+        rgba(220,240,200,0.0) 0%,
+        rgba(220,240,200,0.04) 30%,
+        rgba(220,240,200,0.02) 70%,
+        rgba(220,240,200,0.0) 100%
+    );
+}
 
-            <!-- Walls -->
-            <rect x="0" y="0" width="900" height="18" fill="var(--store-wall)"/>
-            <rect x="0" y="602" width="900" height="18" fill="var(--store-wall)"/>
-            <rect x="0" y="0" width="18" height="620" fill="var(--store-wall)"/>
-            <rect x="882" y="0" width="18" height="620" fill="var(--store-wall)"/>
+/* ── STORE HEADER AREA ── */
+.store-header-zone {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: stretch;
+    padding: 0;
+    border-bottom: 3px solid #1a1c14;
+    background: #222418;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+}
 
-            <!-- Entrance sign -->
-            <rect x="380" y="585" width="140" height="20" fill="var(--store-wall)" rx="2"/>
-            <text x="450" y="599" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="11" fill="var(--accent)" letter-spacing="2">ENTRANCE</text>
+/* Checkout counter */
+.checkout-counter {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 1.4rem 2rem;
+    background: linear-gradient(180deg, #2e3020 0%, #252718 100%);
+    border-right: 2px solid #1a1c14;
+    border-left: 2px solid #1a1c14;
+    position: relative;
+}
+.checkout-counter::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: repeating-linear-gradient(90deg, #c49a4a 0px, #c49a4a 20px, #8b6820 20px, #8b6820 40px);
+}
+.store-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.4rem;
+    letter-spacing: 0.15em;
+    color: #f0c060;
+    text-shadow: 0 0 20px rgba(240,192,96,0.4), 0 2px 4px rgba(0,0,0,0.8);
+    line-height: 1;
+}
+.store-tagline {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: #8a9060;
+    text-transform: uppercase;
+    margin-top: 0.2rem;
+}
 
-            <!-- Counter at top -->
-            <rect x="300" y="28" width="300" height="55" fill="var(--store-counter)" rx="3" stroke="var(--store-counter-border)" stroke-width="1.5"/>
-            <text x="450" y="52" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="13" fill="var(--accent)" letter-spacing="3">THE ARCADE</text>
-            <text x="450" y="68" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-size="9" fill="var(--text2)" letter-spacing="2">BROWSE · DISCOVER · COLLECT</text>
+/* Staff window */
+.staff-window {
+    width: 180px;
+    flex-shrink: 0;
+    background: #1e2018;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    border-right: 2px solid #1a1c14;
+    gap: 0.4rem;
+}
+.staff-window-frame {
+    width: 100%;
+    background: #2a2c20;
+    border: 2px solid #3a3c28;
+    border-radius: 2px;
+    padding: 0.5rem;
+    text-align: center;
+}
+.staff-window-frame .label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    color: #6a7050;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.3rem;
+}
+.staff-window-frame .value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    color: #b0c080;
+    letter-spacing: 0.08em;
+}
 
-            <!-- ROW 1 (y=110 to 270) -->
+/* New releases rack on the right */
+.new-releases-rack {
+    width: 160px;
+    flex-shrink: 0;
+    background: #1e2018;
+    border-left: 2px solid #1a1c14;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.8rem;
+    gap: 0.3rem;
+}
+.rack-sign {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    color: #e05030;
+    text-shadow: 0 0 8px rgba(224,80,48,0.5);
+    text-align: center;
+    border: 1px solid #e05030;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    width: 100%;
+    text-align: center;
+}
+.rack-spines {
+    display: flex;
+    gap: 3px;
+    align-items: flex-end;
+    margin-top: 0.3rem;
+}
+.rack-spine {
+    border-radius: 1px;
+    opacity: 0.7;
+}
 
-            <!-- AISLE 1: Action -->
-            <g class="aisle-group" data-genre="action" data-slug="action" style="cursor:pointer;">
-                <rect class="aisle-shelf" x="40" y="110" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
-                <line x1="40" y1="142" x2="215" y2="142" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="40" y1="174" x2="215" y2="174" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="40" y1="206" x2="215" y2="206" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="40" y1="238" x2="215" y2="238" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <rect x="48" y="116" width="10" height="22" rx="1" fill="#c03020" opacity="0.7"/>
-                <rect x="62" y="116" width="8" height="22" rx="1" fill="#e05030" opacity="0.7"/>
-                <rect x="74" y="116" width="12" height="22" rx="1" fill="#a02010" opacity="0.7"/>
-                <rect x="90" y="116" width="9" height="22" rx="1" fill="#d04020" opacity="0.7"/>
-                <rect x="103" y="116" width="11" height="22" rx="1" fill="#f06040" opacity="0.7"/>
-                <rect x="118" y="116" width="8" height="22" rx="1" fill="#b03010" opacity="0.7"/>
-                <rect x="130" y="116" width="13" height="22" rx="1" fill="#e04030" opacity="0.7"/>
-                <rect x="48" y="148" width="9" height="22" rx="1" fill="#d03020" opacity="0.6"/>
-                <rect x="61" y="148" width="11" height="22" rx="1" fill="#a01010" opacity="0.6"/>
-                <rect x="76" y="148" width="8" height="22" rx="1" fill="#f05040" opacity="0.6"/>
-                <line x1="127" y1="96" x2="127" y2="110" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
-                <rect class="aisle-sign" x="72" y="72" width="110" height="30" rx="4" fill="var(--sign-action)" stroke="var(--sign-action-border)" stroke-width="2" filter="url(#sign-glow)"/>
-                <text x="127" y="92" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">ACTION</text>
-            </g>
+/* ── STORE FLOOR CONTENT ── */
+.store-floor-content {
+    position: relative;
+    z-index: 5;
+    padding: 2rem 2rem 4rem;
+}
 
-            <!-- AISLE 2: RPG -->
-            <g class="aisle-group" data-genre="rpg" data-slug="role-playing-games-rpg" style="cursor:pointer;">
-                <rect class="aisle-shelf" x="245" y="110" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
-                <line x1="245" y1="142" x2="420" y2="142" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="245" y1="174" x2="420" y2="174" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="245" y1="206" x2="420" y2="206" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="245" y1="238" x2="420" y2="238" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <rect x="253" y="116" width="11" height="22" rx="1" fill="#6040c0" opacity="0.7"/>
-                <rect x="268" y="116" width="9" height="22" rx="1" fill="#8060d0" opacity="0.7"/>
-                <rect x="281" y="116" width="13" height="22" rx="1" fill="#5030b0" opacity="0.7"/>
-                <rect x="298" y="116" width="8" height="22" rx="1" fill="#9070e0" opacity="0.7"/>
-                <rect x="310" y="116" width="10" height="22" rx="1" fill="#7050c0" opacity="0.7"/>
-                <rect x="324" y="116" width="12" height="22" rx="1" fill="#4020a0" opacity="0.7"/>
-                <rect x="253" y="148" width="10" height="22" rx="1" fill="#7055c5" opacity="0.6"/>
-                <rect x="267" y="148" width="9" height="22" rx="1" fill="#5535b5" opacity="0.6"/>
-                <line x1="332" y1="96" x2="332" y2="110" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
-                <rect class="aisle-sign" x="277" y="72" width="110" height="30" rx="4" fill="var(--sign-rpg)" stroke="var(--sign-rpg-border)" stroke-width="2" filter="url(#sign-glow)"/>
-                <text x="332" y="92" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">RPG</text>
-            </g>
+/* ── AISLE ROW ── */
+.aisle-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    align-items: stretch;
+}
 
-            <!-- AISLE 3: Horror -->
-            <g class="aisle-group" data-genre="horror" data-slug="action" style="cursor:pointer;" data-rawg-genre="horror">
-                <rect class="aisle-shelf" x="450" y="110" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
-                <line x1="450" y1="142" x2="625" y2="142" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="450" y1="174" x2="625" y2="174" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="450" y1="206" x2="625" y2="206" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="450" y1="238" x2="625" y2="238" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <rect x="458" y="116" width="10" height="22" rx="1" fill="#1a1a2e" opacity="0.9"/>
-                <rect x="472" y="116" width="8" height="22" rx="1" fill="#2d0a0a" opacity="0.9"/>
-                <rect x="484" y="116" width="12" height="22" rx="1" fill="#1a0a1a" opacity="0.9"/>
-                <rect x="500" y="116" width="9" height="22" rx="1" fill="#2a0808" opacity="0.9"/>
-                <rect x="513" y="116" width="11" height="22" rx="1" fill="#0d0d1a" opacity="0.9"/>
-                <rect x="528" y="116" width="8" height="22" rx="1" fill="#1e0a0a" opacity="0.9"/>
-                <rect x="458" y="148" width="9" height="22" rx="1" fill="#150510" opacity="0.9"/>
-                <rect x="471" y="148" width="11" height="22" rx="1" fill="#200808" opacity="0.9"/>
-                <line x1="537" y1="96" x2="537" y2="110" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
-                <rect class="aisle-sign" x="482" y="72" width="110" height="30" rx="4" fill="var(--sign-horror)" stroke="var(--sign-horror-border)" stroke-width="2" filter="url(#sign-glow)"/>
-                <text x="537" y="92" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">HORROR</text>
-            </g>
+/* The aisle number label on the left */
+.aisle-number {
+    width: 32px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    color: #5a5e48;
+    text-transform: uppercase;
+    border-right: 1px solid #2a2c20;
+    padding-right: 0.3rem;
+}
 
-            <!-- AISLE 4: Indie -->
-            <g class="aisle-group" data-genre="indie" data-slug="indie" style="cursor:pointer;">
-                <rect class="aisle-shelf" x="655" y="110" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
-                <line x1="655" y1="142" x2="830" y2="142" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="655" y1="174" x2="830" y2="174" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="655" y1="206" x2="830" y2="206" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="655" y1="238" x2="830" y2="238" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <rect x="663" y="116" width="9" height="22" rx="1" fill="#20a060" opacity="0.7"/>
-                <rect x="676" y="116" width="11" height="22" rx="1" fill="#f0c040" opacity="0.7"/>
-                <rect x="691" y="116" width="8" height="22" rx="1" fill="#4090e0" opacity="0.7"/>
-                <rect x="703" y="116" width="13" height="22" rx="1" fill="#e05090" opacity="0.7"/>
-                <rect x="720" y="116" width="9" height="22" rx="1" fill="#a0d040" opacity="0.7"/>
-                <rect x="733" y="116" width="10" height="22" rx="1" fill="#40c0a0" opacity="0.7"/>
-                <rect x="663" y="148" width="11" height="22" rx="1" fill="#f08030" opacity="0.6"/>
-                <rect x="678" y="148" width="9" height="22" rx="1" fill="#8040d0" opacity="0.6"/>
-                <line x1="742" y1="96" x2="742" y2="110" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
-                <rect class="aisle-sign" x="687" y="72" width="110" height="30" rx="4" fill="var(--sign-indie)" stroke="var(--sign-indie-border)" stroke-width="2" filter="url(#sign-glow)"/>
-                <text x="742" y="92" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">INDIE</text>
-            </g>
+/* The shelf unit (top-down view) */
+.shelf-unit {
+    flex: 1;
+    background: #2a2418;
+    border: 2px solid #1e1a10;
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+}
+.shelf-unit:hover {
+    border-color: var(--genre-color, #c49a4a);
+    box-shadow: 0 0 20px rgba(0,0,0,0.5), 0 0 0 1px var(--genre-color, #c49a4a);
+}
 
-            <!-- ROW 2 (y=310 to 470) -->
+/* Wood grain on shelf top */
+.shelf-unit::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        88deg,
+        transparent, transparent 12px,
+        rgba(255,255,255,0.015) 12px, rgba(255,255,255,0.015) 13px
+    );
+    pointer-events: none;
+}
 
-            <!-- AISLE 5: Adventure -->
-            <g class="aisle-group" data-genre="adventure" data-slug="adventure" style="cursor:pointer;">
-                <rect class="aisle-shelf" x="40" y="320" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
-                <line x1="40" y1="352" x2="215" y2="352" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="40" y1="384" x2="215" y2="384" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="40" y1="416" x2="215" y2="416" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="40" y1="448" x2="215" y2="448" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <rect x="48" y="326" width="10" height="22" rx="1" fill="#20a040" opacity="0.7"/>
-                <rect x="62" y="326" width="9" height="22" rx="1" fill="#3080c0" opacity="0.7"/>
-                <rect x="75" y="326" width="12" height="22" rx="1" fill="#c08020" opacity="0.7"/>
-                <rect x="91" y="326" width="8" height="22" rx="1" fill="#208040" opacity="0.7"/>
-                <rect x="103" y="326" width="11" height="22" rx="1" fill="#4060a0" opacity="0.7"/>
-                <rect x="118" y="326" width="9" height="22" rx="1" fill="#a06020" opacity="0.7"/>
-                <rect x="48" y="358" width="10" height="22" rx="1" fill="#308050" opacity="0.6"/>
-                <rect x="62" y="358" width="8" height="22" rx="1" fill="#205090" opacity="0.6"/>
-                <line x1="127" y1="306" x2="127" y2="320" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
-                <rect class="aisle-sign" x="60" y="282" width="134" height="30" rx="4" fill="var(--sign-adventure)" stroke="var(--sign-adventure-border)" stroke-width="2" filter="url(#sign-glow)"/>
-                <text x="127" y="302" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">ADVENTURE</text>
-            </g>
+/* Overhead hanging sign */
+.genre-sign {
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.3rem 1.2rem;
+    border-radius: 0 0 4px 4px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    color: white;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    border-left: 1px solid rgba(255,255,255,0.15);
+    border-right: 1px solid rgba(255,255,255,0.15);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    z-index: 2;
+    white-space: nowrap;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+}
 
-            <!-- AISLE 6: Racing -->
-            <g class="aisle-group" data-genre="racing" data-slug="racing" style="cursor:pointer;">
-                <rect class="aisle-shelf" x="245" y="320" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
-                <line x1="245" y1="352" x2="420" y2="352" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="245" y1="384" x2="420" y2="384" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="245" y1="416" x2="420" y2="416" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="245" y1="448" x2="420" y2="448" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <rect x="253" y="326" width="11" height="22" rx="1" fill="#f0a000" opacity="0.8"/>
-                <rect x="268" y="326" width="9" height="22" rx="1" fill="#e08000" opacity="0.8"/>
-                <rect x="281" y="326" width="13" height="22" rx="1" fill="#f0c000" opacity="0.8"/>
-                <rect x="298" y="326" width="8" height="22" rx="1" fill="#d06000" opacity="0.8"/>
-                <rect x="310" y="326" width="10" height="22" rx="1" fill="#f0b000" opacity="0.8"/>
-                <rect x="324" y="326" width="12" height="22" rx="1" fill="#c05000" opacity="0.8"/>
-                <rect x="253" y="358" width="10" height="22" rx="1" fill="#e09010" opacity="0.7"/>
-                <rect x="267" y="358" width="9" height="22" rx="1" fill="#f0a020" opacity="0.7"/>
-                <line x1="332" y1="306" x2="332" y2="320" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
-                <rect class="aisle-sign" x="277" y="282" width="110" height="30" rx="4" fill="var(--sign-racing)" stroke="var(--sign-racing-border)" stroke-width="2" filter="url(#sign-glow)"/>
-                <text x="332" y="302" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">RACING</text>
-            </g>
+/* Game spines on the shelf surface */
+.shelf-spines {
+    display: flex;
+    gap: 2px;
+    padding: 2.2rem 0.6rem 0.4rem;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    flex: 1;
+}
+.shelf-spine {
+    border-radius: 1px;
+    opacity: 0.8;
+    box-shadow: 1px 0 2px rgba(0,0,0,0.4);
+}
 
-            <!-- AISLE 7: Puzzle -->
-            <g class="aisle-group" data-genre="puzzle" data-slug="puzzle" style="cursor:pointer;">
-                <rect class="aisle-shelf" x="450" y="320" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
-                <line x1="450" y1="352" x2="625" y2="352" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="450" y1="384" x2="625" y2="384" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="450" y1="416" x2="625" y2="416" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="450" y1="448" x2="625" y2="448" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <rect x="458" y="326" width="10" height="22" rx="1" fill="#00c0c0" opacity="0.7"/>
-                <rect x="472" y="326" width="9" height="22" rx="1" fill="#0080a0" opacity="0.7"/>
-                <rect x="485" y="326" width="12" height="22" rx="1" fill="#00a0b0" opacity="0.7"/>
-                <rect x="501" y="326" width="8" height="22" rx="1" fill="#20d0d0" opacity="0.7"/>
-                <rect x="513" y="326" width="11" height="22" rx="1" fill="#0090c0" opacity="0.7"/>
-                <rect x="528" y="326" width="9" height="22" rx="1" fill="#40b0c0" opacity="0.7"/>
-                <rect x="458" y="358" width="10" height="22" rx="1" fill="#10b0b0" opacity="0.6"/>
-                <rect x="472" y="358" width="8" height="22" rx="1" fill="#0070a0" opacity="0.6"/>
-                <line x1="537" y1="306" x2="537" y2="320" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
-                <rect class="aisle-sign" x="482" y="282" width="110" height="30" rx="4" fill="var(--sign-puzzle)" stroke="var(--sign-puzzle-border)" stroke-width="2" filter="url(#sign-glow)"/>
-                <text x="537" y="302" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">PUZZLE</text>
-            </g>
+/* Shelf divider lines (top-down rows) */
+.shelf-dividers {
+    position: absolute;
+    inset: 2.2rem 0 0 0;
+    pointer-events: none;
+}
+.shelf-divider {
+    height: 1px;
+    background: rgba(0,0,0,0.3);
+    margin-bottom: 26px;
+}
 
-            <!-- AISLE 8: Strategy -->
-            <g class="aisle-group" data-genre="strategy" data-slug="strategy" style="cursor:pointer;">
-                <rect class="aisle-shelf" x="655" y="320" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
-                <line x1="655" y1="352" x2="830" y2="352" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="655" y1="384" x2="830" y2="384" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="655" y1="416" x2="830" y2="416" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <line x1="655" y1="448" x2="830" y2="448" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <rect x="663" y="326" width="10" height="22" rx="1" fill="#808020" opacity="0.8"/>
-                <rect x="677" y="326" width="9" height="22" rx="1" fill="#606010" opacity="0.8"/>
-                <rect x="690" y="326" width="12" height="22" rx="1" fill="#a0a030" opacity="0.8"/>
-                <rect x="706" y="326" width="8" height="22" rx="1" fill="#707020" opacity="0.8"/>
-                <rect x="718" y="326" width="11" height="22" rx="1" fill="#909028" opacity="0.8"/>
-                <rect x="733" y="326" width="9" height="22" rx="1" fill="#505015" opacity="0.8"/>
-                <rect x="663" y="358" width="10" height="22" rx="1" fill="#787822" opacity="0.7"/>
-                <rect x="677" y="358" width="8" height="22" rx="1" fill="#a0a035" opacity="0.7"/>
-                <line x1="742" y1="306" x2="742" y2="320" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
-                <rect class="aisle-sign" x="679" y="282" width="126" height="30" rx="4" fill="var(--sign-strategy)" stroke="var(--sign-strategy-border)" stroke-width="2" filter="url(#sign-glow)"/>
-                <text x="742" y="302" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">STRATEGY</text>
-            </g>
+/* ── AISLE WALKING PATH ── */
+.aisle-path {
+    height: 48px;
+    margin: 0 0 2rem 2.5rem;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.aisle-path::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        90deg,
+        rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px,
+        transparent 1px, transparent 40px
+    );
+    border-top: 1px dashed rgba(255,255,255,0.06);
+    border-bottom: 1px dashed rgba(255,255,255,0.06);
+}
+.aisle-path-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.18em;
+    color: #4a4e38;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 2;
+}
 
-            <!-- Walking paths -->
-            <rect x="220" y="100" width="20" height="480" fill="var(--store-path)" opacity="0.3"/>
-            <rect x="425" y="100" width="20" height="480" fill="var(--store-path)" opacity="0.3"/>
-            <rect x="630" y="100" width="20" height="480" fill="var(--store-path)" opacity="0.3"/>
-            <rect x="18" y="285" width="864" height="30" fill="var(--store-path)" opacity="0.3"/>
+/* ── ENTRANCE / EXIT ── */
+.store-entrance {
+    text-align: center;
+    padding: 1rem;
+    border-top: 3px solid #1a1c14;
+    background: #222418;
+    position: relative;
+    z-index: 10;
+}
+.entrance-sign {
+    display: inline-block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.25em;
+    color: #6a7050;
+    border: 1px solid #3a3c28;
+    padding: 0.3rem 2rem;
+    border-radius: 2px;
+}
+.entrance-arrows {
+    color: #4a4e38;
+    font-size: 0.7rem;
+    margin-top: 0.2rem;
+    letter-spacing: 0.1em;
+    font-family: 'Barlow Condensed', sans-serif;
+}
 
-            <!-- Overhead lights -->
-            <ellipse cx="127" cy="50" rx="18" ry="6" fill="var(--light-glow)" opacity="0.4"/>
-            <ellipse cx="332" cy="50" rx="18" ry="6" fill="var(--light-glow)" opacity="0.4"/>
-            <ellipse cx="537" cy="50" rx="18" ry="6" fill="var(--light-glow)" opacity="0.4"/>
-            <ellipse cx="742" cy="50" rx="18" ry="6" fill="var(--light-glow)" opacity="0.4"/>
-        </svg>
+/* ── HOVER HELPER TEXT ── */
+.floor-help {
+    text-align: center;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    color: #5a5e48;
+    padding: 0.6rem;
+    position: relative;
+    z-index: 10;
+}
 
-        <p style="text-align:center;font-size:0.78rem;color:var(--text2);margin-top:0.5rem;">Click any aisle or sign to browse games</p>
+/* ══════════════════════════════════════════════
+   AISLE VIEW
+   ══════════════════════════════════════════════ */
+#aisle-view {
+    display: none;
+    position: relative;
+    min-height: calc(100vh - 80px);
+    background: #1e1c14;
+}
+
+/* VHS store aisle background */
+.aisle-bg {
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            transparent, transparent 119px,
+            rgba(0,0,0,0.2) 119px, rgba(0,0,0,0.2) 120px
+        ),
+        repeating-linear-gradient(
+            0deg,
+            transparent, transparent 39px,
+            rgba(255,255,255,0.02) 39px, rgba(255,255,255,0.02) 40px
+        ),
+        #1e1c14;
+    pointer-events: none;
+}
+
+/* Overhead light glow from above */
+.aisle-ceiling-light {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 300px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(220,240,180,0.06) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.aisle-content {
+    position: relative;
+    z-index: 5;
+    padding: 1.5rem 2rem 3rem;
+}
+
+.aisle-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.8rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #2a2818;
+}
+
+.aisle-heading {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 0.12em;
+    line-height: 1;
+}
+
+/* Overhead aisle sign */
+.aisle-overhead-sign {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.2rem;
+}
+.sign-chain {
+    display: flex;
+    gap: 8px;
+}
+.sign-chain-link {
+    width: 2px;
+    height: 6px;
+    background: #5a5040;
+    border-radius: 1px;
+}
+.sign-board {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.2em;
+    padding: 0.5rem 3rem;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+    text-shadow: 0 1px 6px rgba(0,0,0,0.5);
+}
+
+/* Aisle shelf scene */
+.aisle-scene-wrap {
+    perspective: 600px;
+    perspective-origin: 50% -10%;
+}
+.aisle-shelf-tilt {
+    transform: rotateX(5deg);
+    transform-origin: top center;
+}
+
+/* The actual shelf plank */
+.aisle-plank {
+    background: #5c3510;
+    background-image: repeating-linear-gradient(
+        91deg,
+        transparent, transparent 18px,
+        rgba(255,255,255,0.018) 18px, rgba(255,255,255,0.018) 19px
+    );
+    border-radius: 3px 3px 0 0;
+    padding: 1.2rem 1.5rem 0.6rem;
+    box-shadow:
+        0 8px 0 #3a1e06,
+        0 12px 30px rgba(0,0,0,0.7),
+        inset 0 1px 0 rgba(255,255,255,0.07);
+    position: relative;
+}
+.aisle-plank-edge {
+    height: 14px;
+    background: #3a1e06;
+    margin: 0 -1.5rem;
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+
+.aisle-games-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 7px;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-bottom: 0.5rem;
+    min-height: 165px;
+    scrollbar-width: thin;
+    scrollbar-color: #3a1e06 transparent;
+}
+.aisle-games-row::-webkit-scrollbar { height: 3px; }
+.aisle-games-row::-webkit-scrollbar-thumb { background: #3a1e06; border-radius: 2px; }
+
+/* Game case in aisle */
+.game-case-aisle {
+    flex-shrink: 0;
+    width: 100px;
+    height: 148px;
+    border-radius: 3px 2px 2px 3px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s cubic-bezier(.22,.68,0,1.2), box-shadow 0.2s;
+    box-shadow: 3px 6px 16px rgba(0,0,0,0.7), inset -2px 0 5px rgba(0,0,0,0.4);
+    border: none;
+    background: none;
+    padding: 0;
+    will-change: transform;
+    isolation: isolate;
+}
+.game-case-aisle:hover {
+    transform: translateY(-20px) scale(1.06);
+    box-shadow: 0 24px 40px rgba(0,0,0,0.85), inset -2px 0 5px rgba(0,0,0,0.4);
+    z-index: 20;
+}
+.game-case-aisle img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    pointer-events: none;
+}
+.no-cover-aisle {
+    width: 100%; height: 100%;
+    background: linear-gradient(160deg, var(--surface2), var(--surface));
+    display: flex; align-items: center; justify-content: center;
+    padding: 8px; text-align: center; pointer-events: none;
+}
+.no-cover-aisle span {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.65rem; font-weight: 600; color: var(--text2); line-height: 1.3;
+}
+.case-shine-aisle {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background:
+        linear-gradient(115deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.03) 30%, transparent 50%),
+        linear-gradient(90deg, rgba(255,255,255,0.06) 0%, transparent 25%);
+    pointer-events: none; border-radius: inherit;
+}
+.game-case-aisle:hover .case-shine-aisle {
+    background: linear-gradient(125deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.05) 35%, transparent 55%);
+}
+
+.aisle-loading-msg {
+    text-align: center; padding: 3rem;
+    color: var(--text2);
+    font-family: 'Barlow Condensed', sans-serif; letter-spacing: 0.08em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .game-case-aisle { transition: none !important; }
+    .game-case-aisle:hover { transform: translateY(-4px); }
+}
+</style>
+
+<!-- ══ STORE FLOOR VIEW ══ -->
+<div id="game-aisle-wrapper">
+<div id="store-floor-view">
+
+    <!-- CEILING LIGHTS -->
+    <div class="ceiling-lights" id="ceiling-lights"></div>
+
+    <!-- STORE HEADER -->
+    <div class="store-header-zone">
+        <div class="staff-window">
+            <div class="staff-window-frame">
+                <span class="label">Members</span>
+                <span class="value">{{ member_count if member_count is defined else '—' }}</span>
+            </div>
+            <div class="staff-window-frame">
+                <span class="label">Games Tracked</span>
+                <span class="value">{{ game_count if game_count is defined else '—' }}</span>
+            </div>
+        </div>
+
+        <div class="checkout-counter">
+            <div class="store-name">The Game Aisle</div>
+            <div class="store-tagline">Browse · Discover · Track</div>
+        </div>
+
+        <div class="new-releases-rack">
+            <div class="rack-sign">New Arrivals</div>
+            <div class="rack-spines">
+                {% for c in ['#c03020','#6040c0','#20a060','#f0a000','#0090c0','#e05090'] %}
+                <div class="rack-spine" style="width:12px;height:{% if loop.index % 2 == 0 %}52px{% else %}44px{% endif %};background:{{ c }};border-radius:1px;"></div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
-    <!-- AISLE VIEW -->
-    <div id="aisle-view" style="display:none;">
-        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.8rem;">
-            <button id="back-to-map" class="btn btn-sm">← Back to Store</button>
-            <div id="aisle-title" class="aisle-view-title"></div>
-        </div>
+    <!-- FLOOR HELP -->
+    <div class="floor-help">Click any aisle to browse games by genre</div>
 
-        <!-- Overhead aisle sign banner -->
-        <div id="aisle-banner" class="aisle-banner">
-            <div class="aisle-banner-string"></div>
-            <div id="aisle-banner-label" class="aisle-banner-label"></div>
-        </div>
+    <!-- STORE FLOOR -->
+    <div class="store-floor-content">
 
-        <!-- Perspective shelf scene -->
-        <div class="aisle-scene">
-            <!-- Back wall / depth effect -->
-            <div class="aisle-back-wall"></div>
+        <!-- AISLE ROW 1 -->
+        <div style="display:flex;gap:0.5rem;align-items:stretch;margin-bottom:0.4rem;">
+            <div class="aisle-number">Aisle 1–4</div>
+            <div style="flex:1;display:flex;gap:1rem;">
 
-            <!-- Shelf container with perspective recede -->
-            <div class="aisle-shelf-perspective">
-                <div id="aisle-loading" class="aisle-loading-msg">Loading shelf...</div>
-
-                <div id="aisle-shelf-wrap" style="display:none;">
-                    <!-- Floor shadow strip -->
-                    <div class="aisle-floor-strip"></div>
-
-                    <!-- The actual shelf plank -->
-                    <div class="aisle-shelf-plank">
-                        <div id="aisle-games" class="aisle-games-row"></div>
-                        <div class="aisle-plank-face"></div>
+                <div class="shelf-unit" data-genre="action" data-label="ACTION" style="--genre-color:#ff4040;">
+                    <div class="genre-sign" style="background:#8b1a1a;border-top:2px solid #ff4040;">ACTION</div>
+                    <div class="shelf-dividers"><div class="shelf-divider"></div><div class="shelf-divider"></div></div>
+                    <div class="shelf-spines">
+                        {% for c,h in [('#c03020',22),('#e05030',18),('#a02010',24),('#d04020',20),('#f06040',22),('#b03010',19),('#e04030',21),('#c02010',18),('#d03020',23)] %}
+                        <div class="shelf-spine" style="width:{% if loop.index % 3 == 0 %}11px{% elif loop.index % 2 == 0 %}8px{% else %}10px{% endif %};height:{{ h }}px;background:{{ c }};"></div>
+                        {% endfor %}
                     </div>
+                </div>
+
+                <div class="shelf-unit" data-genre="rpg" data-label="RPG" style="--genre-color:#9060ff;">
+                    <div class="genre-sign" style="background:#2a1a6b;border-top:2px solid #9060ff;">RPG</div>
+                    <div class="shelf-dividers"><div class="shelf-divider"></div><div class="shelf-divider"></div></div>
+                    <div class="shelf-spines">
+                        {% for c,h in [('#6040c0',22),('#8060d0',19),('#5030b0',24),('#9070e0',18),('#7050c0',21),('#4020a0',20),('#6848b8',22),('#5535b5',18),('#7a58d0',23)] %}
+                        <div class="shelf-spine" style="width:{% if loop.index % 3 == 0 %}11px{% elif loop.index % 2 == 0 %}9px{% else %}10px{% endif %};height:{{ h }}px;background:{{ c }};"></div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="shelf-unit" data-genre="horror" data-label="HORROR" style="--genre-color:#800000;">
+                    <div class="genre-sign" style="background:#0a0a0a;border-top:2px solid #800000;">HORROR</div>
+                    <div class="shelf-dividers"><div class="shelf-divider"></div><div class="shelf-divider"></div></div>
+                    <div class="shelf-spines">
+                        {% for c,h in [('#1a1a2e',24),('#2d0a0a',19),('#1a0a1a',22),('#2a0808',20),('#0d0d1a',23),('#1e0a0a',18),('#150510',22),('#200808',21),('#0f0510',19)] %}
+                        <div class="shelf-spine" style="width:{% if loop.index % 3 == 0 %}12px{% elif loop.index % 2 == 0 %}8px{% else %}10px{% endif %};height:{{ h }}px;background:{{ c }};opacity:0.9;"></div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="shelf-unit" data-genre="indie" data-label="INDIE" style="--genre-color:#40d080;">
+                    <div class="genre-sign" style="background:#1a4a1a;border-top:2px solid #40d080;">INDIE</div>
+                    <div class="shelf-dividers"><div class="shelf-divider"></div><div class="shelf-divider"></div></div>
+                    <div class="shelf-spines">
+                        {% for c,h in [('#20a060',20),('#f0c040',22),('#4090e0',19),('#e05090',24),('#a0d040',21),('#40c0a0',18),('#f08030',22),('#8040d0',20),('#50d090',19)] %}
+                        <div class="shelf-spine" style="width:{% if loop.index % 3 == 0 %}9px{% elif loop.index % 2 == 0 %}11px{% else %}10px{% endif %};height:{{ h }}px;background:{{ c }};"></div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- WALKING AISLE -->
+        <div class="aisle-path">
+            <span class="aisle-path-label">← Main Aisle →</span>
+        </div>
+
+        <!-- AISLE ROW 2 -->
+        <div style="display:flex;gap:0.5rem;align-items:stretch;">
+            <div class="aisle-number">Aisle 5–8</div>
+            <div style="flex:1;display:flex;gap:1rem;">
+
+                <div class="shelf-unit" data-genre="adventure" data-label="ADVENTURE" style="--genre-color:#60a040;">
+                    <div class="genre-sign" style="background:#1a3a1a;border-top:2px solid #60a040;">ADVENTURE</div>
+                    <div class="shelf-dividers"><div class="shelf-divider"></div><div class="shelf-divider"></div></div>
+                    <div class="shelf-spines">
+                        {% for c,h in [('#20a040',21),('#3080c0',19),('#c08020',23),('#208040',20),('#4060a0',22),('#a06020',18),('#308050',21),('#205090',19),('#70a030',22)] %}
+                        <div class="shelf-spine" style="width:{% if loop.index % 3 == 0 %}11px{% elif loop.index % 2 == 0 %}9px{% else %}10px{% endif %};height:{{ h }}px;background:{{ c }};"></div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="shelf-unit" data-genre="racing" data-label="RACING" style="--genre-color:#f0a000;">
+                    <div class="genre-sign" style="background:#4a2a00;border-top:2px solid #f0a000;">RACING</div>
+                    <div class="shelf-dividers"><div class="shelf-divider"></div><div class="shelf-divider"></div></div>
+                    <div class="shelf-spines">
+                        {% for c,h in [('#f0a000',22),('#e08000',19),('#f0c000',24),('#d06000',20),('#f0b000',21),('#c05000',18),('#e09010',22),('#f0a020',20),('#d07010',19)] %}
+                        <div class="shelf-spine" style="width:{% if loop.index % 3 == 0 %}12px{% elif loop.index % 2 == 0 %}8px{% else %}10px{% endif %};height:{{ h }}px;background:{{ c }};"></div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="shelf-unit" data-genre="puzzle" data-label="PUZZLE" style="--genre-color:#00c0d0;">
+                    <div class="genre-sign" style="background:#003a4a;border-top:2px solid #00c0d0;">PUZZLE</div>
+                    <div class="shelf-dividers"><div class="shelf-divider"></div><div class="shelf-divider"></div></div>
+                    <div class="shelf-spines">
+                        {% for c,h in [('#00c0c0',20),('#0080a0',22),('#00a0b0',19),('#20d0d0',24),('#0090c0',21),('#40b0c0',18),('#10b0b0',22),('#0070a0',20),('#20c0d0',19)] %}
+                        <div class="shelf-spine" style="width:{% if loop.index % 3 == 0 %}9px{% elif loop.index % 2 == 0 %}11px{% else %}10px{% endif %};height:{{ h }}px;background:{{ c }};"></div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="shelf-unit" data-genre="strategy" data-label="STRATEGY" style="--genre-color:#a0a020;">
+                    <div class="genre-sign" style="background:#2a2a00;border-top:2px solid #a0a020;">STRATEGY</div>
+                    <div class="shelf-dividers"><div class="shelf-divider"></div><div class="shelf-divider"></div></div>
+                    <div class="shelf-spines">
+                        {% for c,h in [('#808020',21),('#606010',19),('#a0a030',23),('#707020',20),('#909028',22),('#505015',18),('#787822',21),('#a0a035',20),('#686818',19)] %}
+                        <div class="shelf-spine" style="width:{% if loop.index % 3 == 0 %}11px{% elif loop.index % 2 == 0 %}9px{% else %}10px{% endif %};height:{{ h }}px;background:{{ c }};"></div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div><!-- /store-floor-content -->
+
+    <!-- ENTRANCE -->
+    <div class="store-entrance">
+        <div class="entrance-sign">Entrance / Exit</div>
+        <div class="entrance-arrows">↕ You Are Here</div>
+    </div>
+
+</div><!-- /store-floor-view -->
+
+<!-- ══ AISLE VIEW ══ -->
+<div id="aisle-view">
+    <div class="aisle-bg"></div>
+    <div class="aisle-ceiling-light"></div>
+    <div class="aisle-content">
+        <div class="aisle-nav">
+            <button id="back-to-map" class="btn btn-sm">← Back to Store</button>
+            <div id="aisle-heading" class="aisle-heading" style="color:var(--accent);"></div>
+        </div>
+
+        <!-- Overhead sign -->
+        <div class="aisle-overhead-sign">
+            <div class="sign-chain">
+                <div class="sign-chain-link"></div>
+                <div class="sign-chain-link" style="height:8px;margin-top:2px;"></div>
+                <div class="sign-chain-link"></div>
+                <div class="sign-chain-link" style="height:8px;margin-top:2px;"></div>
+                <div class="sign-chain-link"></div>
+            </div>
+            <div id="aisle-sign-board" class="sign-board"></div>
+        </div>
+
+        <!-- Shelf scene -->
+        <div class="aisle-scene-wrap">
+            <div class="aisle-shelf-tilt">
+                <div id="aisle-loading" class="aisle-loading-msg">Loading shelf...</div>
+                <div id="aisle-shelf-wrap" style="display:none;">
+                    <div class="aisle-plank">
+                        <div id="aisle-games" class="aisle-games-row"></div>
+                    </div>
+                    <div class="aisle-plank-edge"></div>
                 </div>
             </div>
         </div>
 
         <div id="aisle-pagination" style="display:flex;justify-content:center;gap:0.8rem;margin-top:1.2rem;"></div>
     </div>
-
 </div>
 
-<!-- GAME QUICK-ADD MODAL -->
+</div><!-- /game-aisle-wrapper -->
+
+<!-- QUICK-ADD MODAL -->
 <div id="game-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:center;justify-content:center;">
     <div style="background:var(--surface);border:1px solid var(--border);border-radius:6px;max-width:480px;width:90%;max-height:90vh;overflow-y:auto;">
         <div style="background:var(--surface2);border-bottom:1px solid var(--border);padding:0.8rem 1.2rem;display:flex;justify-content:space-between;align-items:center;">
@@ -292,9 +785,7 @@
                         <div style="flex:1;">
                             <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:0.3rem;">Shelf</label>
                             <select name="shelf" style="width:100%;padding:0.45rem 0.6rem;background:var(--bg2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:'Barlow',sans-serif;font-size:0.88rem;">
-                                <option>Playing</option>
-                                <option>Want to Play</option>
-                                <option>Finished</option>
+                                <option>Playing</option><option>Want to Play</option><option>Finished</option>
                             </select>
                         </div>
                         <div style="flex:1;">
@@ -302,7 +793,7 @@
                             <input type="number" name="rating" min="0.1" max="5" step="0.1" placeholder="e.g. 4.3" style="width:100%;padding:0.45rem 0.6rem;background:var(--bg2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:'Barlow',sans-serif;font-size:0.88rem;">
                         </div>
                     </div>
-                    <div style="margin-bottom:0.8rem;">
+                    <div style="margin-bottom:1rem;">
                         <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:0.3rem;">Platform (optional)</label>
                         <select name="platform" style="width:100%;padding:0.45rem 0.6rem;background:var(--bg2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:'Barlow',sans-serif;font-size:0.88rem;">
                             <option value="">— optional —</option>
@@ -310,10 +801,6 @@
                             <option>Xbox Series X/S</option><option>Xbox One</option><option>Nintendo Switch</option>
                             <option>Meta Quest</option><option>iOS</option><option>Android</option><option>Other</option>
                         </select>
-                    </div>
-                    <div style="margin-bottom:1rem;">
-                        <label style="font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--text2);display:block;margin-bottom:0.3rem;">Quick Review (optional)</label>
-                        <textarea name="review" rows="2" placeholder="What do you think?" style="width:100%;padding:0.45rem 0.6rem;background:var(--bg2);border:1px solid var(--border);border-radius:3px;color:var(--text);font-family:'Barlow',sans-serif;font-size:0.88rem;resize:vertical;"></textarea>
                     </div>
                     <div style="display:flex;gap:0.8rem;">
                         <button type="submit" class="btn btn-solid" style="flex:1;">Add to Shelf</button>
@@ -330,437 +817,125 @@
     </div>
 </div>
 
-<style>
-    :root {
-        --store-floor:          #2a2010;
-        --store-tile-line:      rgba(255,255,255,0.04);
-        --store-wall:           #1a1008;
-        --store-counter:        #3a2a10;
-        --store-counter-border: #6a4a20;
-        --store-shelf-fill:     #2a1a08;
-        --store-shelf-border:   #5a3a18;
-        --store-path:           rgba(255,220,150,0.08);
-        --store-string:         #8a6a40;
-        --light-glow:           #fff8e0;
-        --sign-action:          #8b1a1a;
-        --sign-action-border:   #ff4040;
-        --sign-rpg:             #2a1a6b;
-        --sign-rpg-border:      #9060ff;
-        --sign-horror:          #0a0a0a;
-        --sign-horror-border:   #600000;
-        --sign-indie:           #1a4a1a;
-        --sign-indie-border:    #40d080;
-        --sign-adventure:       #1a3a1a;
-        --sign-adventure-border:#60a040;
-        --sign-racing:          #4a2a00;
-        --sign-racing-border:   #f0a000;
-        --sign-puzzle:          #003a4a;
-        --sign-puzzle-border:   #00c0d0;
-        --sign-strategy:        #2a2a00;
-        --sign-strategy-border: #a0a020;
-    }
-    [data-theme="light"] {
-        --store-floor:          #d4c4a0;
-        --store-tile-line:      rgba(0,0,0,0.06);
-        --store-wall:           #8b6a3a;
-        --store-counter:        #c4a870;
-        --store-counter-border: #8b6030;
-        --store-shelf-fill:     #e8d8b0;
-        --store-shelf-border:   #a08040;
-        --store-path:           rgba(255,255,200,0.4);
-        --store-string:         #806030;
-        --light-glow:           #fffbe0;
-    }
-
-    .aisle-group .aisle-shelf { transition: fill 0.2s, filter 0.2s; }
-    .aisle-group:hover .aisle-shelf { fill: var(--surface2); filter: brightness(1.3); }
-    .aisle-group .aisle-sign { transition: filter 0.2s; }
-    .aisle-group:hover .aisle-sign { filter: url(#hover-glow); }
-
-    /* ── AISLE VIEW TITLE ── */
-    .aisle-view-title {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 2rem;
-        letter-spacing: 0.1em;
-        color: var(--accent);
-    }
-
-    /* ── OVERHEAD AISLE SIGN BANNER ── */
-    .aisle-banner {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 0;
-        position: relative;
-    }
-    .aisle-banner-string {
-        width: 1px;
-        height: 20px;
-        background: repeating-linear-gradient(
-            180deg,
-            var(--text2) 0px, var(--text2) 3px,
-            transparent 3px, transparent 6px
-        );
-    }
-    .aisle-banner-label {
-        font-family: 'Bebas Neue', sans-serif;
-        font-size: 1rem;
-        letter-spacing: 0.2em;
-        color: white;
-        padding: 0.4rem 2rem;
-        border-radius: 4px;
-        box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.1) inset;
-        background: var(--banner-color, var(--accent2));
-        border: 1.5px solid var(--banner-border, var(--accent));
-        text-shadow: 0 1px 4px rgba(0,0,0,0.5);
-    }
-
-    /* ── PERSPECTIVE AISLE SCENE ── */
-    .aisle-scene {
-        perspective: 700px;
-        perspective-origin: 50% -20%;
-        margin-top: 0;
-        position: relative;
-        border-radius: 6px;
-    }
-
-    /* Dark store-floor backdrop */
-    .aisle-back-wall {
-        position: absolute;
-        inset: 0;
-        background:
-            repeating-linear-gradient(
-                90deg,
-                transparent,
-                transparent 60px,
-                rgba(255,255,255,0.015) 60px,
-                rgba(255,255,255,0.015) 61px
-            ),
-            repeating-linear-gradient(
-                180deg,
-                transparent,
-                transparent 60px,
-                rgba(255,255,255,0.015) 60px,
-                rgba(255,255,255,0.015) 61px
-            ),
-            var(--bg2);
-        border-radius: 6px;
-        pointer-events: none;
-    }
-
-    .aisle-shelf-perspective {
-        transform: rotateX(6deg);
-        transform-origin: top center;
-        padding: 2.5rem 1.5rem 1rem;
-        position: relative;
-    }
-
-    .aisle-loading-msg {
-        text-align: center;
-        padding: 3rem;
-        color: var(--text2);
-        font-family: 'Barlow Condensed', sans-serif;
-        letter-spacing: 0.08em;
-    }
-
-    /* Floor shadow strip above shelf */
-    .aisle-floor-strip {
-        height: 18px;
-        background: linear-gradient(180deg, transparent, rgba(0,0,0,0.25));
-        margin: 0 -1.5rem;
-        pointer-events: none;
-    }
-
-    /* Shelf plank */
-    .aisle-shelf-plank {
-        background: #5c3510;
-        border-radius: 3px 3px 0 0;
-        padding: 1rem 1.2rem 0;
-        box-shadow:
-            0 6px 0 #3a1e06,
-            0 10px 24px rgba(0,0,0,0.7),
-            inset 0 1px 0 rgba(255,255,255,0.06);
-        position: relative;
-    }
-    .aisle-shelf-plank::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 3px 3px 0 0;
-        background: repeating-linear-gradient(
-            92deg,
-            transparent, transparent 20px,
-            rgba(255,255,255,0.02) 20px, rgba(255,255,255,0.02) 21px
-        );
-        pointer-events: none;
-    }
-    .aisle-plank-face {
-        height: 12px;
-        margin: 0 -1.2rem;
-        background: #3a1e06;
-        border-radius: 0 0 3px 3px;
-        box-shadow: inset 0 2px 0 rgba(255,255,255,0.04), 0 3px 8px rgba(0,0,0,0.6);
-    }
-
-    /* Games row inside aisle */
-    .aisle-games-row {
-        display: flex;
-        align-items: flex-end;
-        gap: 7px;
-        overflow-x: auto;
-        overflow-y: visible;
-        padding-bottom: 0.6rem;
-        min-height: 160px;
-        scrollbar-width: thin;
-        scrollbar-color: var(--shelf-edge) transparent;
-    }
-    .aisle-games-row::-webkit-scrollbar { height: 3px; }
-    .aisle-games-row::-webkit-scrollbar-thumb { background: var(--shelf-edge); border-radius: 2px; }
-
-    /* Individual aisle game case */
-    .game-case-aisle {
-        flex-shrink: 0;
-        width: 100px;
-        height: 148px;
-        border-radius: 3px 2px 2px 3px;
-        overflow: hidden;
-        cursor: pointer;
-        position: relative;
-        transition: transform 0.22s cubic-bezier(.22,.68,0,1.2), box-shadow 0.22s;
-        box-shadow:
-            3px 6px 16px rgba(0,0,0,0.7),
-            inset -2px 0 5px rgba(0,0,0,0.4),
-            inset 1px 0 2px rgba(255,255,255,0.05);
-        border: none;
-        background: none;
-        padding: 0;
-        will-change: transform;
-        isolation: isolate;
-    }
-    .game-case-aisle:hover {
-        transform: translateY(-20px) scale(1.06);
-        box-shadow:
-            0 24px 40px rgba(0,0,0,0.85),
-            inset -2px 0 5px rgba(0,0,0,0.4);
-        z-index: 20;
-    }
-    .game-case-aisle img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-        pointer-events: none;
-    }
-    .no-cover-aisle {
-        width: 100%; height: 100%;
-        background: linear-gradient(160deg, var(--surface2), var(--surface));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 8px;
-        text-align: center;
-        pointer-events: none;
-    }
-    .no-cover-aisle span {
-        font-family: 'Barlow Condensed', sans-serif;
-        font-size: 0.65rem;
-        font-weight: 600;
-        color: var(--text2);
-        line-height: 1.3;
-    }
-
-    /* Plastic wrap sheen — two-layer shimmer */
-    .case-shine-aisle {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background:
-            linear-gradient(
-                115deg,
-                rgba(255,255,255,0.13) 0%,
-                rgba(255,255,255,0.04) 30%,
-                transparent 50%,
-                rgba(255,255,255,0.02) 70%,
-                transparent 100%
-            ),
-            linear-gradient(
-                90deg,
-                rgba(255,255,255,0.07) 0%,
-                transparent 25%
-            );
-        pointer-events: none;
-        border-radius: inherit;
-    }
-
-    /* Hover: sheen shifts */
-    .game-case-aisle:hover .case-shine-aisle {
-        background:
-            linear-gradient(
-                125deg,
-                rgba(255,255,255,0.18) 0%,
-                rgba(255,255,255,0.06) 35%,
-                transparent 55%
-            ),
-            linear-gradient(
-                90deg,
-                rgba(255,255,255,0.08) 0%,
-                transparent 30%
-            );
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-        .game-case-aisle, .aisle-shelf-perspective { transition: none !important; }
-        .game-case-aisle:hover { transform: translateY(-4px); }
-    }
-</style>
 {% endblock %}
 
 {% block scripts %}
 <script>
 const IS_LOGGED_IN = {{ 'true' if session.get('username') else 'false' }};
-let currentPage = 1;
-let currentGenre = '';
-let currentGenreLabel = '';
+let currentPage = 1, currentGenre = '', currentGenreLabel = '';
 
-// Genre → banner color mapping
 const GENRE_COLORS = {
-    action:    { bg: '#8b1a1a', border: '#ff4040' },
-    rpg:       { bg: '#2a1a6b', border: '#9060ff' },
-    horror:    { bg: '#1a0a0a', border: '#800000' },
-    indie:     { bg: '#1a4a1a', border: '#40d080' },
-    adventure: { bg: '#1a3a1a', border: '#60a040' },
-    racing:    { bg: '#4a2a00', border: '#f0a000' },
-    puzzle:    { bg: '#003a4a', border: '#00c0d0' },
-    strategy:  { bg: '#2a2a00', border: '#a0a020' },
+    action:    { bg:'#8b1a1a', border:'#ff4040', text:'white' },
+    rpg:       { bg:'#2a1a6b', border:'#9060ff', text:'white' },
+    horror:    { bg:'#0a0a0a', border:'#800000', text:'#cc8888' },
+    indie:     { bg:'#1a4a1a', border:'#40d080', text:'white' },
+    adventure: { bg:'#1a3a1a', border:'#60a040', text:'white' },
+    racing:    { bg:'#4a2a00', border:'#f0a000', text:'white' },
+    puzzle:    { bg:'#003a4a', border:'#00c0d0', text:'white' },
+    strategy:  { bg:'#2a2a00', border:'#a0a020', text:'white' },
 };
 
-document.querySelectorAll('.aisle-group').forEach(el => {
+// Generate ceiling light strips
+(function() {
+    const el = document.getElementById('ceiling-lights');
+    for (let i = 0; i < 5; i++) {
+        const strip = document.createElement('div');
+        strip.className = 'light-strip';
+        strip.style.left = (15 + i * 18) + '%';
+        el.appendChild(strip);
+    }
+})();
+
+// Shelf unit click
+document.querySelectorAll('.shelf-unit').forEach(el => {
     el.addEventListener('click', () => {
-        const genre = el.dataset.genre;
-        const label = genre.toUpperCase();
-        openAisle(genre, label, 1);
+        openAisle(el.dataset.genre, el.dataset.label, 1);
     });
 });
 
 document.getElementById('back-to-map').addEventListener('click', () => {
-    document.getElementById('store-map').style.display = '';
+    document.getElementById('store-floor-view').style.display = '';
     document.getElementById('aisle-view').style.display = 'none';
+    window.scrollTo(0, 0);
 });
 
 async function openAisle(genre, label, page) {
-    currentGenre = genre;
-    currentGenreLabel = label;
-    currentPage = page;
-
-    document.getElementById('store-map').style.display = 'none';
+    currentGenre = genre; currentGenreLabel = label; currentPage = page;
+    document.getElementById('store-floor-view').style.display = 'none';
     document.getElementById('aisle-view').style.display = '';
-    document.getElementById('aisle-title').textContent = label + ' AISLE';
+    window.scrollTo(0, 0);
 
-    // Update banner
-    const colors = GENRE_COLORS[genre] || { bg: 'var(--accent2)', border: 'var(--accent)' };
-    const banner = document.getElementById('aisle-banner-label');
-    banner.textContent = label;
-    banner.style.setProperty('--banner-color', colors.bg);
-    banner.style.setProperty('--banner-border', colors.border);
-    banner.style.background = colors.bg;
-    banner.style.borderColor = colors.border;
+    const colors = GENRE_COLORS[genre] || { bg:'#2a2000', border:'#c49a4a', text:'white' };
+    document.getElementById('aisle-heading').textContent = label + ' AISLE';
+    document.getElementById('aisle-heading').style.color = colors.border;
+
+    const board = document.getElementById('aisle-sign-board');
+    board.textContent = label;
+    board.style.background = colors.bg;
+    board.style.borderTop = '3px solid ' + colors.border;
+    board.style.borderLeft = '1px solid ' + colors.border;
+    board.style.borderRight = '1px solid ' + colors.border;
+    board.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+    board.style.color = colors.text;
 
     document.getElementById('aisle-loading').style.display = '';
     document.getElementById('aisle-shelf-wrap').style.display = 'none';
     document.getElementById('aisle-pagination').innerHTML = '';
 
     try {
-        const url = `/arcade/genre?genre=${genre}&page=${page}`;
-        const r = await fetch(url);
+        const r = await fetch(`/arcade/genre?genre=${genre}&page=${page}`);
         const data = await r.json();
         renderAisle(data.results, data.total, page);
     } catch(e) {
-        document.getElementById('aisle-loading').textContent = 'Could not load games. Try again.';
+        document.getElementById('aisle-loading').textContent = 'Could not load games.';
     }
 }
 
 function renderAisle(games, total, page) {
     document.getElementById('aisle-loading').style.display = 'none';
     const wrap = document.getElementById('aisle-shelf-wrap');
-    const gamesEl = document.getElementById('aisle-games');
-    wrap.style.display = '';
-    gamesEl.innerHTML = '';
+    const row = document.getElementById('aisle-games');
+    wrap.style.display = ''; row.innerHTML = '';
 
     if (!games.length) {
-        gamesEl.innerHTML = '<span style="color:var(--text2);font-style:italic;font-size:0.9rem;padding:1rem;align-self:center;">No games found for this genre.</span>';
+        row.innerHTML = '<span style="color:var(--text2);font-style:italic;font-size:0.9rem;padding:1rem;align-self:center;">No games found.</span>';
     } else {
-        games.forEach((g, i) => {
+        games.forEach(g => {
             const btn = document.createElement('button');
             btn.className = 'game-case-aisle';
             btn.title = g.title;
-            btn.style.animationDelay = (i * 30) + 'ms';
             btn.onclick = () => openGameModal(g);
-
-            if (g.cover_url) {
-                btn.innerHTML = `<img src="${g.cover_url}" alt="${escHtml(g.title)}" loading="lazy"><div class="case-shine-aisle"></div>`;
-            } else {
-                btn.innerHTML = `<div class="no-cover-aisle"><span>${escHtml(g.title)}</span></div><div class="case-shine-aisle"></div>`;
-            }
-            gamesEl.appendChild(btn);
+            btn.innerHTML = g.cover_url
+                ? `<img src="${g.cover_url}" alt="${escHtml(g.title)}" loading="lazy"><div class="case-shine-aisle"></div>`
+                : `<div class="no-cover-aisle"><span>${escHtml(g.title)}</span></div><div class="case-shine-aisle"></div>`;
+            row.appendChild(btn);
         });
     }
 
-    // Pagination
     const pag = document.getElementById('aisle-pagination');
     if (total > 12) {
-        if (page > 1) {
-            const prev = document.createElement('button');
-            prev.className = 'btn btn-sm';
-            prev.textContent = '← Prev';
-            prev.onclick = () => openAisle(currentGenre, currentGenreLabel, page - 1);
-            pag.appendChild(prev);
-        }
-        const info = document.createElement('span');
-        info.style.cssText = 'padding:0.3rem 0.7rem;color:var(--text2);font-family:Barlow Condensed,sans-serif;font-size:0.85rem;';
-        info.textContent = `Page ${page}`;
-        pag.appendChild(info);
-        if (games.length === 12) {
-            const next = document.createElement('button');
-            next.className = 'btn btn-sm';
-            next.textContent = 'Next →';
-            next.onclick = () => openAisle(currentGenre, currentGenreLabel, page + 1);
-            pag.appendChild(next);
-        }
+        if (page > 1) { const b = document.createElement('button'); b.className='btn btn-sm'; b.textContent='← Prev'; b.onclick=()=>openAisle(currentGenre,currentGenreLabel,page-1); pag.appendChild(b); }
+        const info = document.createElement('span'); info.style.cssText='padding:0.3rem 0.7rem;color:var(--text2);font-family:Barlow Condensed,sans-serif;font-size:0.85rem;'; info.textContent=`Page ${page}`; pag.appendChild(info);
+        if (games.length===12) { const b = document.createElement('button'); b.className='btn btn-sm'; b.textContent='Next →'; b.onclick=()=>openAisle(currentGenre,currentGenreLabel,page+1); pag.appendChild(b); }
     }
 }
 
 function openGameModal(g) {
     document.getElementById('modal-title').textContent = g.title;
-    const coverEl = document.getElementById('modal-cover');
-    coverEl.src = g.cover_url || '';
-    coverEl.style.display = g.cover_url ? '' : 'none';
-    document.getElementById('modal-meta').textContent = [g.released, g.genres].filter(Boolean).join(' · ');
-    document.getElementById('modal-desc').textContent = g.description || '';
+    const c = document.getElementById('modal-cover');
+    c.src = g.cover_url||''; c.style.display = g.cover_url?'':'none';
+    document.getElementById('modal-meta').textContent = [g.released,g.genres].filter(Boolean).join(' · ');
+    document.getElementById('modal-desc').textContent = g.description||'';
     document.getElementById('modal-game-title').value = g.title;
-    document.getElementById('modal-cover-url').value = g.cover_url || '';
+    document.getElementById('modal-cover-url').value = g.cover_url||'';
     document.getElementById('modal-form').action = `/game/${g.id}/add`;
     document.getElementById('modal-full-link').href = `/game/${g.id}`;
-
-    if (IS_LOGGED_IN) {
-        document.getElementById('modal-logged-in').style.display = '';
-        document.getElementById('modal-logged-out').style.display = 'none';
-    } else {
-        document.getElementById('modal-logged-in').style.display = 'none';
-        document.getElementById('modal-logged-out').style.display = '';
-    }
+    document.getElementById('modal-logged-in').style.display = IS_LOGGED_IN ? '' : 'none';
+    document.getElementById('modal-logged-out').style.display = IS_LOGGED_IN ? 'none' : '';
     document.getElementById('game-modal').style.display = 'flex';
 }
-
-function closeModal() {
-    document.getElementById('game-modal').style.display = 'none';
-}
-
-function escHtml(str) {
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-document.getElementById('game-modal').addEventListener('click', e => {
-    if (e.target === document.getElementById('game-modal')) closeModal();
-});
+function closeModal() { document.getElementById('game-modal').style.display='none'; }
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+document.getElementById('game-modal').addEventListener('click',e=>{ if(e.target===document.getElementById('game-modal'))closeModal(); });
 </script>
 {% endblock %}
