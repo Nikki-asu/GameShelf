@@ -862,7 +862,7 @@ document.getElementById('back-to-map').addEventListener('click', () => {
 async function openAisle(genre, label, page) {
     currentGenre = genre; currentGenreLabel = label; currentPage = page;
     document.getElementById('store-floor-view').style.display = 'none';
-    document.getElementById('aisle-view').style.display = '';
+    document.getElementById('aisle-view').style.display = 'block';
     window.scrollTo(0, 0);
 
     const colors = GENRE_COLORS[genre] || { bg:'#2a2000', border:'#c49a4a', text:'white' };
