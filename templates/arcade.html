@@ -416,6 +416,7 @@
     position: relative;
     z-index: 5;
     padding: 1.5rem 2rem 3rem;
+    overflow: visible;
 }
 
 .aisle-nav {
@@ -465,15 +466,17 @@
 .aisle-scene-wrap {
     perspective: 600px;
     perspective-origin: 50% -10%;
+    overflow: visible;
 }
 .aisle-shelf-tilt {
     transform: rotateX(5deg);
     transform-origin: top center;
+    overflow: visible;
 }
 
 /* The actual shelf plank */
 .aisle-plank {
-    background: #5c3510;
+    background: #c49a4a;
     background-image: repeating-linear-gradient(
         91deg,
         transparent, transparent 18px,
@@ -482,14 +485,14 @@
     border-radius: 3px 3px 0 0;
     padding: 1.2rem 1.5rem 0.6rem;
     box-shadow:
-        0 8px 0 #3a1e06,
+        0 8px 0 #9a7428,
         0 12px 30px rgba(0,0,0,0.7),
         inset 0 1px 0 rgba(255,255,255,0.07);
     position: relative;
 }
 .aisle-plank-edge {
     height: 14px;
-    background: #3a1e06;
+    background: #9a7428;
     margin: 0 -1.5rem;
     border-radius: 0 0 3px 3px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.6);
@@ -504,10 +507,10 @@
     padding-bottom: 0.5rem;
     min-height: 165px;
     scrollbar-width: thin;
-    scrollbar-color: #3a1e06 transparent;
+    scrollbar-color: #9a7428 transparent;
 }
 .aisle-games-row::-webkit-scrollbar { height: 3px; }
-.aisle-games-row::-webkit-scrollbar-thumb { background: #3a1e06; border-radius: 2px; }
+.aisle-games-row::-webkit-scrollbar-thumb { background: #9a7428; border-radius: 2px; }
 
 /* Game case in aisle */
 .game-case-aisle {
