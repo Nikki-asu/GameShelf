@@ -2,7 +2,7 @@
 {% block title %}{{ user.username }}'s Shelf — GameShelf{% endblock %}
 
 {% macro shelf_case(entry) %}
-<a href="/game/{{ entry.game_id }}" class="game-case" title="{{ entry.game_title }}{% if entry.rating %} — ★ {{ entry.rating }}{% endif %}">
+<a href="/game/{{ entry.game_id }}" class="game-case shelf3d-case" title="{{ entry.game_title }}{% if entry.rating %} — ★ {{ entry.rating }}{% endif %}">
     {% if entry.cover_url %}
         <img src="{{ entry.cover_url }}" alt="{{ entry.game_title }}" loading="lazy">
     {% else %}
@@ -27,9 +27,12 @@
             {{ total }} game{% if total != 1 %}s{% endif %} tracked
         </div>
     </div>
-    {% if is_owner %}
-    <a href="/search" class="btn btn-solid">+ Add Games</a>
-    {% endif %}
+    <div style="display:flex;gap:0.6rem;align-items:center;">
+        {% if is_owner %}
+        <button id="customize-btn" class="btn btn-sm" title="Customize your shelf">⚙ Customize Shelf</button>
+        <a href="/search" class="btn btn-solid">+ Add Games</a>
+        {% endif %}
+    </div>
 </div>
 
 <!-- SHELF STATS -->
@@ -51,16 +54,524 @@
         {{ shelf_name }}
         <span class="shelf-count">{{ entries|length }}</span>
     </div>
-    <div class="shelf-plank">
-        {% if entries %}
-            {% for entry in entries %}
-                {{ shelf_case(entry) }}
-            {% endfor %}
-        {% else %}
-            <span class="empty-shelf">{% if is_owner %}Nothing here yet — <a href="/search" style="color:var(--accent)">search for games</a> to add.{% else %}Empty.{% endif %}</span>
-        {% endif %}
+
+    <!-- 3D SHELF WRAPPER -->
+    <div class="shelf3d-scene">
+        <div class="shelf3d-plank">
+            <!-- Games row -->
+            <div class="shelf3d-row" id="shelf-row-{{ loop.index }}">
+                {% if entries %}
+                    {% for entry in entries %}
+                        {{ shelf_case(entry) }}
+                    {% endfor %}
+                    <!-- Empty slots to fill the row -->
+                    {% set filled = entries|length % 10 %}
+                    {% if filled != 0 %}
+                        {% for i in range(10 - filled) %}
+                        <div class="shelf3d-empty"></div>
+                        {% endfor %}
+                    {% endif %}
+                {% else %}
+                    {% for i in range(10) %}
+                    <div class="shelf3d-empty"></div>
+                    {% endfor %}
+                    <span class="empty-shelf" style="position:absolute;bottom:1.4rem;left:1.2rem;">
+                        {% if is_owner %}Nothing here yet — <a href="/search" style="color:var(--accent)">search for games</a> to add.{% else %}Empty.{% endif %}
+                    </span>
+                {% endif %}
+            </div>
+            <!-- Decorations row (between games and wood edge) -->
+            <div class="shelf3d-decor-row" id="decor-row-{{ loop.index }}"></div>
+            <!-- Wood plank face -->
+            <div class="shelf3d-wood-face"></div>
+        </div>
     </div>
 </div>
 {% endfor %}
 
+<!-- CUSTOMIZATION DRAWER -->
+<div id="customize-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:300;" onclick="closeCustomize(event)"></div>
+
+<div id="customize-drawer" class="customize-drawer">
+    <div class="customize-header">
+        <span>🪵 Customize Shelf</span>
+        <button onclick="closeCustomize()" style="background:none;border:none;color:var(--text2);font-size:1.2rem;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <div class="customize-body">
+
+        <!-- WOOD STAIN -->
+        <div class="cust-section">
+            <div class="cust-label">Wood Stain</div>
+            <div class="stain-swatches">
+                <button class="stain-swatch" data-stain="pine"    title="Light Pine"   style="--sw:#c49a4a;"></button>
+                <button class="stain-swatch" data-stain="walnut"  title="Dark Walnut"  style="--sw:#3d1f00;"></button>
+                <button class="stain-swatch" data-stain="mahogany"title="Mahogany"     style="--sw:#6b1a0d;"></button>
+                <button class="stain-swatch" data-stain="ebony"   title="Ebony"        style="--sw:#1a1008;"></button>
+                <button class="stain-swatch" data-stain="ikea"    title="IKEA White"   style="--sw:#e8e0d0;"></button>
+            </div>
+        </div>
+
+        <!-- DECORATIONS -->
+        <div class="cust-section">
+            <div class="cust-label">Shelf Decorations</div>
+            <div class="decor-toggles">
+                <label class="decor-toggle">
+                    <input type="checkbox" id="decor-plant" onchange="applyDecorations()">
+                    <span class="decor-icon">🌱</span>
+                    <span>Plant</span>
+                </label>
+                <label class="decor-toggle">
+                    <input type="checkbox" id="decor-candle" onchange="applyDecorations()">
+                    <span class="decor-icon">🕯</span>
+                    <span>Candle</span>
+                </label>
+                <label class="decor-toggle">
+                    <input type="checkbox" id="decor-figure" onchange="applyDecorations()">
+                    <span class="decor-icon">🏆</span>
+                    <span>Trophy</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- PREVIEW NOTE -->
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:0.78rem;color:var(--text2);letter-spacing:0.04em;margin-top:0.5rem;padding:0.6rem;background:var(--bg2);border-radius:3px;">
+            Changes preview instantly and are saved automatically.
+        </div>
+
+    </div>
+</div>
+
+<style>
+/* =====================================================
+   3D SHELF SCENE
+   ===================================================== */
+.shelf3d-scene {
+    perspective: 900px;
+    perspective-origin: 50% 0%;
+    margin-bottom: 2.8rem;
+}
+
+.shelf3d-plank {
+    position: relative;
+    border-radius: 4px 4px 0 0;
+    padding: 0.9rem 1rem 0;
+    box-shadow:
+        0 8px 0 var(--shelf-stain-edge, var(--shelf-edge)),
+        0 12px 24px var(--shelf-shadow),
+        0 20px 40px rgba(0,0,0,0.4),
+        inset 0 1px 0 rgba(255,255,255,0.08);
+    background: var(--shelf-stain-wood, var(--shelf-wood));
+    transform: rotateX(4deg);
+    transform-origin: top center;
+    transition: background 0.4s, box-shadow 0.4s;
+}
+
+/* Wood grain texture overlay */
+.shelf3d-plank::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 4px 4px 0 0;
+    background: repeating-linear-gradient(
+        92deg,
+        transparent,
+        transparent 18px,
+        rgba(255,255,255,0.025) 18px,
+        rgba(255,255,255,0.025) 19px
+    ), repeating-linear-gradient(
+        180deg,
+        transparent,
+        transparent 6px,
+        rgba(0,0,0,0.04) 6px,
+        rgba(0,0,0,0.04) 7px
+    );
+    pointer-events: none;
+}
+
+/* Plank front face (the thick edge) */
+.shelf3d-wood-face {
+    height: 14px;
+    margin: 0 -1rem;
+    background: var(--shelf-stain-edge, var(--shelf-edge));
+    border-radius: 0 0 3px 3px;
+    box-shadow: inset 0 2px 0 rgba(255,255,255,0.06), 0 3px 8px rgba(0,0,0,0.5);
+    transition: background 0.4s;
+}
+
+/* =====================================================
+   GAME ROW
+   ===================================================== */
+.shelf3d-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding-bottom: 0.5rem;
+    position: relative;
+    min-height: 130px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--shelf-edge) transparent;
+}
+.shelf3d-row::-webkit-scrollbar { height: 3px; }
+.shelf3d-row::-webkit-scrollbar-thumb { background: var(--shelf-edge); border-radius: 2px; }
+
+/* Individual game case with 3D micro-tilt */
+.shelf3d-case {
+    flex-shrink: 0;
+    width: 80px;
+    height: 120px;
+    border-radius: 3px 2px 2px 3px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    text-decoration: none;
+    display: block;
+    transform: rotateY(-3deg);
+    transform-origin: left center;
+    transform-style: preserve-3d;
+    transition: transform 0.22s cubic-bezier(.22,.68,0,1.2), box-shadow 0.22s;
+    box-shadow:
+        3px 4px 12px rgba(0,0,0,0.6),
+        inset -2px 0 5px rgba(0,0,0,0.35),
+        inset 1px 0 2px rgba(255,255,255,0.06);
+}
+
+.shelf3d-case:hover {
+    transform: rotateY(0deg) translateY(-18px) scale(1.07);
+    box-shadow:
+        0 20px 40px rgba(0,0,0,0.8),
+        inset -2px 0 5px rgba(0,0,0,0.35);
+    z-index: 20;
+}
+
+.shelf3d-case img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.shelf3d-case .no-cover {
+    width: 100%; height: 100%;
+    background: linear-gradient(160deg, var(--surface2), var(--surface));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    text-align: center;
+}
+.shelf3d-case .no-cover span {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 600;
+    color: var(--text2);
+    line-height: 1.3;
+}
+.shelf3d-case .case-shine {
+    position: absolute;
+    top: 0; left: 0;
+    width: 28%;
+    height: 100%;
+    background: linear-gradient(90deg, rgba(255,255,255,0.10), transparent);
+    pointer-events: none;
+}
+.shelf3d-case .rating-badge {
+    position: absolute;
+    bottom: 3px; right: 3px;
+    background: rgba(0,0,0,0.78);
+    color: var(--accent);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 2px;
+}
+
+/* Empty slot */
+.shelf3d-empty {
+    flex-shrink: 0;
+    width: 80px;
+    height: 120px;
+    border-radius: 3px;
+    border: 1px dashed rgba(255,255,255,0.06);
+    background: rgba(0,0,0,0.1);
+}
+
+/* =====================================================
+   DECORATION ROW
+   ===================================================== */
+.shelf3d-decor-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 0 4px 2px;
+    min-height: 0;
+    overflow: hidden;
+    transition: min-height 0.3s;
+}
+.shelf3d-decor-row:not(:empty) {
+    min-height: 44px;
+}
+
+/* SVG decorations */
+.decor-item {
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-end;
+}
+
+/* =====================================================
+   WOOD STAIN THEMES
+   ===================================================== */
+.stain-pine    { --shelf-stain-wood:#b8863a; --shelf-stain-edge:#8b6020; }
+.stain-walnut  { --shelf-stain-wood:#3d1f00; --shelf-stain-edge:#5c3100; }
+.stain-mahogany{ --shelf-stain-wood:#6b1a0d; --shelf-stain-edge:#4a1008; }
+.stain-ebony   { --shelf-stain-wood:#1e1410; --shelf-stain-edge:#0d0a08; }
+.stain-ikea    { --shelf-stain-wood:#d8cfc0; --shelf-stain-edge:#b0a890; }
+
+/* =====================================================
+   CUSTOMIZATION DRAWER
+   ===================================================== */
+.customize-drawer {
+    position: fixed;
+    top: 0; right: 0;
+    width: 300px;
+    height: 100vh;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    z-index: 400;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(.22,.68,0,1.1);
+    display: flex;
+    flex-direction: column;
+    box-shadow: -8px 0 32px rgba(0,0,0,0.5);
+}
+.customize-drawer.open {
+    transform: translateX(0);
+}
+.customize-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.2rem;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    background: var(--surface2);
+}
+.customize-body {
+    padding: 1.2rem;
+    overflow-y: auto;
+    flex: 1;
+}
+.cust-section {
+    margin-bottom: 1.6rem;
+}
+.cust-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text2);
+    margin-bottom: 0.7rem;
+}
+
+/* Stain swatches */
+.stain-swatches {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+}
+.stain-swatch {
+    width: 40px; height: 40px;
+    border-radius: 6px;
+    border: 2px solid transparent;
+    background: var(--sw);
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+}
+.stain-swatch:hover { transform: scale(1.1); }
+.stain-swatch.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--glow), 0 2px 8px rgba(0,0,0,0.4);
+}
+
+/* Decoration toggles */
+.decor-toggles {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.decor-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    cursor: pointer;
+    padding: 0.55rem 0.8rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    transition: border-color 0.15s, background 0.15s;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    user-select: none;
+}
+.decor-toggle:hover { border-color: var(--accent); }
+.decor-toggle input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; }
+.decor-icon { font-size: 1.1rem; }
+
+/* =====================================================
+   REDUCED MOTION
+   ===================================================== */
+@media (prefers-reduced-motion: reduce) {
+    .shelf3d-case,
+    .customize-drawer,
+    .stain-swatch,
+    .shelf3d-plank { transition: none !important; }
+    .shelf3d-case:hover { transform: translateY(-4px); }
+}
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+// ── SHELF CUSTOMIZATION ─────────────────────────────────────────
+
+const IS_OWNER = {{ 'true' if is_owner else 'false' }};
+const PREFS_KEY = 'gameshelf_prefs_{{ user.username }}';
+
+const STAIN_LABELS = {
+    pine: 'Light Pine',
+    walnut: 'Dark Walnut',
+    mahogany: 'Mahogany',
+    ebony: 'Ebony',
+    ikea: 'IKEA White'
+};
+
+// SVG decoration templates
+const DECOR_SVGS = {
+    plant: `<svg class="decor-item" width="28" height="44" viewBox="0 0 28 44" fill="none" xmlns="http://www.w3.org/2000/svg" title="Plant">
+        <rect x="10" y="32" width="8" height="10" rx="2" fill="#5a3a18"/>
+        <rect x="11" y="34" width="6" height="8" fill="#4a2a0a"/>
+        <path d="M14 32 C14 22 6 18 4 12 C8 14 12 20 14 28 C14 20 20 14 24 10 C22 18 14 22 14 32Z" fill="#3a8040"/>
+        <path d="M14 28 C14 20 8 16 6 10 C10 13 13 20 14 26Z" fill="#2d6832"/>
+        <path d="M14 28 C14 20 20 16 22 10 C18 13 15 20 14 26Z" fill="#4a9050"/>
+    </svg>`,
+
+    candle: `<svg class="decor-item" width="20" height="44" viewBox="0 0 20 44" fill="none" xmlns="http://www.w3.org/2000/svg" title="Candle">
+        <rect x="6" y="22" width="8" height="20" rx="2" fill="#e8dcc8"/>
+        <rect x="6" y="22" width="8" height="4" rx="1" fill="#d4c8b0"/>
+        <line x1="10" y1="22" x2="10" y2="18" stroke="#888" stroke-width="1"/>
+        <ellipse cx="10" cy="16" rx="3" ry="4" fill="#f0a030" opacity="0.9"/>
+        <ellipse cx="10" cy="14" rx="1.5" ry="2.5" fill="#fff0a0" opacity="0.8"/>
+        <ellipse cx="10" cy="16" rx="5" ry="6" fill="#f0a030" opacity="0.15"/>
+    </svg>`,
+
+    figure: `<svg class="decor-item" width="32" height="44" viewBox="0 0 32 44" fill="none" xmlns="http://www.w3.org/2000/svg" title="Trophy">
+        <rect x="11" y="38" width="10" height="4" rx="1" fill="#b08030"/>
+        <rect x="9" y="36" width="14" height="3" rx="1" fill="#c09040"/>
+        <rect x="13" y="28" width="6" height="9" fill="#c09040"/>
+        <path d="M8 14 L8 26 Q16 30 24 26 L24 14 Q16 10 8 14Z" fill="#f0c040"/>
+        <path d="M8 14 L4 14 Q4 22 8 24" stroke="#d0a030" stroke-width="2" fill="none"/>
+        <path d="M24 14 L28 14 Q28 22 24 24" stroke="#d0a030" stroke-width="2" fill="none"/>
+        <path d="M10 18 Q16 22 22 18" stroke="#fff0a0" stroke-width="1" fill="none" opacity="0.5"/>
+    </svg>`
+};
+
+let prefs = loadPrefs();
+
+function loadPrefs() {
+    try {
+        const raw = localStorage.getItem(PREFS_KEY);
+        if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    return { stain: 'walnut', decorations: [] };
+}
+
+function savePrefs() {
+    try { localStorage.setItem(PREFS_KEY, JSON.stringify(prefs)); } catch(e) {}
+}
+
+function applyStain(stain) {
+    // Remove all stain classes from all planks
+    document.querySelectorAll('.shelf3d-plank, .shelf3d-wood-face').forEach(el => {
+        el.className = el.className.replace(/\bstain-\w+\b/g, '').trim();
+    });
+    if (stain && stain !== 'walnut') {
+        document.querySelectorAll('.shelf3d-plank, .shelf3d-wood-face').forEach(el => {
+            el.classList.add('stain-' + stain);
+        });
+    }
+    // Update active swatch
+    document.querySelectorAll('.stain-swatch').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.stain === stain);
+    });
+    prefs.stain = stain;
+    savePrefs();
+}
+
+function applyDecorations() {
+    const plant  = document.getElementById('decor-plant')?.checked;
+    const candle = document.getElementById('decor-candle')?.checked;
+    const figure = document.getElementById('decor-figure')?.checked;
+
+    prefs.decorations = [];
+    if (plant)  prefs.decorations.push('plant');
+    if (candle) prefs.decorations.push('candle');
+    if (figure) prefs.decorations.push('figure');
+    savePrefs();
+
+    // Re-render decoration rows
+    document.querySelectorAll('[id^="decor-row-"]').forEach(row => {
+        row.innerHTML = '';
+        if (plant)  row.insertAdjacentHTML('beforeend', DECOR_SVGS.plant);
+        if (candle) row.insertAdjacentHTML('beforeend', DECOR_SVGS.candle);
+        if (figure) row.insertAdjacentHTML('beforeend', DECOR_SVGS.figure);
+    });
+}
+
+function openCustomize() {
+    document.getElementById('customize-overlay').style.display = '';
+    document.getElementById('customize-drawer').classList.add('open');
+}
+
+function closeCustomize(e) {
+    if (e && e.target !== document.getElementById('customize-overlay')) return;
+    document.getElementById('customize-overlay').style.display = 'none';
+    document.getElementById('customize-drawer').classList.remove('open');
+}
+
+// Stain swatch click
+document.querySelectorAll('.stain-swatch').forEach(btn => {
+    btn.addEventListener('click', () => applyStain(btn.dataset.stain));
+});
+
+// Customize button
+if (IS_OWNER) {
+    const btn = document.getElementById('customize-btn');
+    if (btn) btn.addEventListener('click', openCustomize);
+}
+
+// On load: restore preferences
+window.addEventListener('DOMContentLoaded', () => {
+    applyStain(prefs.stain || 'walnut');
+
+    if (prefs.decorations?.length) {
+        prefs.decorations.forEach(d => {
+            const el = document.getElementById('decor-' + d);
+            if (el) el.checked = true;
+        });
+        applyDecorations();
+    }
+});
+</script>
 {% endblock %}
