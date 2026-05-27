@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% block scripts %}
+{{ super() }}
+{% endblock %}
 {% block title %}The Game Aisle — GameShelf{% endblock %}
 
 {% block content %}
@@ -12,7 +15,7 @@
     position: relative;
     margin: -2rem -1.5rem;
     min-height: calc(100vh - 80px);
-    background: #2a2d24;
+    background: #001a1a;
     overflow: hidden;
 }
 
@@ -21,11 +24,11 @@
     position: relative;
     width: 100%;
     min-height: calc(100vh - 80px);
-    background-color: #3a3d30;
+    background-color: #002222;
     background-image:
         /* linoleum tile grid */
-        repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(0,0,0,0.25) 59px, rgba(0,0,0,0.25) 60px),
-        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(0,0,0,0.25) 59px, rgba(0,0,0,0.25) 60px),
+        repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(0,180,180,0.08) 59px, rgba(0,180,180,0.08) 60px),
+        repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(0,180,180,0.08) 59px, rgba(0,180,180,0.08) 60px),
         /* subtle color variation in tiles */
         repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 30px, transparent 30px, transparent 60px),
         repeating-linear-gradient(90deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 30px, transparent 30px, transparent 60px);
@@ -73,9 +76,9 @@
     display: flex;
     align-items: stretch;
     padding: 0;
-    border-bottom: 3px solid #1a1c14;
-    background: #222418;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+    border-bottom: 3px solid #003a5a;
+    background: #001228;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.8), 0 0 20px rgba(0,168,168,0.15);
 }
 
 /* Checkout counter */
@@ -86,7 +89,7 @@
     justify-content: center;
     flex-direction: column;
     padding: 1.4rem 2rem;
-    background: linear-gradient(180deg, #2e3020 0%, #252718 100%);
+    background: linear-gradient(180deg, #001e3a 0%, #001228 100%);
     border-right: 2px solid #1a1c14;
     border-left: 2px solid #1a1c14;
     position: relative;
@@ -96,21 +99,21 @@
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 4px;
-    background: repeating-linear-gradient(90deg, #c49a4a 0px, #c49a4a 20px, #8b6820 20px, #8b6820 40px);
+    background: repeating-linear-gradient(90deg, #00a8a8 0px, #00a8a8 20px, #007070 20px, #007070 40px);
 }
 .store-name {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.4rem;
-    letter-spacing: 0.15em;
-    color: #f0c060;
-    text-shadow: 0 0 20px rgba(240,192,96,0.4), 0 2px 4px rgba(0,0,0,0.8);
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.12em;
+    color: #f5d800;
+    text-shadow: 0 0 20px rgba(245,216,0,0.5), 0 2px 4px rgba(0,0,0,0.8);
     line-height: 1;
 }
 .store-tagline {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 0.75rem;
     letter-spacing: 0.2em;
-    color: #8a9060;
+    color: #00a8a8;
     text-transform: uppercase;
     margin-top: 0.2rem;
 }
@@ -119,7 +122,7 @@
 .staff-window {
     width: 180px;
     flex-shrink: 0;
-    background: #1e2018;
+    background: #001020;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -130,8 +133,8 @@
 }
 .staff-window-frame {
     width: 100%;
-    background: #2a2c20;
-    border: 2px solid #3a3c28;
+    background: #001830;
+    border: 2px solid #00a8a8;
     border-radius: 2px;
     padding: 0.5rem;
     text-align: center;
@@ -140,7 +143,7 @@
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 0.65rem;
     letter-spacing: 0.12em;
-    color: #6a7050;
+    color: #00a8a8;
     text-transform: uppercase;
     display: block;
     margin-bottom: 0.3rem;
@@ -148,7 +151,7 @@
 .staff-window-frame .value {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.1rem;
-    color: #b0c080;
+    color: #f5d800;
     letter-spacing: 0.08em;
 }
 
@@ -156,7 +159,7 @@
 .new-releases-rack {
     width: 160px;
     flex-shrink: 0;
-    background: #1e2018;
+    background: #001020;
     border-left: 2px solid #1a1c14;
     display: flex;
     flex-direction: column;
@@ -169,10 +172,10 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: 0.85rem;
     letter-spacing: 0.12em;
-    color: #e05030;
-    text-shadow: 0 0 8px rgba(224,80,48,0.5);
+    color: #f5d800;
+    text-shadow: 0 0 8px rgba(245,216,0,0.5);
     text-align: center;
-    border: 1px solid #e05030;
+    border: 1px solid #f5d800;
     padding: 0.2rem 0.6rem;
     border-radius: 2px;
     width: 100%;
@@ -215,7 +218,7 @@
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 0.65rem;
     letter-spacing: 0.15em;
-    color: #5a5e48;
+    color: #008888;
     text-transform: uppercase;
     border-right: 1px solid #2a2c20;
     padding-right: 0.3rem;
@@ -224,8 +227,8 @@
 /* The shelf unit (top-down view) */
 .shelf-unit {
     flex: 1;
-    background: #2a2418;
-    border: 2px solid #1e1a10;
+    background: #001a2a;
+    border: 2px solid #003a5a;
     border-radius: 3px;
     cursor: pointer;
     position: relative;
@@ -326,7 +329,7 @@
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 0.65rem;
     letter-spacing: 0.18em;
-    color: #4a4e38;
+    color: #007070;
     text-transform: uppercase;
     position: relative;
     z-index: 2;
@@ -337,7 +340,7 @@
     text-align: center;
     padding: 1rem;
     border-top: 3px solid #1a1c14;
-    background: #222418;
+    background: #001228;
     position: relative;
     z-index: 10;
 }
@@ -346,13 +349,13 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: 0.9rem;
     letter-spacing: 0.25em;
-    color: #6a7050;
-    border: 1px solid #3a3c28;
+    color: #00a8a8;
+    border: 1px solid #00a8a8;
     padding: 0.3rem 2rem;
     border-radius: 2px;
 }
 .entrance-arrows {
-    color: #4a4e38;
+    color: #007070;
     font-size: 0.7rem;
     margin-top: 0.2rem;
     letter-spacing: 0.1em;
@@ -365,7 +368,7 @@
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 0.78rem;
     letter-spacing: 0.08em;
-    color: #5a5e48;
+    color: #008888;
     padding: 0.6rem;
     position: relative;
     z-index: 10;
@@ -378,7 +381,7 @@
     display: none;
     position: relative;
     min-height: calc(100vh - 80px);
-    background: #1e1c14;
+    background: #000d1a;
 }
 
 /* VHS store aisle background */
@@ -428,9 +431,9 @@
 }
 
 .aisle-heading {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.2rem;
-    letter-spacing: 0.12em;
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.08em;
     line-height: 1;
 }
 
@@ -452,9 +455,9 @@
     border-radius: 1px;
 }
 .sign-board {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.4rem;
-    letter-spacing: 0.2em;
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.15em;
     padding: 0.5rem 3rem;
     border-radius: 0 0 4px 4px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
