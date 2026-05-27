@@ -15,59 +15,120 @@
 
 {% block content %}
 
-<!-- THREE ENTRY POINTS -->
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.2rem;margin-bottom:3rem;">
+<!-- MAGAZINE COVER HERO -->
+<div class="mag-hero">
+    <!-- Issue badge -->
+    <div class="mag-issue-badge">
+        <span class="mag-issue-vol">VOL. 1</span>
+        <span class="mag-issue-num">ISSUE 01</span>
+    </div>
 
-    <!-- THE ARCADE -->
-    <a href="/arcade" style="text-decoration:none;">
-        <div class="entry-card"
-             onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.5)'"
-             onmouseout="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow=''">
-            <div style="display:flex;justify-content:center;gap:4px;margin-bottom:1rem;height:56px;align-items:flex-end;">
-                {% for c in ['#c03020','#6040c0','#20a060','#f0a000','#0090c0','#e05090','#808020','#1a1a2e'] %}
-                <div style="width:13px;height:{% if loop.index % 3 == 0 %}56px{% elif loop.index % 2 == 0 %}46px{% else %}42px{% endif %};background:{{ c }};border-radius:2px 1px 1px 2px;opacity:0.85;box-shadow:2px 0 4px rgba(0,0,0,0.4);"></div>
-                {% endfor %}
+    <!-- Barcode decoration -->
+    <div class="mag-barcode">
+        {% for i in range(20) %}
+        <div class="barcode-line" style="height:{% if i % 3 == 0 %}100%{% else %}70%{% endif %};width:{% if i % 4 == 0 %}3px{% else %}2px{% endif %};"></div>
+        {% endfor %}
+        <span class="barcode-num">GAME·SHELF·001</span>
+    </div>
+
+    <!-- Main headline -->
+    <div class="mag-headline">
+        <div class="mag-kicker">★ WELCOME TO ★</div>
+        <h1 class="mag-title">GAME<br>SHELF</h1>
+        <div class="mag-subtitle">THE ULTIMATE GAME TRACKING EXPERIENCE</div>
+    </div>
+
+    <!-- Cover story blurbs -->
+    <div class="mag-blurbs">
+        <div class="mag-blurb" style="--blurb-color: var(--t-blue);">
+            <span class="blurb-icon">🕹</span>
+            <span class="blurb-text">TRACK YOUR COLLECTION</span>
+        </div>
+        <div class="mag-blurb" style="--blurb-color: var(--t-green);">
+            <span class="blurb-icon">⭐</span>
+            <span class="blurb-text">RATE & REVIEW GAMES</span>
+        </div>
+        <div class="mag-blurb" style="--blurb-color: var(--t-yellow);">
+            <span class="blurb-icon">👾</span>
+            <span class="blurb-text">DISCOVER NEW TITLES</span>
+        </div>
+    </div>
+
+    <!-- Tetris block decoration -->
+    <div class="mag-blocks">
+        <div class="t-block" style="background:var(--t-blue);width:80px;height:20px;"></div>
+        <div class="t-block" style="background:var(--t-yellow);width:20px;height:40px;margin-top:-20px;margin-left:80px;"></div>
+        <div class="t-block" style="background:var(--t-green);width:40px;height:20px;margin-top:0;"></div>
+        <div class="t-block" style="background:var(--t-red);width:20px;height:20px;margin-left:40px;margin-top:-20px;"></div>
+    </div>
+</div>
+
+<!-- THREE ENTRY POINT CARDS -->
+<div class="entry-grid">
+
+    <!-- THE GAME AISLE -->
+    <a href="/arcade" class="entry-card" style="--card-accent:var(--bb-teal,#00a8a8);--card-accent2:var(--bb-yellow,#f5d800);">
+        <div class="entry-card-top" style="background:linear-gradient(135deg,#003a3a,#005a5a);">
+            <div class="entry-icon-area">
+                <!-- VHS tape icon -->
+                <div style="width:56px;height:38px;background:#111;border-radius:4px;border:2px solid #444;position:relative;display:flex;align-items:center;justify-content:center;">
+                    <div style="width:12px;height:12px;border:2px solid #888;border-radius:50%;"></div>
+                    <div style="width:8px;height:8px;background:#222;border-radius:50%;position:absolute;left:10px;"></div>
+                    <div style="width:8px;height:8px;background:#222;border-radius:50%;position:absolute;right:10px;"></div>
+                    <div style="position:absolute;bottom:-1px;left:4px;right:4px;height:4px;background:#333;border-radius:0 0 3px 3px;"></div>
+                </div>
+                <div style="display:flex;gap:3px;margin-top:6px;">
+                    {% for c in ['#00a8a8','#f5d800','#ff6b35','#00d4aa','#ff4757'] %}
+                    <div style="width:8px;height:{% if loop.index % 2 == 0 %}28px{% else %}22px{% endif %};background:{{ c }};border-radius:1px;opacity:0.9;"></div>
+                    {% endfor %}
+                </div>
             </div>
-            <div class="entry-title">The Arcade</div>
-            <div class="entry-sub">Browse by Genre</div>
+        </div>
+        <div class="entry-card-body" style="border-top:3px solid #00a8a8;">
+            <div class="entry-card-label" style="color:#00d4d4;">THE GAME AISLE</div>
+            <div class="entry-card-sub">Browse by genre · Blockbuster-style</div>
         </div>
     </a>
 
     <!-- MY SHELF -->
-    <a href="{% if session.get('username') %}/user/{{ session.username }}{% else %}/login{% endif %}" style="text-decoration:none;">
-        <div class="entry-card"
-             onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.5)'"
-             onmouseout="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow=''">
-            <div style="margin-bottom:1rem;height:56px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:3px;">
-                <div style="display:flex;gap:3px;align-items:flex-end;">
-                    {% for h in [36,50,44,48,38,50,42,35] %}
-                    <div style="width:11px;height:{{ h }}px;background:var(--surface2);border:1px solid var(--border);border-radius:2px 1px 1px 2px;"></div>
-                    {% endfor %}
+    <a href="{% if session.get('username') %}/user/{{ session.username }}{% else %}/login{% endif %}" class="entry-card" style="--card-accent:var(--t-green);--card-accent2:#00ff88;">
+        <div class="entry-card-top" style="background:linear-gradient(135deg,#001a0a,#002a14);">
+            <div class="entry-icon-area">
+                <div style="display:flex;flex-direction:column;gap:4px;align-items:center;">
+                    <div style="display:flex;gap:3px;align-items:flex-end;">
+                        {% for h in [32,44,38,46,34,42,36,40] %}
+                        <div style="width:9px;height:{{ h }}px;background:var(--surface2);border:1px solid var(--border2);border-radius:1px;"></div>
+                        {% endfor %}
+                    </div>
+                    <div style="width:90px;height:5px;background:var(--shelf-wood);border-radius:1px;box-shadow:0 2px 4px rgba(0,0,0,0.5);"></div>
                 </div>
-                <div style="width:120px;height:4px;background:var(--shelf-wood);border-radius:1px;"></div>
             </div>
-            <div class="entry-title">My Shelf</div>
-            <div class="entry-sub">{% if session.get('username') %}Playing · Want to Play · Finished{% else %}Log in to view your shelf{% endif %}</div>
+        </div>
+        <div class="entry-card-body" style="border-top:3px solid var(--t-green);">
+            <div class="entry-card-label" style="color:var(--t-green);">MY SHELF</div>
+            <div class="entry-card-sub">{% if session.get('username') %}Playing · Want to Play · Finished{% else %}Log in to view your shelf{% endif %}</div>
         </div>
     </a>
 
     <!-- THE BOARD -->
-    <a href="/board" style="text-decoration:none;">
-        <div class="entry-card"
-             onmouseover="this.style.borderColor='var(--accent)';this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(0,0,0,0.5)'"
-             onmouseout="this.style.borderColor='var(--border)';this.style.transform='';this.style.boxShadow=''">
-            <!-- Bulletin board icon -->
-            <div style="margin-bottom:1rem;height:56px;display:flex;align-items:center;justify-content:center;">
-                <div style="width:90px;height:52px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;position:relative;display:flex;flex-direction:column;gap:5px;padding:7px 8px;justify-content:center;">
-                    {% for w in ['70%','50%','80%','45%'] %}
-                    <div style="height:4px;width:{{ w }};background:var(--border);border-radius:2px;"></div>
-                    {% endfor %}
-                    <!-- Pin -->
-                    <div style="position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:8px;height:8px;background:var(--accent);border-radius:50%;"></div>
+    <a href="/board" class="entry-card" style="--card-accent:var(--t-purple);--card-accent2:#cc44ff;">
+        <div class="entry-card-top" style="background:linear-gradient(135deg,#1a0028,#2a0042);">
+            <div class="entry-icon-area">
+                <!-- Arcade cabinet silhouette -->
+                <div style="position:relative;width:50px;height:64px;">
+                    <div style="position:absolute;top:0;left:5px;right:5px;height:32px;background:#1a0030;border:2px solid #8822cc;border-radius:4px 4px 0 0;display:flex;align-items:center;justify-content:center;">
+                        <div style="width:24px;height:18px;background:#220044;border:1px solid #6600aa;border-radius:2px;box-shadow:0 0 8px rgba(170,0,255,0.5);"></div>
+                    </div>
+                    <div style="position:absolute;top:32px;left:0;right:0;height:32px;background:#110022;border:2px solid #661199;border-top:none;border-radius:0 0 4px 4px;display:flex;align-items:center;justify-content:center;gap:4px;">
+                        <div style="width:8px;height:8px;background:#cc00ff;border-radius:50%;box-shadow:0 0 6px #cc00ff;"></div>
+                        <div style="width:6px;height:6px;background:#ff0088;border-radius:50%;box-shadow:0 0 6px #ff0088;"></div>
+                    </div>
                 </div>
             </div>
-            <div class="entry-title">The Board</div>
-            <div class="entry-sub">Community Reviews</div>
+        </div>
+        <div class="entry-card-body" style="border-top:3px solid var(--t-purple);">
+            <div class="entry-card-label" style="color:#cc44ff;">THE BOARD</div>
+            <div class="entry-card-sub">Community reviews · 90s arcade style</div>
         </div>
     </a>
 
@@ -104,30 +165,182 @@
 </div>
 
 <style>
-.entry-card {
+/* ── MAGAZINE HERO ── */
+.mag-hero {
+    position: relative;
     background: var(--surface);
-    border: 2px solid var(--border);
-    border-radius: 6px;
-    padding: 1.5rem 1rem;
-    text-align: center;
-    transition: all 0.2s;
-    cursor: pointer;
-    height: 100%;
+    border: 2px solid var(--border2);
+    border-radius: 3px;
+    padding: 2rem 2rem 1.5rem;
+    margin-bottom: 2.5rem;
+    overflow: hidden;
+    box-shadow: 0 0 40px rgba(0,144,224,0.1), var(--card-shadow);
 }
-.entry-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.6rem;
-    letter-spacing: 0.1em;
-    color: var(--accent);
-    line-height: 1;
+
+/* Magazine scan line texture */
+.mag-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg, transparent, transparent 3px,
+        rgba(255,255,255,0.012) 3px, rgba(255,255,255,0.012) 4px
+    );
+    pointer-events: none;
 }
-.entry-sub {
+
+/* Color bar across top — magazine cover price strip */
+.mag-hero::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(90deg,
+        var(--t-red) 0%,      var(--t-red) 12.5%,
+        var(--t-blue) 12.5%,  var(--t-blue) 25%,
+        var(--t-yellow) 25%,  var(--t-yellow) 37.5%,
+        var(--t-green) 37.5%, var(--t-green) 50%,
+        var(--t-purple) 50%,  var(--t-purple) 62.5%,
+        var(--t-cyan) 62.5%,  var(--t-cyan) 75%,
+        var(--t-orange) 75%,  var(--t-orange) 87.5%,
+        var(--t-red) 87.5%,   var(--t-red) 100%
+    );
+}
+
+.mag-issue-badge {
+    position: absolute;
+    top: 14px; right: 1.5rem;
+    display: flex; flex-direction: column; align-items: flex-end;
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.8rem;
-    letter-spacing: 0.06em;
+}
+.mag-issue-vol { font-size: 0.7rem; letter-spacing: 0.15em; color: var(--text2); text-transform: uppercase; }
+.mag-issue-num { font-size: 0.9rem; font-weight: 700; letter-spacing: 0.12em; color: var(--accent2); }
+
+.mag-barcode {
+    position: absolute;
+    bottom: 1rem; right: 1.5rem;
+    display: flex; align-items: flex-end; gap: 2px;
+    opacity: 0.4;
+}
+.barcode-line { background: var(--text); border-radius: 1px; }
+.barcode-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.55rem; letter-spacing: 0.1em;
     color: var(--text2);
-    margin-top: 0.3rem;
+    writing-mode: vertical-rl;
+    margin-left: 4px;
+    align-self: flex-end;
+}
+
+.mag-kicker {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+    color: var(--t-yellow);
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 12px rgba(240,208,0,0.5);
+}
+.mag-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 1.1;
+    color: white;
+    text-shadow: 4px 4px 0 var(--t-blue), 8px 8px 0 rgba(0,144,224,0.3);
+    letter-spacing: 0.05em;
+    margin-bottom: 0.6rem;
+}
+.mag-subtitle {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    color: var(--text2);
     text-transform: uppercase;
+    border-left: 3px solid var(--t-blue);
+    padding-left: 0.6rem;
+}
+
+.mag-blurbs {
+    display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 1.2rem;
+}
+.mag-blurb {
+    display: flex; align-items: center; gap: 0.4rem;
+    padding: 0.3rem 0.8rem;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--blurb-color);
+    border-radius: 2px;
+}
+.blurb-icon { font-size: 0.85rem; }
+.blurb-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--blurb-color);
+}
+
+.mag-blocks {
+    position: absolute;
+    bottom: 0; left: 0;
+    opacity: 0.12;
+    pointer-events: none;
+}
+.t-block { position: absolute; }
+
+/* ── ENTRY CARDS ── */
+.entry-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+.entry-card {
+    display: block;
+    text-decoration: none;
+    color: var(--text);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+    background: var(--surface);
+}
+.entry-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--card-accent, var(--accent));
+    box-shadow: 0 0 20px rgba(0,0,0,0.5), 0 0 0 1px var(--card-accent, var(--accent));
+    text-decoration: none;
+}
+.entry-card-top {
+    height: 120px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+}
+.entry-card-top::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg, transparent, transparent 3px,
+        rgba(0,0,0,0.08) 3px, rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+}
+.entry-icon-area {
+    position: relative; z-index: 2;
+    display: flex; flex-direction: column; align-items: center;
+}
+.entry-card-body {
+    padding: 0.8rem 1rem;
+    background: var(--surface);
+}
+.entry-card-label {
+    font-family: 'Black Ops One', sans-serif;
+    font-size: 1rem; letter-spacing: 0.06em;
+    margin-bottom: 0.2rem;
+}
+.entry-card-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.75rem; letter-spacing: 0.06em;
+    color: var(--text2); text-transform: uppercase;
 }
 </style>
 
