@@ -294,8 +294,9 @@
     width: 80px;
     height: 120px;
     border-radius: 3px;
-    border: 1px dashed rgba(255,255,255,0.06);
-    background: rgba(0,0,0,0.1);
+    border: 1px dashed rgba(255,255,255,0.15);
+    background: rgba(0,0,0,0.06);
+    box-shadow: inset 0 1px 4px rgba(0,0,0,0.08);
 }
 
 /* =====================================================
@@ -324,7 +325,7 @@
 /* =====================================================
    WOOD STAIN THEMES
    ===================================================== */
-.stain-pine    { --shelf-stain-wood:#b8863a; --shelf-stain-edge:#8b6020; }
+.stain-pine    { --shelf-stain-wood:#c49a4a; --shelf-stain-edge:#9a7428; }
 .stain-walnut  { --shelf-stain-wood:#3d1f00; --shelf-stain-edge:#5c3100; }
 .stain-mahogany{ --shelf-stain-wood:#6b1a0d; --shelf-stain-edge:#4a1008; }
 .stain-ebony   { --shelf-stain-wood:#1e1410; --shelf-stain-edge:#0d0a08; }
@@ -494,7 +495,7 @@ function loadPrefs() {
         const raw = localStorage.getItem(PREFS_KEY);
         if (raw) return JSON.parse(raw);
     } catch(e) {}
-    return { stain: 'walnut', decorations: [] };
+    return { stain: 'pine', decorations: [] };
 }
 
 function savePrefs() {
@@ -506,7 +507,7 @@ function applyStain(stain) {
     document.querySelectorAll('.shelf3d-plank, .shelf3d-wood-face').forEach(el => {
         el.className = el.className.replace(/\bstain-\w+\b/g, '').trim();
     });
-    if (stain && stain !== 'walnut') {
+    if (stain) {
         document.querySelectorAll('.shelf3d-plank, .shelf3d-wood-face').forEach(el => {
             el.classList.add('stain-' + stain);
         });
