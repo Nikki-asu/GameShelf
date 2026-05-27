@@ -17,6 +17,75 @@
 
 {% block content %}
 
+<!-- LIVING ROOM SCENE -->
+<div class="living-room-scene" id="living-room-scene">
+    <div class="lr-wall"></div>
+    <div class="lr-carpet"></div>
+    <div class="lr-baseboard"></div>
+
+    <!-- Window -->
+    <div class="lr-window">
+        <div class="lr-blinds">
+            {% for i in range(8) %}<div class="lr-blind-slat"></div>{% endfor %}
+        </div>
+    </div>
+
+    <!-- TV -->
+    <div class="lr-tv">
+        <div class="lr-tv-screen"></div>
+        <div class="lr-tv-stand"></div>
+        <div class="lr-tv-base"></div>
+    </div>
+
+    <!-- Wall shelf with game spines -->
+    <div class="lr-wall-shelf">
+        <div class="lr-wall-shelf-books">
+            {% for c,h in [('#c03020',38),('#6040c0',44),('#20a060',40),('#f0a000',36),('#0090c0',42),('#e05090',38),('#808020',44),('#1a1a2e',40)] %}
+            <div class="lr-shelf-book" style="width:10px;height:{{ h }}px;background:{{ c }};"></div>
+            {% endfor %}
+        </div>
+        <div class="lr-wall-shelf-board"></div>
+        <div class="lr-wall-shelf-bracket" style="left:8px;"></div>
+        <div class="lr-wall-shelf-bracket" style="right:8px;border-radius:0 0 0 2px;"></div>
+    </div>
+
+    <!-- Lamp -->
+    <div class="lr-lamp">
+        <div class="lr-lamp-shade"><div class="lr-lamp-glow"></div></div>
+        <div class="lr-lamp-pole"></div>
+        <div class="lr-lamp-base"></div>
+    </div>
+
+    <!-- Couch -->
+    <div class="lr-couch">
+        <div class="lr-couch-back">
+            <div class="lr-couch-arm left"></div>
+            <div class="lr-couch-arm right"></div>
+        </div>
+        <div class="lr-couch-seat"></div>
+    </div>
+
+    <!-- Coffee table -->
+    <div class="lr-coffee-table">
+        <div class="lr-table-top">
+            <div class="lr-controller"></div>
+        </div>
+        <div class="lr-table-legs">
+            <div class="lr-table-leg"></div>
+            <div class="lr-table-leg"></div>
+        </div>
+    </div>
+
+    <!-- Floor clutter -->
+    <div class="lr-sock"></div>
+    <div class="lr-remote"></div>
+
+    <!-- Dim overlay -->
+    <div class="lr-dim-overlay"></div>
+</div>
+
+<div class="profile-content">
+
 <!-- PROFILE HEADER -->
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;">
     <div>
@@ -432,6 +501,382 @@
 /* =====================================================
    REDUCED MOTION
    ===================================================== */
+
+/* ══════════════════════════════════════════════
+   LIVING ROOM BACKGROUND SCENE
+   ══════════════════════════════════════════════ */
+.living-room-scene {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+/* Carpet floor */
+.lr-carpet {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 45%;
+    background: #3a2818;
+    background-image:
+        repeating-linear-gradient(
+            90deg,
+            transparent, transparent 4px,
+            rgba(255,255,255,0.012) 4px, rgba(255,255,255,0.012) 5px
+        ),
+        repeating-linear-gradient(
+            0deg,
+            transparent, transparent 4px,
+            rgba(255,255,255,0.008) 4px, rgba(255,255,255,0.008) 5px
+        );
+}
+
+/* Wall */
+.lr-wall {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    bottom: 45%;
+    background: linear-gradient(180deg, #1e1a14 0%, #2a2218 100%);
+}
+
+/* Wall baseboard */
+.lr-baseboard {
+    position: absolute;
+    bottom: 45%;
+    left: 0; right: 0;
+    height: 10px;
+    background: linear-gradient(180deg, #3a2c1a, #2a1e0e);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* Window with blinds */
+.lr-window {
+    position: absolute;
+    top: 6%;
+    right: 8%;
+    width: 120px;
+    height: 90px;
+    background: #0a1820;
+    border: 6px solid #2a1e0e;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow: 0 0 30px rgba(60,120,180,0.08), inset 0 0 20px rgba(0,0,0,0.5);
+}
+/* Night sky outside */
+.lr-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #05101a 0%, #0a1e30 100%);
+}
+/* Stars */
+.lr-window::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle, rgba(255,255,255,0.8) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.6) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.7) 1px, transparent 1px);
+    background-size: 30px 25px, 20px 18px, 40px 35px;
+    background-position: 5px 8px, 15px 20px, 25px 5px;
+}
+/* Blind slats */
+.lr-blinds {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    z-index: 2;
+}
+.lr-blind-slat {
+    flex: 1;
+    border-bottom: 1px solid rgba(60,40,10,0.6);
+    background: rgba(40,28,10,0.35);
+}
+
+/* Wall shelf with games */
+.lr-wall-shelf {
+    position: absolute;
+    top: 30%;
+    left: 5%;
+    width: 140px;
+}
+.lr-wall-shelf-board {
+    height: 8px;
+    background: linear-gradient(180deg, #5c3510, #3a1e06);
+    border-radius: 2px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+}
+.lr-wall-shelf-books {
+    display: flex;
+    gap: 2px;
+    align-items: flex-end;
+    padding: 0 4px;
+    margin-bottom: 0;
+    transform: translateY(-100%);
+}
+.lr-shelf-book {
+    border-radius: 1px 1px 0 0;
+    opacity: 0.7;
+}
+.lr-wall-shelf-bracket {
+    width: 8px;
+    height: 22px;
+    background: #3a2010;
+    position: absolute;
+    bottom: 0;
+    border-radius: 0 0 2px 0;
+}
+
+/* TV in corner */
+.lr-tv {
+    position: absolute;
+    bottom: 46%;
+    left: 3%;
+    width: 100px;
+}
+.lr-tv-screen {
+    width: 100%;
+    height: 64px;
+    background: #050810;
+    border: 5px solid #1a1410;
+    border-radius: 3px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(60,100,180,0.12);
+}
+/* Static/screen glow */
+.lr-tv-screen::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg,
+        rgba(20,40,80,0.4) 0%,
+        rgba(10,20,40,0.2) 50%,
+        rgba(20,40,80,0.4) 100%
+    );
+}
+.lr-tv-screen::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent, transparent 2px,
+        rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 3px
+    );
+}
+.lr-tv-stand {
+    width: 30px;
+    height: 8px;
+    background: #1a1410;
+    margin: 0 auto;
+    border-radius: 0 0 3px 3px;
+}
+.lr-tv-base {
+    width: 50px;
+    height: 4px;
+    background: #1a1410;
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+/* Couch at bottom */
+.lr-couch {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    max-width: 600px;
+}
+.lr-couch-back {
+    height: 52px;
+    background: linear-gradient(180deg, #3a2a1e 0%, #2e2018 100%);
+    border-radius: 8px 8px 0 0;
+    border: 2px solid #1e1408;
+    border-bottom: none;
+    position: relative;
+}
+/* Couch cushion seams */
+.lr-couch-back::before {
+    content: '';
+    position: absolute;
+    top: 8px; bottom: 8px;
+    left: 33%; width: 2px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 1px;
+}
+.lr-couch-back::after {
+    content: '';
+    position: absolute;
+    top: 8px; bottom: 8px;
+    left: 66%; width: 2px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 1px;
+}
+.lr-couch-seat {
+    height: 36px;
+    background: linear-gradient(180deg, #4a3828 0%, #3a2a18 100%);
+    border: 2px solid #1e1408;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+    position: relative;
+}
+.lr-couch-arm {
+    position: absolute;
+    top: -52px;
+    width: 40px;
+    height: 88px;
+    background: linear-gradient(180deg, #3a2a1e, #2e2018);
+    border: 2px solid #1e1408;
+    border-radius: 6px;
+}
+.lr-couch-arm.left { left: -42px; }
+.lr-couch-arm.right { right: -42px; }
+
+/* Coffee table */
+.lr-coffee-table {
+    position: absolute;
+    bottom: 14%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 220px;
+}
+.lr-table-top {
+    height: 10px;
+    background: linear-gradient(180deg, #5c3510, #4a2808);
+    border-radius: 3px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    position: relative;
+}
+/* Controller on table */
+.lr-controller {
+    position: absolute;
+    top: -12px;
+    left: 20px;
+    width: 38px;
+    height: 26px;
+    background: #1a1a1a;
+    border-radius: 8px 8px 4px 4px;
+    border: 1px solid #2a2a2a;
+}
+.lr-controller::before {
+    content: '';
+    position: absolute;
+    top: 6px; left: 6px;
+    width: 8px; height: 8px;
+    background: #333;
+    border-radius: 50%;
+}
+.lr-controller::after {
+    content: '';
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 8px; height: 8px;
+    background: #333;
+    border-radius: 50%;
+}
+/* Sock on the floor */
+.lr-sock {
+    position: absolute;
+    bottom: 18%;
+    right: 12%;
+    width: 28px;
+    height: 14px;
+    background: #5a4030;
+    border-radius: 4px 8px 2px 2px;
+    transform: rotate(-15deg);
+    opacity: 0.6;
+}
+.lr-sock::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 2px;
+    right: 2px; height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+}
+/* Remote on floor */
+.lr-remote {
+    position: absolute;
+    bottom: 20%;
+    right: 18%;
+    width: 10px;
+    height: 24px;
+    background: #1e1e1e;
+    border-radius: 3px;
+    transform: rotate(20deg);
+    opacity: 0.5;
+}
+
+/* Table legs */
+.lr-table-legs {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 16px;
+}
+.lr-table-leg {
+    width: 6px;
+    height: 16px;
+    background: #3a1e06;
+    border-radius: 0 0 2px 2px;
+}
+
+/* Lamp */
+.lr-lamp {
+    position: absolute;
+    bottom: 45%;
+    right: 18%;
+}
+.lr-lamp-shade {
+    width: 0;
+    height: 0;
+    border-left: 16px solid transparent;
+    border-right: 16px solid transparent;
+    border-top: 24px solid #c49a4a;
+    opacity: 0.7;
+    position: relative;
+}
+.lr-lamp-glow {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 60px; height: 60px;
+    background: radial-gradient(circle, rgba(196,154,74,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+    top: -10px;
+}
+.lr-lamp-pole {
+    width: 3px;
+    height: 30px;
+    background: #3a2010;
+    margin: 0 auto;
+}
+.lr-lamp-base {
+    width: 20px;
+    height: 4px;
+    background: #3a2010;
+    border-radius: 2px;
+    margin: 0 auto;
+}
+
+/* Dim overlay so content stays readable */
+.lr-dim-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10,8,4,0.55);
+}
+
+/* Main content sits above the scene */
+.profile-content {
+    position: relative;
+    z-index: 10;
+}
+
 @media (prefers-reduced-motion: reduce) {
     .shelf3d-case,
     .customize-drawer,
@@ -441,6 +886,7 @@
 }
 </style>
 
+</div><!-- /profile-content -->
 {% endblock %}
 
 {% block scripts %}
