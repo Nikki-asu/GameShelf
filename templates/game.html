@@ -40,19 +40,23 @@
     </div>
 </div>
 
-<!-- USER SHELF ACTION -->
 {% if session.get('username') %}
-<div class="card" style="margin-bottom:2rem;">
+
+<!-- ── SHELF ACTION (quick — no review here) ── -->
+<div class="card" style="margin-bottom:1.2rem;">
     <div class="card-header">
-        {% if user_entry %}Edit Your Entry{% else %}Add to Your Shelf{% endif %}
+        {% if user_entry %}Your Shelf Entry{% else %}Add to Your Shelf{% endif %}
     </div>
     <div class="card-body">
         {% if user_entry %}
-        <p style="margin-bottom:1rem;">Currently on your <strong>{{ user_entry.shelf }}</strong> shelf.</p>
+        <p style="margin-bottom:1rem;font-size:0.88rem;">Currently on your <strong>{{ user_entry.shelf }}</strong> shelf{% if user_entry.platform %} · {{ user_entry.platform }}{% endif %}.</p>
         {% endif %}
         <form method="POST" action="/game/{{ info.id }}/add">
             <input type="hidden" name="game_title" value="{{ info.title }}">
             <input type="hidden" name="cover_url" value="{{ info.cover_url }}">
+            <!-- carry review/notes through so they aren't wiped on shelf update -->
+            <input type="hidden" name="review" value="{{ user_entry.review if user_entry else '' }}">
+            <input type="hidden" name="private_notes" value="{{ user_entry.private_notes if user_entry else '' }}">
             <div class="row">
                 <div class="form-group">
                     <label>Shelf</label>
@@ -78,16 +82,8 @@
                     </select>
                 </div>
             </div>
-            <div class="form-group">
-                <label>Public Review</label>
-                <textarea name="review" rows="3" placeholder="What did you think?">{{ user_entry.review if user_entry else '' }}</textarea>
-            </div>
-            <div class="form-group">
-                <label>Private Notes (only you see this)</label>
-                <textarea name="private_notes" rows="2" placeholder="Personal reminders, spoilers, etc.">{{ user_entry.private_notes if user_entry else '' }}</textarea>
-            </div>
             <div style="display:flex;gap:0.8rem;align-items:center;">
-                <button type="submit" class="btn btn-solid">{% if user_entry %}Update{% else %}Add to Shelf{% endif %}</button>
+                <button type="submit" class="btn btn-solid">{% if user_entry %}Update Shelf{% else %}Add to Shelf{% endif %}</button>
                 {% if user_entry %}
                 <form method="POST" action="/game/{{ info.id }}/remove" style="display:inline">
                     <button type="submit" class="btn btn-danger btn-sm">Remove</button>
@@ -97,9 +93,45 @@
         </form>
     </div>
 </div>
+
+<!-- ── REVIEW SECTION (separate) ── -->
+<div class="card" style="margin-bottom:2rem;">
+    <div class="card-header">
+        {% if user_entry and user_entry.review %}Edit Your Review{% else %}Write a Review{% endif %}
+    </div>
+    <div class="card-body">
+        {% if not user_entry %}
+        <p style="margin-bottom:1rem;font-size:0.85rem;color:var(--text2);">Add this game to your shelf first, then leave a review.</p>
+        {% endif %}
+        <form method="POST" action="/game/{{ info.id }}/add">
+            <input type="hidden" name="game_title" value="{{ info.title }}">
+            <input type="hidden" name="cover_url" value="{{ info.cover_url }}">
+            <!-- carry shelf/rating/platform through so they aren't wiped on review update -->
+            <input type="hidden" name="shelf" value="{{ user_entry.shelf if user_entry else 'Want to Play' }}">
+            <input type="hidden" name="rating" value="{{ user_entry.rating if user_entry else '' }}">
+            <input type="hidden" name="platform" value="{{ user_entry.platform if user_entry else '' }}">
+            <div class="form-group">
+                <label>Public Review</label>
+                <textarea name="review" rows="3" placeholder="What did you think?" {% if not user_entry %}disabled{% endif %}>{{ user_entry.review if user_entry else '' }}</textarea>
+            </div>
+            <div class="form-group">
+                <label>Private Notes <span style="font-weight:400;text-transform:none;font-size:0.78rem;">(only you see this)</span></label>
+                <textarea name="private_notes" rows="2" placeholder="Personal reminders, spoilers, etc." {% if not user_entry %}disabled{% endif %}>{{ user_entry.private_notes if user_entry else '' }}</textarea>
+            </div>
+            {% if user_entry %}
+            <button type="submit" class="btn btn-solid">Save Review</button>
+            {% else %}
+            <button type="button" class="btn" disabled style="opacity:0.4;cursor:not-allowed;">Save Review</button>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
 {% else %}
-<div style="margin-bottom:2rem;">
-    <a href="/login" class="btn">Log in to add to your shelf</a>
+<!-- LOGGED OUT -->
+<div style="margin-bottom:2rem;display:flex;gap:0.8rem;align-items:center;">
+    <a href="/login" class="btn btn-solid">Log in to add to your shelf</a>
+    <a href="/login" class="btn">Log in to leave a review</a>
 </div>
 {% endif %}
 
