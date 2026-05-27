@@ -421,7 +421,6 @@
         perspective-origin: 50% -20%;
         margin-top: 0;
         position: relative;
-        overflow: hidden;
         border-radius: 6px;
     }
 
@@ -450,9 +449,8 @@
     }
 
     .aisle-shelf-perspective {
-        transform: rotateX(8deg);
+        transform: rotateX(6deg);
         transform-origin: top center;
-        transform-style: preserve-3d;
         padding: 2.5rem 1.5rem 1rem;
         position: relative;
     }
@@ -475,13 +473,13 @@
 
     /* Shelf plank */
     .aisle-shelf-plank {
-        background: var(--shelf-wood);
+        background: #5c3510;
         border-radius: 3px 3px 0 0;
         padding: 1rem 1.2rem 0;
         box-shadow:
-            0 6px 0 var(--shelf-edge),
-            0 10px 24px rgba(0,0,0,0.6),
-            inset 0 1px 0 rgba(255,255,255,0.08);
+            0 6px 0 #3a1e06,
+            0 10px 24px rgba(0,0,0,0.7),
+            inset 0 1px 0 rgba(255,255,255,0.06);
         position: relative;
     }
     .aisle-shelf-plank::before {
@@ -499,9 +497,9 @@
     .aisle-plank-face {
         height: 12px;
         margin: 0 -1.2rem;
-        background: var(--shelf-edge);
+        background: #3a1e06;
         border-radius: 0 0 3px 3px;
-        box-shadow: inset 0 2px 0 rgba(255,255,255,0.05), 0 3px 8px rgba(0,0,0,0.5);
+        box-shadow: inset 0 2px 0 rgba(255,255,255,0.04), 0 3px 8px rgba(0,0,0,0.6);
     }
 
     /* Games row inside aisle */
@@ -536,6 +534,8 @@
         border: none;
         background: none;
         padding: 0;
+        will-change: transform;
+        isolation: isolate;
     }
     .game-case-aisle:hover {
         transform: translateY(-20px) scale(1.06);
