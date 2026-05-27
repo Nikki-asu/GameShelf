@@ -11,7 +11,6 @@
 
     <!-- TOP-DOWN STORE MAP -->
     <div id="store-map">
-        <!-- Store shell -->
         <svg id="store-svg" viewBox="0 0 900 620" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:900px;display:block;margin:0 auto;cursor:default;">
 
             <!-- Floor -->
@@ -22,7 +21,6 @@
                 <pattern id="tiles" width="40" height="40" patternUnits="userSpaceOnUse">
                     <rect width="40" height="40" fill="none" stroke="var(--store-tile-line)" stroke-width="0.5"/>
                 </pattern>
-                <!-- Glow filter for signs -->
                 <filter id="sign-glow">
                     <feGaussianBlur stdDeviation="3" result="blur"/>
                     <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
@@ -49,20 +47,15 @@
             <text x="450" y="52" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="13" fill="var(--accent)" letter-spacing="3">THE ARCADE</text>
             <text x="450" y="68" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-size="9" fill="var(--text2)" letter-spacing="2">BROWSE · DISCOVER · COLLECT</text>
 
-            <!-- AISLE DEFINITIONS: 4 columns x 2 rows = 8 aisles -->
-            <!-- Each aisle: shelf unit (top-down view = rectangle with shelving lines) + hanging sign -->
-
             <!-- ROW 1 (y=110 to 270) -->
 
             <!-- AISLE 1: Action -->
             <g class="aisle-group" data-genre="action" data-slug="action" style="cursor:pointer;">
                 <rect class="aisle-shelf" x="40" y="110" width="175" height="160" rx="4" fill="var(--store-shelf-fill)" stroke="var(--store-shelf-border)" stroke-width="2"/>
-                <!-- Shelf dividers (top-down view of shelf rows) -->
                 <line x1="40" y1="142" x2="215" y2="142" stroke="var(--store-shelf-border)" stroke-width="1"/>
                 <line x1="40" y1="174" x2="215" y2="174" stroke="var(--store-shelf-border)" stroke-width="1"/>
                 <line x1="40" y1="206" x2="215" y2="206" stroke="var(--store-shelf-border)" stroke-width="1"/>
                 <line x1="40" y1="238" x2="215" y2="238" stroke="var(--store-shelf-border)" stroke-width="1"/>
-                <!-- Game spines on shelf (decorative) -->
                 <rect x="48" y="116" width="10" height="22" rx="1" fill="#c03020" opacity="0.7"/>
                 <rect x="62" y="116" width="8" height="22" rx="1" fill="#e05030" opacity="0.7"/>
                 <rect x="74" y="116" width="12" height="22" rx="1" fill="#a02010" opacity="0.7"/>
@@ -73,9 +66,7 @@
                 <rect x="48" y="148" width="9" height="22" rx="1" fill="#d03020" opacity="0.6"/>
                 <rect x="61" y="148" width="11" height="22" rx="1" fill="#a01010" opacity="0.6"/>
                 <rect x="76" y="148" width="8" height="22" rx="1" fill="#f05040" opacity="0.6"/>
-                <!-- Hanging sign string -->
                 <line x1="127" y1="96" x2="127" y2="110" stroke="var(--store-string)" stroke-width="1" stroke-dasharray="2,2"/>
-                <!-- Ceiling sign -->
                 <rect class="aisle-sign" x="72" y="72" width="110" height="30" rx="4" fill="var(--sign-action)" stroke="var(--sign-action-border)" stroke-width="2" filter="url(#sign-glow)"/>
                 <text x="127" y="92" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">ACTION</text>
             </g>
@@ -222,7 +213,7 @@
                 <text x="742" y="302" text-anchor="middle" font-family="Bebas Neue, sans-serif" font-size="16" fill="white" letter-spacing="3" pointer-events="none">STRATEGY</text>
             </g>
 
-            <!-- Walking paths between aisles -->
+            <!-- Walking paths -->
             <rect x="220" y="100" width="20" height="480" fill="var(--store-path)" opacity="0.3"/>
             <rect x="425" y="100" width="20" height="480" fill="var(--store-path)" opacity="0.3"/>
             <rect x="630" y="100" width="20" height="480" fill="var(--store-path)" opacity="0.3"/>
@@ -233,29 +224,47 @@
             <ellipse cx="332" cy="50" rx="18" ry="6" fill="var(--light-glow)" opacity="0.4"/>
             <ellipse cx="537" cy="50" rx="18" ry="6" fill="var(--light-glow)" opacity="0.4"/>
             <ellipse cx="742" cy="50" rx="18" ry="6" fill="var(--light-glow)" opacity="0.4"/>
-
         </svg>
 
         <p style="text-align:center;font-size:0.78rem;color:var(--text2);margin-top:0.5rem;">Click any aisle or sign to browse games</p>
     </div>
 
-    <!-- AISLE VIEW (hidden until genre clicked) -->
+    <!-- AISLE VIEW -->
     <div id="aisle-view" style="display:none;">
-        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.8rem;">
             <button id="back-to-map" class="btn btn-sm">← Back to Store</button>
-            <div id="aisle-title" style="font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.1em;color:var(--accent);"></div>
+            <div id="aisle-title" class="aisle-view-title"></div>
         </div>
 
-        <!-- The physical shelf in aisle view -->
-        <div id="aisle-shelf-container">
-            <div id="aisle-loading" style="text-align:center;padding:3rem;color:var(--text2);font-family:'Barlow Condensed',sans-serif;letter-spacing:0.08em;">
-                Loading shelf...
-            </div>
-            <div id="aisle-shelf" style="display:none;">
-                <div class="shelf-plank" id="aisle-games" style="min-height:180px;flex-wrap:wrap;align-items:flex-end;gap:8px;padding:1.2rem 1.5rem 1rem;"></div>
-            </div>
-            <div id="aisle-pagination" style="display:flex;justify-content:center;gap:0.8rem;margin-top:1rem;"></div>
+        <!-- Overhead aisle sign banner -->
+        <div id="aisle-banner" class="aisle-banner">
+            <div class="aisle-banner-string"></div>
+            <div id="aisle-banner-label" class="aisle-banner-label"></div>
         </div>
+
+        <!-- Perspective shelf scene -->
+        <div class="aisle-scene">
+            <!-- Back wall / depth effect -->
+            <div class="aisle-back-wall"></div>
+
+            <!-- Shelf container with perspective recede -->
+            <div class="aisle-shelf-perspective">
+                <div id="aisle-loading" class="aisle-loading-msg">Loading shelf...</div>
+
+                <div id="aisle-shelf-wrap" style="display:none;">
+                    <!-- Floor shadow strip -->
+                    <div class="aisle-floor-strip"></div>
+
+                    <!-- The actual shelf plank -->
+                    <div class="aisle-shelf-plank">
+                        <div id="aisle-games" class="aisle-games-row"></div>
+                        <div class="aisle-plank-face"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="aisle-pagination" style="display:flex;justify-content:center;gap:0.8rem;margin-top:1.2rem;"></div>
     </div>
 
 </div>
@@ -363,38 +372,177 @@
         --light-glow:           #fffbe0;
     }
 
-    .aisle-group .aisle-shelf {
-        transition: fill 0.2s, filter 0.2s;
-    }
-    .aisle-group:hover .aisle-shelf {
-        fill: var(--surface2);
-        filter: brightness(1.3);
-    }
-    .aisle-group .aisle-sign {
-        transition: filter 0.2s;
-    }
-    .aisle-group:hover .aisle-sign {
-        filter: url(#hover-glow);
+    .aisle-group .aisle-shelf { transition: fill 0.2s, filter 0.2s; }
+    .aisle-group:hover .aisle-shelf { fill: var(--surface2); filter: brightness(1.3); }
+    .aisle-group .aisle-sign { transition: filter 0.2s; }
+    .aisle-group:hover .aisle-sign { filter: url(#hover-glow); }
+
+    /* ── AISLE VIEW TITLE ── */
+    .aisle-view-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2rem;
+        letter-spacing: 0.1em;
+        color: var(--accent);
     }
 
+    /* ── OVERHEAD AISLE SIGN BANNER ── */
+    .aisle-banner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 0;
+        position: relative;
+    }
+    .aisle-banner-string {
+        width: 1px;
+        height: 20px;
+        background: repeating-linear-gradient(
+            180deg,
+            var(--text2) 0px, var(--text2) 3px,
+            transparent 3px, transparent 6px
+        );
+    }
+    .aisle-banner-label {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1rem;
+        letter-spacing: 0.2em;
+        color: white;
+        padding: 0.4rem 2rem;
+        border-radius: 4px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.1) inset;
+        background: var(--banner-color, var(--accent2));
+        border: 1.5px solid var(--banner-border, var(--accent));
+        text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    }
+
+    /* ── PERSPECTIVE AISLE SCENE ── */
+    .aisle-scene {
+        perspective: 700px;
+        perspective-origin: 50% -20%;
+        margin-top: 0;
+        position: relative;
+        overflow: hidden;
+        border-radius: 6px;
+    }
+
+    /* Dark store-floor backdrop */
+    .aisle-back-wall {
+        position: absolute;
+        inset: 0;
+        background:
+            repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 60px,
+                rgba(255,255,255,0.015) 60px,
+                rgba(255,255,255,0.015) 61px
+            ),
+            repeating-linear-gradient(
+                180deg,
+                transparent,
+                transparent 60px,
+                rgba(255,255,255,0.015) 60px,
+                rgba(255,255,255,0.015) 61px
+            ),
+            var(--bg2);
+        border-radius: 6px;
+        pointer-events: none;
+    }
+
+    .aisle-shelf-perspective {
+        transform: rotateX(8deg);
+        transform-origin: top center;
+        transform-style: preserve-3d;
+        padding: 2.5rem 1.5rem 1rem;
+        position: relative;
+    }
+
+    .aisle-loading-msg {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text2);
+        font-family: 'Barlow Condensed', sans-serif;
+        letter-spacing: 0.08em;
+    }
+
+    /* Floor shadow strip above shelf */
+    .aisle-floor-strip {
+        height: 18px;
+        background: linear-gradient(180deg, transparent, rgba(0,0,0,0.25));
+        margin: 0 -1.5rem;
+        pointer-events: none;
+    }
+
+    /* Shelf plank */
+    .aisle-shelf-plank {
+        background: var(--shelf-wood);
+        border-radius: 3px 3px 0 0;
+        padding: 1rem 1.2rem 0;
+        box-shadow:
+            0 6px 0 var(--shelf-edge),
+            0 10px 24px rgba(0,0,0,0.6),
+            inset 0 1px 0 rgba(255,255,255,0.08);
+        position: relative;
+    }
+    .aisle-shelf-plank::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 3px 3px 0 0;
+        background: repeating-linear-gradient(
+            92deg,
+            transparent, transparent 20px,
+            rgba(255,255,255,0.02) 20px, rgba(255,255,255,0.02) 21px
+        );
+        pointer-events: none;
+    }
+    .aisle-plank-face {
+        height: 12px;
+        margin: 0 -1.2rem;
+        background: var(--shelf-edge);
+        border-radius: 0 0 3px 3px;
+        box-shadow: inset 0 2px 0 rgba(255,255,255,0.05), 0 3px 8px rgba(0,0,0,0.5);
+    }
+
+    /* Games row inside aisle */
+    .aisle-games-row {
+        display: flex;
+        align-items: flex-end;
+        gap: 7px;
+        overflow-x: auto;
+        overflow-y: visible;
+        padding-bottom: 0.6rem;
+        min-height: 160px;
+        scrollbar-width: thin;
+        scrollbar-color: var(--shelf-edge) transparent;
+    }
+    .aisle-games-row::-webkit-scrollbar { height: 3px; }
+    .aisle-games-row::-webkit-scrollbar-thumb { background: var(--shelf-edge); border-radius: 2px; }
+
+    /* Individual aisle game case */
     .game-case-aisle {
         flex-shrink: 0;
-        width: 80px;
-        height: 120px;
-        border-radius: 3px 1px 1px 3px;
+        width: 100px;
+        height: 148px;
+        border-radius: 3px 2px 2px 3px;
         overflow: hidden;
         cursor: pointer;
         position: relative;
-        transition: transform 0.2s, box-shadow 0.2s;
-        box-shadow: 0 6px 18px rgba(0,0,0,0.6), inset -2px 0 4px rgba(0,0,0,0.4);
+        transition: transform 0.22s cubic-bezier(.22,.68,0,1.2), box-shadow 0.22s;
+        box-shadow:
+            3px 6px 16px rgba(0,0,0,0.7),
+            inset -2px 0 5px rgba(0,0,0,0.4),
+            inset 1px 0 2px rgba(255,255,255,0.05);
         border: none;
         background: none;
         padding: 0;
     }
     .game-case-aisle:hover {
-        transform: translateY(-14px) scale(1.06);
-        box-shadow: 0 18px 36px rgba(0,0,0,0.8), inset -2px 0 4px rgba(0,0,0,0.4);
-        z-index: 10;
+        transform: translateY(-20px) scale(1.06);
+        box-shadow:
+            0 24px 40px rgba(0,0,0,0.85),
+            inset -2px 0 5px rgba(0,0,0,0.4);
+        z-index: 20;
     }
     .game-case-aisle img {
         width: 100%;
@@ -403,34 +551,68 @@
         display: block;
         pointer-events: none;
     }
-    .game-case-aisle .no-cover-aisle {
-        width: 100%;
-        height: 100%;
+    .no-cover-aisle {
+        width: 100%; height: 100%;
         background: linear-gradient(160deg, var(--surface2), var(--surface));
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 6px;
+        padding: 8px;
         text-align: center;
         pointer-events: none;
     }
-    .game-case-aisle .no-cover-aisle span {
+    .no-cover-aisle span {
         font-family: 'Barlow Condensed', sans-serif;
         font-size: 0.65rem;
         font-weight: 600;
         color: var(--text2);
         line-height: 1.3;
     }
+
+    /* Plastic wrap sheen — two-layer shimmer */
     .case-shine-aisle {
         position: absolute;
         top: 0; left: 0;
-        width: 30%;
-        height: 100%;
-        background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
+        width: 100%; height: 100%;
+        background:
+            linear-gradient(
+                115deg,
+                rgba(255,255,255,0.13) 0%,
+                rgba(255,255,255,0.04) 30%,
+                transparent 50%,
+                rgba(255,255,255,0.02) 70%,
+                transparent 100%
+            ),
+            linear-gradient(
+                90deg,
+                rgba(255,255,255,0.07) 0%,
+                transparent 25%
+            );
         pointer-events: none;
+        border-radius: inherit;
+    }
+
+    /* Hover: sheen shifts */
+    .game-case-aisle:hover .case-shine-aisle {
+        background:
+            linear-gradient(
+                125deg,
+                rgba(255,255,255,0.18) 0%,
+                rgba(255,255,255,0.06) 35%,
+                transparent 55%
+            ),
+            linear-gradient(
+                90deg,
+                rgba(255,255,255,0.08) 0%,
+                transparent 30%
+            );
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .game-case-aisle, .aisle-shelf-perspective { transition: none !important; }
+        .game-case-aisle:hover { transform: translateY(-4px); }
     }
 </style>
-
 {% endblock %}
 
 {% block scripts %}
@@ -440,19 +622,17 @@ let currentPage = 1;
 let currentGenre = '';
 let currentGenreLabel = '';
 
-// Genre → RAWG genre slug mapping
-const GENRE_SLUGS = {
-    action: 'action',
-    rpg: 'role-playing-games-rpg',
-    horror: 'action', // will use tags for horror
-    indie: 'indie',
-    adventure: 'adventure',
-    racing: 'racing',
-    puzzle: 'puzzle',
-    strategy: 'strategy'
+// Genre → banner color mapping
+const GENRE_COLORS = {
+    action:    { bg: '#8b1a1a', border: '#ff4040' },
+    rpg:       { bg: '#2a1a6b', border: '#9060ff' },
+    horror:    { bg: '#1a0a0a', border: '#800000' },
+    indie:     { bg: '#1a4a1a', border: '#40d080' },
+    adventure: { bg: '#1a3a1a', border: '#60a040' },
+    racing:    { bg: '#4a2a00', border: '#f0a000' },
+    puzzle:    { bg: '#003a4a', border: '#00c0d0' },
+    strategy:  { bg: '#2a2a00', border: '#a0a020' },
 };
-
-const HORROR_OVERRIDE = { horror: true };
 
 document.querySelectorAll('.aisle-group').forEach(el => {
     el.addEventListener('click', () => {
@@ -471,11 +651,22 @@ async function openAisle(genre, label, page) {
     currentGenre = genre;
     currentGenreLabel = label;
     currentPage = page;
+
     document.getElementById('store-map').style.display = 'none';
     document.getElementById('aisle-view').style.display = '';
     document.getElementById('aisle-title').textContent = label + ' AISLE';
+
+    // Update banner
+    const colors = GENRE_COLORS[genre] || { bg: 'var(--accent2)', border: 'var(--accent)' };
+    const banner = document.getElementById('aisle-banner-label');
+    banner.textContent = label;
+    banner.style.setProperty('--banner-color', colors.bg);
+    banner.style.setProperty('--banner-border', colors.border);
+    banner.style.background = colors.bg;
+    banner.style.borderColor = colors.border;
+
     document.getElementById('aisle-loading').style.display = '';
-    document.getElementById('aisle-shelf').style.display = 'none';
+    document.getElementById('aisle-shelf-wrap').style.display = 'none';
     document.getElementById('aisle-pagination').innerHTML = '';
 
     try {
@@ -490,23 +681,25 @@ async function openAisle(genre, label, page) {
 
 function renderAisle(games, total, page) {
     document.getElementById('aisle-loading').style.display = 'none';
-    const shelf = document.getElementById('aisle-shelf');
+    const wrap = document.getElementById('aisle-shelf-wrap');
     const gamesEl = document.getElementById('aisle-games');
-    shelf.style.display = '';
+    wrap.style.display = '';
     gamesEl.innerHTML = '';
 
     if (!games.length) {
-        gamesEl.innerHTML = '<span style="color:var(--text2);font-style:italic;font-size:0.9rem;padding:1rem;">No games found for this genre.</span>';
+        gamesEl.innerHTML = '<span style="color:var(--text2);font-style:italic;font-size:0.9rem;padding:1rem;align-self:center;">No games found for this genre.</span>';
     } else {
-        games.forEach(g => {
+        games.forEach((g, i) => {
             const btn = document.createElement('button');
             btn.className = 'game-case-aisle';
             btn.title = g.title;
+            btn.style.animationDelay = (i * 30) + 'ms';
             btn.onclick = () => openGameModal(g);
+
             if (g.cover_url) {
-                btn.innerHTML = `<img src="${g.cover_url}" alt="${g.title}" loading="lazy"><div class="case-shine-aisle"></div>`;
+                btn.innerHTML = `<img src="${g.cover_url}" alt="${escHtml(g.title)}" loading="lazy"><div class="case-shine-aisle"></div>`;
             } else {
-                btn.innerHTML = `<div class="no-cover-aisle"><span>${g.title}</span></div><div class="case-shine-aisle"></div>`;
+                btn.innerHTML = `<div class="no-cover-aisle"><span>${escHtml(g.title)}</span></div><div class="case-shine-aisle"></div>`;
             }
             gamesEl.appendChild(btn);
         });
@@ -538,8 +731,9 @@ function renderAisle(games, total, page) {
 
 function openGameModal(g) {
     document.getElementById('modal-title').textContent = g.title;
-    document.getElementById('modal-cover').src = g.cover_url || '';
-    document.getElementById('modal-cover').style.display = g.cover_url ? '' : 'none';
+    const coverEl = document.getElementById('modal-cover');
+    coverEl.src = g.cover_url || '';
+    coverEl.style.display = g.cover_url ? '' : 'none';
     document.getElementById('modal-meta').textContent = [g.released, g.genres].filter(Boolean).join(' · ');
     document.getElementById('modal-desc').textContent = g.description || '';
     document.getElementById('modal-game-title').value = g.title;
@@ -559,6 +753,10 @@ function openGameModal(g) {
 
 function closeModal() {
     document.getElementById('game-modal').style.display = 'none';
+}
+
+function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 document.getElementById('game-modal').addEventListener('click', e => {
