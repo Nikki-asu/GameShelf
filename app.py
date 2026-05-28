@@ -3,7 +3,7 @@ from flask import (Flask, render_template, request, redirect,
 from functools import wraps
 import requests as http
 import os, time
-from hash_util import hash_string, hash_password, check_password
+from hash_util import hash_password, check_password
 import xml_store as db
 
 app = Flask(__name__)
