@@ -7,11 +7,37 @@ from hash_util import hash_string, hash_password, check_password
 import xml_store as db
 
 app = Flask(__name__)
-app.secret_key = 'gameshelf-secret-change-in-prod'
+app.secret_key = os.environ.get('SECRET_KEY', 'gameshelf-secret-change-in-prod')
 
 PLATFORMS = ['PC', 'PlayStation 5', 'PlayStation 4', 'Xbox Series X/S',
              'Xbox One', 'Nintendo Switch', 'Meta Quest', 'iOS', 'Android', 'Other']
 SHELVES = ['Playing', 'Want to Play', 'Finished']
+
+FEATURED_GENRES = [
+    ('Adventure',    'genres = (31) & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('RPG',          'genres = (12) & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('Puzzle',       'genres = (9)  & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('Shooter',      'genres = (5)  & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('Horror',       'themes = (19) & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('Indie',        'genres = (32) & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('Strategy',     'genres = (15) & version_parent = null & cover != null & aggregated_rating_count > 3'),
+    ('Racing',       'genres = (10) & version_parent = null & cover != null & aggregated_rating_count > 3'),
+]
+
+GENRE_IGDB_IDS = {
+    'action':    [12],
+    'rpg':       [12, 11],
+    'horror':    [12],
+    'indie':     [32],
+    'adventure': [31],
+    'racing':    [10],
+    'puzzle':    [9],
+    'strategy':  [15],
+}
+
+GENRE_THEMES = {
+    'horror': 19,
+}
 
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
@@ -25,13 +51,14 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
+
 # ── IGDB API ──────────────────────────────────────────────────────────────────
 
 IGDB_CLIENT_ID     = os.environ.get('IGDB_CLIENT_ID', '')
 IGDB_CLIENT_SECRET = os.environ.get('IGDB_CLIENT_SECRET', '')
 IGDB_BASE          = 'https://api.igdb.com/v4'
 
-_igdb_token       = None
+_igdb_token        = None
 _igdb_token_expiry = 0
 
 def igdb_token():
@@ -124,6 +151,7 @@ def igdb_game(game_id):
         print(f'IGDB game error: {ex}')
         return None
 
+
 # ── Routes ────────────────────────────────────────────────────────────────────
 
 @app.route('/')
@@ -144,13 +172,11 @@ def search():
 
 @app.route('/game/<int:game_id>')
 def game(game_id):
-    # First check if we have it in our own XML (fallback)
     all_entries = db.get_all_public_entries()
     reviews = [e for e in all_entries if e['game_id'] == str(game_id) and e['review']]
 
     info = igdb_game(game_id)
 
-    # Graceful fallback — build info from existing shelf data if API fails
     if not info:
         existing = next((e for e in all_entries if e['game_id'] == str(game_id)), None)
         if existing:
@@ -168,7 +194,6 @@ def game(game_id):
             flash('Game not found.', 'danger')
             return redirect(url_for('search'))
 
-    # Backfill cover URL into any existing XML entries that are missing it
     if info and info.get('cover_url'):
         db.backfill_cover(game_id, info['cover_url'])
 
@@ -271,36 +296,10 @@ def theme_toggle():
 def arcade():
     return render_template('arcade.html')
 
-GENRE_IDS = {
-    'action':    12,
-    'rpg':       12,   # will override below
-    'horror':    None,
-    'indie':     32,
-    'adventure': 31,
-    'racing':    10,
-    'puzzle':    9,
-    'strategy':  15,
-}
-
-GENRE_IGDB_IDS = {
-    'action':    [12],
-    'rpg':       [12, 11],
-    'horror':    [12],   # use theme 19 for horror
-    'indie':     [32],
-    'adventure': [31],
-    'racing':    [10],
-    'puzzle':    [9],
-    'strategy':  [15],
-}
-
-GENRE_THEMES = {
-    'horror': 19,  # IGDB theme ID for horror
-}
-
 @app.route('/arcade/genre')
 def arcade_genre():
-    genre = request.args.get('genre', '').lower()
-    page  = int(request.args.get('page', 1))
+    genre  = request.args.get('genre', '').lower()
+    page   = int(request.args.get('page', 1))
     offset = (page - 1) * 12
 
     try:
@@ -336,7 +335,10 @@ def arcade_genre():
                 'description': '',
                 'rating':      round(g.get('aggregated_rating', 0) / 20, 1) if g.get('aggregated_rating') else 0,
             })
-        return jsonify({'results': results, 'total': len(results) + offset + (1 if len(results) == 12 else 0)})
+        return jsonify({
+            'results': results,
+            'total': len(results) + offset + (1 if len(results) == 12 else 0)
+        })
     except Exception as ex:
         print(f'IGDB arcade error: {ex}')
         return jsonify({'results': [], 'total': 0, 'error': str(ex)})
@@ -351,23 +353,8 @@ def board():
                            top_rated=top_rated,
                            most_reviewed=most_reviewed)
 
-if __name__ == '__main__':
-    app.run(debug=True)
-
-FEATURED_GENRES = [
-    ('Adventure',    'genres = (31) & version_parent = null & cover != null & aggregated_rating_count > 3'),
-    ('RPG',          'genres = (12) & version_parent = null & cover != null & aggregated_rating_count > 3'),
-    ('Puzzle',       'genres = (9)  & version_parent = null & cover != null & aggregated_rating_count > 3'),
-    ('Shooter',      'genres = (5)  & version_parent = null & cover != null & aggregated_rating_count > 3'),
-    ('Horror',       'themes = (19) & version_parent = null & cover != null & aggregated_rating_count > 3'),
-    ('Indie',        'genres = (32) & version_parent = null & cover != null & aggregated_rating_count > 3'),
-    ('Strategy',     'genres = (15) & version_parent = null & cover != null & aggregated_rating_count > 3'),
-    ('Racing',       'genres = (10) & version_parent = null & cover != null & aggregated_rating_count > 3'),
-]
-
 @app.route('/board/featured/<genre_name>')
 def board_featured_genre(genre_name):
-    """Returns top rated games from IGDB for a specific genre row."""
     genre_map = {g[0].lower(): g[1] for g in FEATURED_GENRES}
     where = genre_map.get(genre_name.lower())
     if not where:
@@ -388,10 +375,14 @@ def board_featured_genre(genre_name):
             results.append({
                 'id':        g['id'],
                 'title':     g['name'],
-                'cover_url':  igdb_cover_url(g.get('cover', {}).get('image_id') if g.get('cover') else None),
+                'cover_url': igdb_cover_url(g.get('cover', {}).get('image_id') if g.get('cover') else None),
                 'released':  year,
                 'rating':    round(g.get('aggregated_rating', 0) / 20, 1) if g.get('aggregated_rating') else 0,
             })
         return jsonify({'results': results})
     except Exception as ex:
         return jsonify({'results': [], 'error': str(ex)})
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
