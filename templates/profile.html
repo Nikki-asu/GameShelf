@@ -466,23 +466,6 @@
 }
 
 /* ══════════════════════════════════════════════
-   3D SHELF SCENEhelf — GameShelf{% endblock %}
-
-{% macro shelf_case(entry) %}
-<a href="/game/{{ entry.game_id }}" class="game-case shelf3d-case" title="{{ entry.game_title }}{% if entry.rating %} — ★ {{ entry.rating }}{% endif %}">
-    {% if entry.cover_url %}
-        <img src="{{ entry.cover_url }}" alt="{{ entry.game_title }}" loading="lazy">
-    {% else %}
-        <div class="no-cover"><span>{{ entry.game_title }}</span></div>
-    {% endif %}
-    <div class="case-shine"></div>
-    {% if entry.rating %}
-        <div class="rating-badge">★ {{ entry.rating }}</div>
-    {% endif %}
-</a>
-{% endmacro %}
-
-{% block content %}
 
 <!-- PIXEL GAME WALL -->
 <div class="pixel-wall" id="pixel-wall" aria-hidden="true"></div>
