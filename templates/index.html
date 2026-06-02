@@ -14,6 +14,10 @@
 {% endmacro %}
 
 {% block content %}
+<style>
+/* Break storefront out of base.html's <main> container */
+main { padding: 0 !important; max-width: 100% !important; overflow: hidden; }
+</style>
 
 <!-- STOREFRONT HERO -->
 <div class="storefront-wrap" id="storefrontWrap">
@@ -158,37 +162,6 @@
 </div><!-- /storefront-wrap -->
 
 
-<!-- RECENTLY FINISHED -->
-<div class="shelf-section">
-    <div class="shelf-label">
-        Recently Finished
-        <span class="shelf-count">{{ recent_finished|length }} reviews</span>
-    </div>
-    <div class="shelf-plank">
-        {% if recent_finished %}
-            {% for entry in recent_finished %}{{ shelf_case(entry) }}{% endfor %}
-        {% else %}
-            <span class="empty-shelf">No finished games yet. Be the first.</span>
-        {% endif %}
-    </div>
-</div>
-
-<!-- CURRENTLY PLAYING -->
-<div class="shelf-section">
-    <div class="shelf-label">
-        Currently Playing
-        <span class="shelf-count">{{ recent_playing|length }} active</span>
-    </div>
-    <div class="shelf-plank">
-        {% if recent_playing %}
-            {% for entry in recent_playing %}{{ shelf_case(entry) }}{% endfor %}
-        {% else %}
-            <span class="empty-shelf">Nobody's playing anything yet.</span>
-        {% endif %}
-    </div>
-</div>
-
-
 <style>
 /* ─── STOREFRONT WRAPPER ─────────────────────────────── */
 .storefront-wrap {
@@ -197,10 +170,12 @@
   flex-direction: column;
   align-items: stretch;
   padding: 36px 0 0;
-  margin: 0 -2rem 3rem -2rem;
+  margin: 0 0 0 0;
   overflow: hidden;
   background: var(--sf-bg, #05080d);
   font-family: 'Press Start 2P', monospace;
+  min-height: calc(100vh - 64px);
+  justify-content: center;
 }
 
 /* stars sit behind everything */
