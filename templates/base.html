@@ -17,20 +17,20 @@
             --border2:     #3a3a6a;
 
             /* Tetris block colors */
-            --t-blue:      #0090e0;   /* I-piece */
-            --t-yellow:    #f0d000;   /* O-piece */
-            --t-green:     #00c060;   /* S-piece */
-            --t-red:       #e02040;   /* Z-piece */
-            --t-purple:    #a020e0;   /* T-piece */
-            --t-orange:    #f06000;   /* L-piece */
-            --t-cyan:      #00d0d0;   /* J-piece */
+            --t-blue:      #0090e0;
+            --t-yellow:    #f0d000;
+            --t-green:     #00c060;
+            --t-red:       #e02040;
+            --t-purple:    #a020e0;
+            --t-orange:    #f06000;
+            --t-cyan:      #00d0d0;
 
-            /* Primary accent — electric blue */
+            /* Primary accent */
             --accent:      #0090e0;
             --accent2:     #00c0ff;
             --accent-glow: rgba(0,144,224,0.2);
 
-            /* Secondary accent — hot yellow */
+            /* Secondary accent */
             --accent-y:    #f0d000;
             --accent-y2:   #ffe040;
 
@@ -106,7 +106,6 @@
             z-index: 100;
         }
 
-        /* Pixel scanline on header */
         header::after {
             content: '';
             position: absolute;
@@ -121,7 +120,6 @@
             );
         }
 
-        /* LOGO */
         .logo {
             font-family: 'Press Start 2P', monospace;
             font-size: 1.1rem;
@@ -144,7 +142,6 @@
             text-transform: uppercase;
         }
 
-        /* NAV */
         nav { display: flex; align-items: center; gap: 0.3rem; }
         nav a, nav button {
             font-family: 'Barlow Condensed', sans-serif;
@@ -186,7 +183,6 @@
             box-shadow: 0 0 12px rgba(240,208,0,0.3);
         }
 
-        /* SEARCH */
         .search-bar { display: flex; gap: 0; max-width: 320px; }
         .search-bar input {
             flex: 1;
@@ -216,7 +212,7 @@
         }
         .search-bar button:hover { background: var(--accent2); }
 
-        /* MAIN */
+        /* ── MAIN — normal pages use this, hero pages override via block hero ── */
         main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
 
         /* ══ SHELF SECTION ══ */
@@ -245,7 +241,6 @@
             letter-spacing: 0.06em;
         }
 
-        /* SHELF PLANK */
         .shelf-plank {
             background: linear-gradient(180deg, var(--shelf-wood) 0%, var(--shelf-edge) 70%, #000 100%);
             border-top: 2px solid #2d5a2d;
@@ -272,7 +267,6 @@
         .shelf-plank::-webkit-scrollbar-track { background: #000; }
         .shelf-plank::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 
-        /* GAME CASE */
         .game-case {
             flex-shrink: 0;
             width: 80px;
@@ -319,7 +313,6 @@
             padding: 1rem; align-self: center;
         }
 
-        /* GAME CARD (search grid) */
         .game-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -354,7 +347,6 @@
         }
         .game-card-meta { font-size: 0.75rem; color: var(--text2); }
 
-        /* FLASH */
         .flash-container { margin-bottom: 1.5rem; }
         .flash {
             padding: 0.65rem 1rem; border-radius: 2px; margin-bottom: 0.4rem;
@@ -366,7 +358,6 @@
         .flash.info    { background: rgba(0,144,224,0.08); border-color: var(--accent); color: var(--accent2); }
         .flash.warning { background: rgba(240,208,0,0.08); border-color: var(--accent-y); color: var(--accent-y2); }
 
-        /* CARDS / FORMS */
         .card {
             background: var(--surface);
             border: 1px solid var(--border);
@@ -431,7 +422,6 @@
         .btn-danger:hover { background: var(--danger); color: white; }
         .btn-sm { padding: 0.3rem 0.7rem; font-size: 0.78rem; }
 
-        /* STARS */
         .stars { color: var(--t-yellow); font-size: 0.9rem; letter-spacing: 0.05em; }
         .stars .empty { color: var(--border2); }
 
@@ -470,6 +460,8 @@
         </form>
     </nav>
 </header>
+
+{% block hero %}{% endblock %}
 
 <main>
     {% with messages = get_flashed_messages(with_categories=true) %}
