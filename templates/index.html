@@ -233,15 +233,10 @@
   flex-direction: column;
   align-items: center;
   pointer-events: none;
-  bottom: 116px;
-  padding-top: 60px;
+  bottom: 118px;
 }
-.sf-lamp--l { left: calc(50% - 470px); }
-.sf-lamp--r { right: calc(50% - 470px); }
-@media (max-width: 1100px) {
-  .sf-lamp--l { left: 20px; }
-  .sf-lamp--r { right: 20px; }
-}
+.sf-lamp--l { left: calc(50% - min(430px, 44vw)); }
+.sf-lamp--r { right: calc(50% - min(430px, 44vw)); }
 .sf-lamp-arm-l {
   width: 32px; height: 3px;
   border-radius: 2px 0 0 0;
@@ -699,37 +694,23 @@
     var lc = drk(cur.bc, 1.6);
     var gc = alp(cur.sc, 0.45);
     var isL = side === 'l';
-    // Simple reliable lamp: vertical post, horizontal arm at top, head + glow bulb
-    // Using a wrapper div with overflow visible
-    el.style.cssText = 'position:relative;display:flex;flex-direction:column;align-items:center;overflow:visible;';
-    
-    var wrap = '<div style="position:relative;display:flex;flex-direction:column;align-items:center;overflow:visible;">';
-    
-    // Arm extending sideways from top of post
-    var armSide = isL ? 'right:50%' : 'left:50%';
-    wrap += '<div style="position:absolute;top:0;'+armSide+';width:34px;height:4px;background:'+lc+';border-radius:'+(isL?'3px 0 0 3px':'0 3px 3px 0')+'"></div>';
-    
-    // Head cap (wider horizontal bar)
-    wrap += '<div style="width:28px;height:5px;background:'+lc+';border-radius:3px 3px 0 0;z-index:1"></div>';
-    
-    // Bulb (glowing orb)
-    wrap += '<div style="width:20px;height:14px;background:'+gc+';border-radius:0 0 10px 10px;'
-             +'box-shadow:0 0 8px '+alp(cur.sc,0.9)+',0 0 18px '+alp(cur.sc,0.6)+',0 0 35px '+alp(cur.sc,0.3)+';z-index:1"></div>';
-    
-    // Light cone - downward trapezoid using a simple div with clip-path
-    wrap += '<div style="width:80px;height:100px;margin-top:0;background:linear-gradient(180deg,'
-             +alp(cur.sc,0.1)+' 0%,'+alp(cur.sc,0.03)+' 60%,transparent 100%);'
-             +'clip-path:polygon(35% 0%,65% 0%,100% 100%,0% 100%);pointer-events:none;"></div>';
-    
-    // Post (sits behind cone visually but drawn after)
-    wrap += '<div style="width:4px;height:140px;background:linear-gradient(180deg,'+lc+','+drk(lc,0.5)+');'
-             +'border-radius:2px;margin-top:-100px;z-index:0"></div>';
-    
-    // Base plate
-    wrap += '<div style="width:18px;height:7px;background:'+lc+';border-radius:0 0 4px 4px;margin-top:0"></div>';
-    
-    wrap += '</div>';
-    el.innerHTML = wrap;
+    var armDir = isL ? 'right:100%' : 'left:100%';
+    // DO NOT set el.style.cssText - preserve the CSS absolute positioning
+    el.innerHTML =
+      '<div style="position:relative;display:flex;flex-direction:column;align-items:center;">' +
+        // arm
+        '<div style="position:absolute;top:0;'+armDir+';width:34px;height:4px;background:'+lc+';border-radius:'+(isL?'3px 0 0 3px':'0 3px 3px 0')+'"></div>' +
+        // head cap
+        '<div style="width:28px;height:5px;background:'+lc+';border-radius:3px 3px 0 0"></div>' +
+        // glowing bulb
+        '<div style="width:20px;height:14px;background:'+gc+';border-radius:0 0 10px 10px;box-shadow:0 0 8px '+alp(cur.sc,0.9)+',0 0 18px '+alp(cur.sc,0.6)+',0 0 35px '+alp(cur.sc,0.3)+'"></div>' +
+        // downward light cone
+        '<div style="width:80px;height:100px;background:linear-gradient(180deg,'+alp(cur.sc,0.1)+' 0%,'+alp(cur.sc,0.03)+' 60%,transparent 100%);clip-path:polygon(35% 0%,65% 0%,100% 100%,0% 100%)"></div>' +
+        // post - uses negative margin to sit behind cone
+        '<div style="width:4px;height:140px;background:linear-gradient(180deg,'+lc+','+drk(lc,0.5)+');border-radius:2px;margin-top:-100px;z-index:-1"></div>' +
+        // base
+        '<div style="width:18px;height:7px;background:'+lc+';border-radius:0 0 4px 4px"></div>' +
+      '</div>';
   }
 
   function buildFringe(){
