@@ -68,7 +68,6 @@
           <div class="sf-interior-inner" id="sfInner">
 
             <a href="/arcade" class="sf-dest">
-              <div class="sf-dest-icon">🕹️</div>
               <div class="sf-dest-name" id="sfName1">THE GAME AISLE</div>
               <div class="sf-dest-desc">Browse games by genre.</div>
             </a>
@@ -76,7 +75,6 @@
             <div class="sf-vdivider" id="sfVd1"></div>
 
             <a href="{% if session.get('username') %}/user/{{ session.username }}{% else %}/login{% endif %}" class="sf-dest">
-              <div class="sf-dest-icon">📼</div>
               <div class="sf-dest-name" id="sfName2">MY SHELF</div>
               <div class="sf-dest-desc">{% if session.get('username') %}Your collection.{% else %}Log in to view.{% endif %}</div>
             </a>
@@ -84,7 +82,6 @@
             <div class="sf-vdivider" id="sfVd2"></div>
 
             <a href="/board" class="sf-dest">
-              <div class="sf-dest-icon">📌</div>
               <div class="sf-dest-name" id="sfName3">THE BOARD</div>
               <div class="sf-dest-desc">Community reviews.</div>
             </a>
@@ -423,7 +420,6 @@
   border-radius: 2px; transition: background 0.2s; cursor: pointer;
 }
 .sf-dest:hover { background: rgba(255,255,255,0.05); text-decoration: none; }
-.sf-dest-icon { font-size: 20px; line-height: 1; }
 .sf-dest-name { font-size: clamp(9px, 1.2vw, 13px); text-align: center; letter-spacing: 0.06em; margin-bottom: 4px; }
 .sf-dest-desc { font-size: clamp(9px, 1vw, 12px); font-family: 'Barlow Condensed', sans-serif; text-align: center; line-height: 1.5; color: #4a6a80; letter-spacing: 0.06em; font-weight: 600; }
 .sf-vdivider { width: 1px; height: 55px; flex-shrink: 0; opacity: 0.2; }
@@ -701,25 +697,39 @@
 
   function buildLamp(el, side){
     var lc = drk(cur.bc, 1.6);
-    var gc = alp(cur.sc, 0.4);
+    var gc = alp(cur.sc, 0.45);
     var isL = side === 'l';
-    var html = '<div style="display:flex;flex-direction:column;align-items:center;position:relative;">';
-    // Horizontal arm extending to the side
-    html += '<div style="position:absolute;top:2px;'+(isL?'right:50%':'left:50%')+';width:30px;height:3px;background:'+lc+';border-radius:'+(isL?'2px 0 0 2px':'0 2px 2px 0')+'"></div>';
-    // Lamp head (wider cap on top)
-    html += '<div style="width:26px;height:5px;background:'+lc+';border-radius:2px 2px 0 0"></div>';
-    // Bulb housing
-    html += '<div style="width:18px;height:12px;background:'+gc+';border-radius:0 0 9px 9px;box-shadow:0 0 10px '+alp(cur.sc,0.8)+',0 0 22px '+alp(cur.sc,0.5)+',0 0 40px '+alp(cur.sc,0.2)+'"></div>';
-    // Light cone pointing DOWNWARD - use border-bottom trick
-    html += '<div style="width:0;height:0;border-left:36px solid transparent;border-right:36px solid transparent;border-bottom:0px solid transparent;margin-top:0;position:relative;">';
-    html += '<div style="position:absolute;top:0;left:-30px;width:60px;height:90px;background:linear-gradient(180deg,'+alp(cur.sc,0.12)+' 0%,'+alp(cur.sc,0.04)+' 50%,transparent 100%);clip-path:polygon(50% 0%,0% 100%,100% 100%)"></div>';
-    html += '</div>';
-    // Post going down
-    html += '<div style="width:4px;height:130px;background:linear-gradient(180deg,'+lc+','+drk(lc,0.6)+');margin-top:88px"></div>';
-    // Base
-    html += '<div style="width:16px;height:6px;background:'+lc+';border-radius:0 0 3px 3px"></div>';
-    html += '</div>';
-    el.innerHTML = html;
+    // Simple reliable lamp: vertical post, horizontal arm at top, head + glow bulb
+    // Using a wrapper div with overflow visible
+    el.style.cssText = 'position:relative;display:flex;flex-direction:column;align-items:center;overflow:visible;';
+    
+    var wrap = '<div style="position:relative;display:flex;flex-direction:column;align-items:center;overflow:visible;">';
+    
+    // Arm extending sideways from top of post
+    var armSide = isL ? 'right:50%' : 'left:50%';
+    wrap += '<div style="position:absolute;top:0;'+armSide+';width:34px;height:4px;background:'+lc+';border-radius:'+(isL?'3px 0 0 3px':'0 3px 3px 0')+'"></div>';
+    
+    // Head cap (wider horizontal bar)
+    wrap += '<div style="width:28px;height:5px;background:'+lc+';border-radius:3px 3px 0 0;z-index:1"></div>';
+    
+    // Bulb (glowing orb)
+    wrap += '<div style="width:20px;height:14px;background:'+gc+';border-radius:0 0 10px 10px;'
+             +'box-shadow:0 0 8px '+alp(cur.sc,0.9)+',0 0 18px '+alp(cur.sc,0.6)+',0 0 35px '+alp(cur.sc,0.3)+';z-index:1"></div>';
+    
+    // Light cone - downward trapezoid using a simple div with clip-path
+    wrap += '<div style="width:80px;height:100px;margin-top:0;background:linear-gradient(180deg,'
+             +alp(cur.sc,0.1)+' 0%,'+alp(cur.sc,0.03)+' 60%,transparent 100%);'
+             +'clip-path:polygon(35% 0%,65% 0%,100% 100%,0% 100%);pointer-events:none;"></div>';
+    
+    // Post (sits behind cone visually but drawn after)
+    wrap += '<div style="width:4px;height:140px;background:linear-gradient(180deg,'+lc+','+drk(lc,0.5)+');'
+             +'border-radius:2px;margin-top:-100px;z-index:0"></div>';
+    
+    // Base plate
+    wrap += '<div style="width:18px;height:7px;background:'+lc+';border-radius:0 0 4px 4px;margin-top:0"></div>';
+    
+    wrap += '</div>';
+    el.innerHTML = wrap;
   }
 
   function buildFringe(){
