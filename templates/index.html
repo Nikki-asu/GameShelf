@@ -434,8 +434,8 @@
 .sf-door-sheen--l { position: absolute; inset: 0; width: 26%; background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 45%, transparent 65%); }
 .sf-door-sheen--r { position: absolute; top: 0; right: 0; bottom: 0; width: 26%; background: linear-gradient(225deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 45%, transparent 65%); }
 .sf-door-handle { position: absolute; top: 50%; width: 5px; height: 28px; background: var(--sf-handle-bg, linear-gradient(180deg,#506070,#2a3a50)); border-radius: 2px; transform: translateY(-50%); border: 0.5px solid var(--sf-handle-border, #607080); }
-.sf-door-handle--l { right: 11px; }
-.sf-door-handle--r { left: 11px; }
+.sf-door-handle--l { right: 30px; }
+.sf-door-handle--r { left: 30px; }
 .sf-door-seam { position: absolute; top: 0; bottom: 0; left: 50%; width: 3px; background: var(--sf-seam-bg, #0a1420); transform: translateX(-50%); z-index: 4; transition: opacity 0.2s; }
 .sf-door-seam.hidden { opacity: 0; }
 
@@ -692,25 +692,55 @@
 
   function buildLamp(el, side){
     var lc = drk(cur.bc, 1.6);
-    var gc = alp(cur.sc, 0.45);
+    var gc = alp(cur.sc, 0.5);
+    var coneColor = alp(cur.sc, 0.12);
+    var coneFade = alp(cur.sc, 0.0);
     var isL = side === 'l';
-    var armDir = isL ? 'right:100%' : 'left:100%';
-    // DO NOT set el.style.cssText - preserve the CSS absolute positioning
-    el.innerHTML =
-      '<div style="position:relative;display:flex;flex-direction:column;align-items:center;">' +
-        // arm
-        '<div style="position:absolute;top:0;'+armDir+';width:34px;height:4px;background:'+lc+';border-radius:'+(isL?'3px 0 0 3px':'0 3px 3px 0')+'"></div>' +
-        // head cap
-        '<div style="width:28px;height:5px;background:'+lc+';border-radius:3px 3px 0 0"></div>' +
-        // glowing bulb
-        '<div style="width:20px;height:14px;background:'+gc+';border-radius:0 0 10px 10px;box-shadow:0 0 8px '+alp(cur.sc,0.9)+',0 0 18px '+alp(cur.sc,0.6)+',0 0 35px '+alp(cur.sc,0.3)+'"></div>' +
-        // downward light cone
-        '<div style="width:80px;height:100px;background:linear-gradient(180deg,'+alp(cur.sc,0.1)+' 0%,'+alp(cur.sc,0.03)+' 60%,transparent 100%);clip-path:polygon(35% 0%,65% 0%,100% 100%,0% 100%)"></div>' +
-        // post - uses negative margin to sit behind cone
-        '<div style="width:4px;height:140px;background:linear-gradient(180deg,'+lc+','+drk(lc,0.5)+');border-radius:2px;margin-top:-100px;z-index:-1"></div>' +
-        // base
-        '<div style="width:18px;height:7px;background:'+lc+';border-radius:0 0 4px 4px"></div>' +
-      '</div>';
+    // Draw lamp as inline SVG - completely reliable, no CSS positioning fights
+    var w = 70, h = 260;
+    // post x center
+    var cx = isL ? 54 : 16;
+    // arm goes left if left lamp, right if right lamp
+    var armX1 = isL ? 4 : cx;
+    var armX2 = isL ? cx : w - 4;
+    var armY = 10;
+    // head
+    var headX = isL ? armX1 - 2 : armX1 - 2;
+    var headW = 24;
+    headX = isL ? 2 : cx - 10;
+    // bulb center
+    var bulbCX = isL ? 14 : w - 14;
+    // cone: wide at bottom, narrow at top centered on bulb
+    var coneTop = armY + 12;
+    var coneBot = coneTop + 90;
+    var coneHalfW = 32;
+
+    var svg = '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;display:block;">';
+
+    // Light cone (drawn first, behind everything)
+    svg += '<defs><linearGradient id="cg'+side+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+coneColor+'"/><stop offset="100%" stop-color="'+coneFade+'"/></linearGradient></defs>';
+    svg += '<polygon points="'+(bulbCX-4)+','+(coneTop)+' '+(bulbCX+4)+','+(coneTop)+' '+(bulbCX+coneHalfW)+','+(coneBot)+' '+(bulbCX-coneHalfW)+','+(coneBot)+'" fill="url(#cg'+side+')" />';
+
+    // Post
+    svg += '<rect x="'+(cx-2)+'" y="'+armY+'" width="4" height="'+(h - armY - 8)+'" rx="2" fill="'+lc+'" />';
+
+    // Base plate
+    svg += '<rect x="'+(cx-9)+'" y="'+(h-8)+'" width="18" height="8" rx="3" fill="'+lc+'" />';
+
+    // Arm (horizontal)
+    svg += '<rect x="'+armX1+'" y="'+(armY-2)+'" width="'+(armX2-armX1)+'" height="4" rx="2" fill="'+lc+'" />';
+
+    // Head cap
+    svg += '<rect x="'+(bulbCX - 12)+'" y="'+(armY - 6)+'" width="24" height="6" rx="2" fill="'+lc+'" />';
+
+    // Bulb glow (halo)
+    svg += '<circle cx="'+bulbCX+'" cy="'+(armY+12)+'" r="14" fill="'+alp(cur.sc, 0.15)+'" />';
+
+    // Bulb body
+    svg += '<ellipse cx="'+bulbCX+'" cy="'+(armY+10)+'" rx="9" ry="10" fill="'+gc+'" />';
+
+    svg += '</svg>';
+    el.innerHTML = svg;
   }
 
   function buildFringe(){
