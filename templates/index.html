@@ -906,6 +906,54 @@
     /* lamps */
     buildLamp(document.getElementById('sfLampL'), 'l');
     buildLamp(document.getElementById('sfLampR'), 'r');
+
+    /* side walls — bricks, borders, posters */
+    document.querySelectorAll('.sf-sidewall').forEach(function(w){
+      w.style.background = bc;
+      w.style.borderColor = drk(bc, 0.45);
+    });
+    document.querySelectorAll('.sf-sidewall-b').forEach(function(b){
+      b.style.background = drk(bc, 1.25);
+      b.style.borderColor = drk(bc, 0.5);
+    });
+    document.querySelectorAll('.sf-sidewall-poster').forEach(function(p){
+      p.style.background = 'linear-gradient(160deg,'+drk(dc,0.8)+','+drk(dc,0.6)+')';
+      p.style.borderColor = alp(ac, 0.3);
+      p.style.opacity = '0.6';
+    });
+
+    /* also update all bricks in the main brick bands */
+    document.querySelectorAll('.sf-brick').forEach(function(b){
+      b.style.background = drk(bc, 1.25);
+      b.style.borderColor = drk(bc, 0.5);
+    });
+    document.querySelectorAll('.sf-brickband').forEach(function(band){
+      band.style.background = bc;
+      band.style.borderColor = drk(bc, 0.45);
+    });
+  
+
+    /* side walls and brick bands */
+    document.querySelectorAll('.sf-sidewall').forEach(function(w){
+      w.style.background = bc;
+      w.style.borderColor = drk(bc,0.45);
+    });
+    document.querySelectorAll('.sf-sidewall-b').forEach(function(b){
+      b.style.background = drk(bc,1.25);
+      b.style.borderColor = drk(bc,0.5);
+    });
+    document.querySelectorAll('.sf-sidewall-poster').forEach(function(p){
+      p.style.background = 'linear-gradient(160deg,'+drk(dc,0.8)+','+drk(dc,0.6)+')';
+      p.style.borderColor = alp(ac,0.3);
+    });
+    document.querySelectorAll('.sf-brick').forEach(function(b){
+      b.style.background = drk(bc,1.25);
+      b.style.borderColor = drk(bc,0.5);
+    });
+    document.querySelectorAll('.sf-brickband').forEach(function(band){
+      band.style.background = bc;
+      band.style.borderColor = drk(bc,0.45);
+    });
   }
 
   function applyTheme(t){
