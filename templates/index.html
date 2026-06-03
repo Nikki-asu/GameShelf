@@ -273,14 +273,14 @@
   height: 22px;
   border: 2px solid var(--sf-roof-border, #2e3f55);
   border-bottom: none;
-  background: var(--sf-roof-bg, linear-gradient(180deg,#243040,#1a2535));
+  background: var(--sf-roof-bg, linear-gradient(180deg,#2e3f58,#22304a));
   display: flex; align-items: flex-end;
   padding: 0 8px; gap: 5px;
 }
 .sf-batt {
   flex: 1; height: 14px;
-  background: var(--sf-batt-bg, #1a2535);
-  border: 1px solid var(--sf-batt-border, #2a3a50);
+  background: var(--sf-batt-bg, #253548);
+  border: 1px solid var(--sf-batt-border, #344a62);
   border-bottom: none; border-radius: 1px 1px 0 0;
 }
 
@@ -294,11 +294,11 @@
 .sf-brickband--short { height: 24px; }
 .sf-brickrow { display: flex; height: 13px; }
 .sf-brickrow--offset { margin-left: 20px; }
-.sf-brick { flex: 1; margin: 1px; background: var(--sf-brick-face, #162030); border: 1px solid var(--sf-brick-mortar, #0a1420); }
+.sf-brick { flex: 1; margin: 1px; background: var(--sf-brick-face, #1e2e44); border: 1px solid var(--sf-brick-mortar, #060e18); }
 
 .sf-signbox {
-  background: var(--sf-sign-bg, linear-gradient(180deg,#080e1c,#050a14));
-  border: 2px solid var(--sf-sign-border, #1a2840);
+  background: var(--sf-sign-bg, linear-gradient(180deg,#030610,#020408));
+  border: 2px solid var(--sf-sign-border, #223450);
   border-top: none; border-bottom: none;
   padding: 36px 24px 28px;
   text-align: center;
@@ -330,7 +330,7 @@
 .sf-storebody {
   display: flex;
   flex-direction: row;
-  border: 2px solid var(--sf-sign-border, #1a2840);
+  border: 2px solid var(--sf-sign-border, #223450);
   border-top: none; border-bottom: none;
 }
 
@@ -384,7 +384,7 @@
 }
 .sf-transom-pane {
   flex: 1; height: 17px;
-  background: var(--sf-glass-bg, rgba(0,229,255,0.03));
+  background: var(--sf-glass-bg, rgba(0,229,255,0.07));
   border: 0.5px solid var(--sf-glass-border, rgba(0,229,255,0.15));
   position: relative; overflow: hidden;
 }
@@ -400,7 +400,7 @@
   position: absolute; inset: 0; z-index: 1;
   pointer-events: none;
   display: flex; align-items: center; justify-content: center;
-  background: var(--sf-interior-bg, linear-gradient(160deg,#0c1828,#05080d));
+  background: var(--sf-interior-bg, linear-gradient(160deg,#0e1e34,#080e1c));
 }
 .sf-interior-inner {
   display: flex; align-items: center; justify-content: space-around;
@@ -428,7 +428,7 @@
 .sf-door--r { right: 0; transform-origin: right center; border-left: 2px solid var(--sf-door-border, #1c2c40); }
 .sf-door--l.open { transform: perspective(600px) rotateY(-88deg); }
 .sf-door--r.open { transform: perspective(600px) rotateY(88deg); }
-.sf-door-glass { position: absolute; inset: 10px; background: var(--sf-glass-bg, rgba(0,229,255,0.04)); border: 1px solid var(--sf-glass-border, rgba(0,229,255,0.2)); }
+.sf-door-glass { position: absolute; inset: 10px; background: var(--sf-glass-bg, rgba(0,229,255,0.06)); border: 1px solid var(--sf-glass-border, rgba(0,229,255,0.3)); }
 .sf-door-mull-h { position: absolute; left: 0; right: 0; height: 1px; top: 50%; background: var(--sf-mull-color, #1a2c40); }
 .sf-door-mull-v { position: absolute; top: 0; bottom: 0; width: 1px; left: 50%; background: var(--sf-mull-color, #1a2c40); }
 .sf-door-sheen--l { position: absolute; inset: 0; width: 26%; background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.02) 45%, transparent 65%); }
@@ -478,9 +478,9 @@
   bottom: 80px; left: 0; right: 0;
   height: 36px;
   z-index: 2;
-  background: linear-gradient(180deg, #16283c 0%, #101e2e 100%);
-  border-top: 2px solid #243040;
-  border-bottom: 2px solid #0e1c2a;
+  background: linear-gradient(180deg, #1e3450 0%, #162840 100%);
+  border-top: 2px solid #2e4460;
+  border-bottom: 2px solid #162036;
   overflow: hidden;
 }
 .sf-sidewalk::before {
@@ -497,8 +497,8 @@
   bottom: 0; left: 0; right: 0;
   height: 80px;
   z-index: 1;
-  background: linear-gradient(180deg, #0d1824 0%, #091420 100%);
-  border-top: 3px solid #1a2a3a;
+  background: linear-gradient(180deg, #111e2e 0%, #0c1622 100%);
+  border-top: 3px solid #223040;
 }
 .sf-street::before {
   content: '';
@@ -795,7 +795,7 @@
     document.querySelector('.sf-signbox').style.borderColor = drk(bc,0.55);
     var sign = document.getElementById('sfSign');
     sign.style.color = sc;
-    sign.style.textShadow = '0 0 6px #fff,0 0 14px '+alp(sc,1)+',0 0 30px '+alp(sc,0.8)+',0 0 60px '+alp(sc,0.4);
+    sign.style.textShadow = '0 0 4px #fff,0 0 10px #fff,0 0 20px '+alp(sc,1)+',0 0 40px '+alp(sc,0.9)+',0 0 80px '+alp(sc,0.5);
     var sub = document.getElementById('sfSignSub');
     sub.style.color = ac;
     sub.style.textShadow = '0 0 6px '+alp(ac,0.7);
