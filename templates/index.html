@@ -199,6 +199,7 @@
   justify-content: flex-end;
   overflow: hidden;
   background: var(--sf-bg, #05080d);
+  padding-top: 20px;
 }
 
 /* ─── SKY ────────────────────────────────────────────── */
@@ -208,7 +209,7 @@
 .sf-skyline {
   position: absolute;
   bottom: 116px; left: 0; right: 0;
-  height: 80px;
+  height: 120px;
   pointer-events: none;
   z-index: 1;
   display: flex;
@@ -235,10 +236,14 @@
   flex-direction: column;
   align-items: center;
   pointer-events: none;
+  bottom: 116px;
 }
-/* anchored to bottom of scene, above sidewalk */
-.sf-lamp--l { bottom: 80px; left: calc(50% - 460px); }
-.sf-lamp--r { bottom: 80px; right: calc(50% - 460px); }
+.sf-lamp--l { left: calc(50% - 470px); }
+.sf-lamp--r { right: calc(50% - 470px); }
+@media (max-width: 1100px) {
+  .sf-lamp--l { left: 20px; }
+  .sf-lamp--r { right: 20px; }
+}
 .sf-lamp-arm-l {
   width: 32px; height: 3px;
   border-radius: 2px 0 0 0;
@@ -417,8 +422,8 @@
 }
 .sf-dest:hover { background: rgba(255,255,255,0.05); text-decoration: none; }
 .sf-dest-icon { font-size: 20px; line-height: 1; }
-.sf-dest-name { font-size: clamp(4px, 0.8vw, 6.5px); text-align: center; letter-spacing: 0.05em; }
-.sf-dest-desc { font-size: clamp(3px, 0.5vw, 4.5px); font-family: monospace; text-align: center; line-height: 1.8; color: #2a3a4a; }
+.sf-dest-name { font-size: clamp(6px, 0.9vw, 8px); text-align: center; letter-spacing: 0.05em; }
+.sf-dest-desc { font-size: clamp(7px, 0.8vw, 9px); font-family: 'Barlow Condensed', sans-serif; text-align: center; line-height: 1.6; color: #4a6070; letter-spacing: 0.05em; font-weight: 600; }
 .sf-vdivider { width: 1px; height: 55px; flex-shrink: 0; opacity: 0.2; }
 
 .sf-door {
@@ -525,14 +530,13 @@
 /* ─── CUSTOMIZE ──────────────────────────────────────── */
 /* sits at absolute bottom of the wrap, full width */
 .sf-bottom-bar {
-  position: relative;
+  position: absolute;
+  bottom: 116px;
+  right: calc(50% - min(410px, 43vw));
   z-index: 10;
-  width: min(820px, 86vw);
   display: flex; justify-content: flex-end;
-  padding: 6px 0;
+  padding: 0;
   background: transparent;
-  margin-bottom: 116px;
-  margin-top: -110px; /* pull up close to building bottom */
   pointer-events: none;
 }
 .sf-cust-btn {
@@ -549,17 +553,18 @@
 .sf-cust-btn:hover { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.3); }
 
 .sf-cust-panel {
-  position: relative;
+  position: absolute;
   z-index: 9;
   width: min(820px, 86vw);
+  left: 50%;
+  transform: translateX(-50%);
   overflow: hidden;
   max-height: 0;
-  transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
-  background: rgba(4,6,13,0.92);
-  border: 1px solid rgba(255,255,255,0.06);
-  border-radius: 0 0 3px 3px;
-  margin-bottom: 100px;
-  margin-top: -96px;
+  bottom: 116px;
+  transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), bottom 0.4s cubic-bezier(0.4,0,0.2,1);
+  background: rgba(4,6,13,0.95);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-bottom: none;
 }
 .sf-cust-panel.open { max-height: 130px; }
 
@@ -617,7 +622,7 @@
   function setCSSVar(name, val){ document.documentElement.style.setProperty(name, val); }
 
   function buildSkyline(){
-    var heights = [20,35,28,50,22,40,18,44,30,38,24,46,20,32,42,26,36,48,22,34];
+    var heights = [35,55,44,75,38,62,30,68,50,60,40,70,34,52,66,44,58,72,36,54];
     var widths  = [18,14,22,12,20,16,24,12,18,14,20,16,12,18,22,14,16,12,20,18];
     ['sfSkylineL','sfSkylineR'].forEach(function(id, si){
       var el = document.getElementById(id);
@@ -645,25 +650,25 @@
   }
 
   function buildLamp(el, side){
-    var lc = drk(cur.bc, 1.4);   /* lighter than brick for contrast */
-    var gc = alp(cur.sc, 0.3);
-    var isL = side==='l';
-    /* lamp is: arm sticking out, then head, glow, cone, post */
-    el.innerHTML =
-      '<div style="display:flex;flex-direction:column;align-items:center;position:relative">' +
-        /* arm */
-        '<div style="position:absolute;top:0;'+(isL?'right':'left')+':100%;width:30px;height:3px;background:'+lc+';border-radius:'+(isL?'2px 0 0 2px':'0 2px 2px 0')+'"></div>' +
-        /* head */
-        '<div style="width:22px;height:7px;background:'+lc+';border-radius:3px 3px 0 0"></div>' +
-        /* glow bulb */
-        '<div style="width:16px;height:10px;background:'+gc+';border-radius:0 0 50% 50%;box-shadow:0 0 8px '+alp(cur.sc,0.6)+',0 0 20px '+alp(cur.sc,0.3)+'"></div>' +
-        /* light cone */
-        '<div style="width:64px;height:85px;background:linear-gradient(180deg,'+alp(cur.sc,0.08)+' 0%,transparent 100%);clip-path:polygon(20% 0%,80% 0%,100% 100%,0% 100%)"></div>' +
-        /* post */
-        '<div style="width:4px;height:120px;background:linear-gradient(180deg,'+lc+','+drk(lc,0.7)+');border-radius:2px;margin-top:-4px"></div>' +
-        /* base */
-        '<div style="width:12px;height:5px;background:'+lc+';border-radius:1px"></div>' +
-      '</div>';
+    var lc = drk(cur.bc, 1.6);
+    var gc = alp(cur.sc, 0.35);
+    var isL = side === 'l';
+    // Build as a table-like structure so alignment is predictable
+    var html = '<div style="position:relative;display:inline-flex;flex-direction:column;align-items:center;">';
+    // Arm: sits at top, extending out to the side
+    html += '<div style="position:absolute;top:4px;'+(isL?'right:calc(50% + 0px)':'left:calc(50% + 0px)')+';width:28px;height:3px;background:'+lc+';border-radius:'+(isL?'2px 0 0 2px':'0 2px 2px 0')+'"></div>';
+    // Head cap
+    html += '<div style="width:24px;height:6px;background:'+lc+';border-radius:3px 3px 0 0;margin-top:0"></div>';
+    // Bulb glow
+    html += '<div style="width:18px;height:10px;background:'+gc+';border-radius:0 0 50% 50%;box-shadow:0 2px 12px '+alp(cur.sc,0.7)+',0 0 24px '+alp(cur.sc,0.4)+'"></div>';
+    // Light cone  
+    html += '<div style="width:0;height:0;border-left:32px solid transparent;border-right:32px solid transparent;border-top:70px solid '+alp(cur.sc,0.06)+'"></div>';
+    // Post
+    html += '<div style="width:4px;flex:1;min-height:100px;background:'+lc+';border-radius:0 0 2px 2px"></div>';
+    // Base
+    html += '<div style="width:14px;height:5px;background:'+lc+';border-radius:0 0 2px 2px"></div>';
+    html += '</div>';
+    el.innerHTML = html;
   }
 
   function buildFringe(){
@@ -831,7 +836,7 @@
   document.getElementById('sfCustBtn').addEventListener('click', function(){
     custOpen = !custOpen;
     document.getElementById('sfCustPanel').classList.toggle('open', custOpen);
-    document.getElementById('sfBottomBar').classList.toggle('panel-open', custOpen);
+    // panel slides up from building bottom naturally
     this.textContent = custOpen ? '✦ CLOSE' : '✦ CUSTOMIZE';
   });
 
