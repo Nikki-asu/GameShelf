@@ -87,6 +87,11 @@
             </a>
 
           </div>
+
+          <div class="sf-close-wrap" id="sfCloseWrap">
+            <button class="sf-close-btn" id="sfCloseBtn">▲ CLOSE</button>
+          </div>
+
         </div>
 
         <!-- DOORS -->
@@ -307,7 +312,7 @@
   font-size: clamp(16px, 3.2vw, 28px);
   letter-spacing: 0.06em;
   color: var(--sf-sign-color, #ffe600);
-  text-shadow: 0 0 6px #fff, 0 0 12px rgba(255,230,0,1), 0 0 28px rgba(255,230,0,0.8), 0 0 55px rgba(255,230,0,0.4);
+  text-shadow: 0 0 8px rgba(255,230,0,0.9), 0 0 20px rgba(255,230,0,0.5), 0 0 40px rgba(255,230,0,0.2);
 }
 .sf-signsub {
   font-size: clamp(4px, 0.7vw, 6px);
@@ -438,6 +443,37 @@
 .sf-door-handle--r { left: 30px; }
 .sf-door-seam { position: absolute; top: 0; bottom: 0; left: 50%; width: 3px; background: var(--sf-seam-bg, #0a1420); transform: translateX(-50%); z-index: 4; transition: opacity 0.2s; }
 .sf-door-seam.hidden { opacity: 0; }
+
+.sf-close-wrap {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.4s 0.8s;
+  pointer-events: none;
+}
+.sf-close-wrap.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.sf-close-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 5px;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.3);
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  padding: 5px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.sf-close-btn:hover {
+  color: rgba(255,255,255,0.7);
+  border-color: rgba(255,255,255,0.3);
+}
 
 .sf-enter-wrap {
   position: absolute; top: 50%; left: 50%;
@@ -795,7 +831,7 @@
     document.querySelector('.sf-signbox').style.borderColor = drk(bc,0.55);
     var sign = document.getElementById('sfSign');
     sign.style.color = sc;
-    sign.style.textShadow = '0 0 6px #fff,0 0 14px '+alp(sc,1)+',0 0 30px '+alp(sc,0.7)+',0 0 55px '+alp(sc,0.3);
+    sign.style.textShadow = '0 0 8px '+alp(sc,0.9)+',0 0 20px '+alp(sc,0.5)+',0 0 40px '+alp(sc,0.2);
     var sub = document.getElementById('sfSignSub');
     sub.style.color = ac;
     sub.style.textShadow = '0 0 6px '+alp(ac,0.7);
