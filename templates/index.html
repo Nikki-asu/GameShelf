@@ -296,20 +296,20 @@
 .sf-brickband--short { height: 18px; }
 .sf-brickrow { display: flex; height: 13px; }
 .sf-brickrow--offset { margin-left: 20px; }
-.sf-brick { flex: 1; margin: 1px; background: var(--sf-brick-face, #0e1828); border: 1px solid var(--sf-brick-mortar, #080f1a); }
+.sf-brick { flex: 1; margin: 1px; background: var(--sf-brick-face, #162030); border: 1px solid var(--sf-brick-mortar, #0a1420); }
 
 .sf-signbox {
   background: var(--sf-sign-bg, linear-gradient(180deg,#080e1c,#050a14));
   border: 2px solid var(--sf-sign-border, #1a2840);
   border-top: none; border-bottom: none;
-  padding: 20px 24px 14px;
+  padding: 26px 24px 18px;
   text-align: center;
 }
 .sf-sign {
   font-size: clamp(14px, 2.8vw, 22px);
   letter-spacing: 0.06em;
   color: var(--sf-sign-color, #ffe600);
-  text-shadow: 0 0 8px rgba(255,230,0,0.8), 0 0 22px rgba(255,230,0,0.5), 0 0 45px rgba(255,230,0,0.2);
+  text-shadow: 0 0 6px #fff, 0 0 12px rgba(255,230,0,1), 0 0 28px rgba(255,230,0,0.8), 0 0 55px rgba(255,230,0,0.4);
 }
 .sf-signsub {
   font-size: clamp(4px, 0.7vw, 6px);
@@ -395,7 +395,7 @@
   background: linear-gradient(90deg, rgba(255,255,255,0.05), transparent);
 }
 
-.sf-doors-row { height: 190px; position: relative; overflow: hidden; }
+.sf-doors-row { height: 155px; position: relative; overflow: hidden; }
 
 .sf-interior {
   position: absolute; inset: 0; z-index: 1;
@@ -480,9 +480,9 @@
   bottom: 80px; left: 0; right: 0;
   height: 36px;
   z-index: 2;
-  background: linear-gradient(180deg, #0c1828 0%, #091420 100%);
-  border-top: 2px solid #162030;
-  border-bottom: 2px solid #0a1620;
+  background: linear-gradient(180deg, #16283c 0%, #101e2e 100%);
+  border-top: 2px solid #243040;
+  border-bottom: 2px solid #0e1c2a;
   overflow: hidden;
 }
 .sf-sidewalk::before {
@@ -499,8 +499,8 @@
   bottom: 0; left: 0; right: 0;
   height: 80px;
   z-index: 1;
-  background: linear-gradient(180deg, #07101a 0%, #040c14 100%);
-  border-top: 3px solid #0d1a28;
+  background: linear-gradient(180deg, #0d1824 0%, #091420 100%);
+  border-top: 3px solid #1a2a3a;
 }
 .sf-street::before {
   content: '';
@@ -525,12 +525,14 @@
 /* ─── CUSTOMIZE ──────────────────────────────────────── */
 /* sits at absolute bottom of the wrap, full width */
 .sf-bottom-bar {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
+  position: relative;
   z-index: 10;
+  width: min(820px, 86vw);
   display: flex; justify-content: flex-end;
-  padding: 6px 1.5rem;
+  padding: 6px 0;
   background: transparent;
+  margin-bottom: 116px;
+  margin-top: -110px; /* pull up close to building bottom */
   pointer-events: none;
 }
 .sf-cust-btn {
@@ -547,18 +549,19 @@
 .sf-cust-btn:hover { color: rgba(255,255,255,0.7); border-color: rgba(255,255,255,0.3); }
 
 .sf-cust-panel {
-  position: absolute;
-  bottom: 0; left: 0; right: 0;
+  position: relative;
   z-index: 9;
+  width: min(820px, 86vw);
   overflow: hidden;
   max-height: 0;
   transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1);
-  background: rgba(4,6,13,0.95);
-  border-top: 1px solid rgba(255,255,255,0.06);
+  background: rgba(4,6,13,0.92);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 0 0 3px 3px;
+  margin-bottom: 100px;
+  margin-top: -96px;
 }
 .sf-cust-panel.open { max-height: 130px; }
-/* push button up when panel opens */
-.sf-bottom-bar.panel-open { bottom: 130px; transition: bottom 0.4s cubic-bezier(0.4,0,0.2,1); }
 
 .sf-cust-inner { padding: 12px 2rem; display: flex; flex-direction: column; gap: 10px; }
 .sf-cust-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -583,7 +586,7 @@
 }
 @media (max-width: 600px) {
   .sf-building { width: 96vw; }
-  .sf-doors-row { height: 150px; }
+  .sf-doors-row { height: 130px; }
   .sf-sign { font-size: clamp(11px, 4vw, 16px); }
   .sf-signsub { display: none; }
   .sf-dest-desc { display: none; }
@@ -642,17 +645,25 @@
   }
 
   function buildLamp(el, side){
-    var lc = drk(cur.bc, 0.85);
-    var gc = alp(cur.sc, 0.25);
-    var arm = side==='l'
-      ? '<div style="width:32px;height:3px;background:'+lc+';border-radius:2px 0 0 0;align-self:flex-start;margin-left:-1px"></div>'
-      : '<div style="width:32px;height:3px;background:'+lc+';border-radius:0 2px 0 0;align-self:flex-end;margin-right:-1px"></div>';
-    el.style.cssText = 'display:flex;flex-direction:column;align-items:center';
-    el.innerHTML = arm +
-      '<div style="width:20px;height:7px;background:'+lc+';border-radius:3px 3px 0 0;margin-top:0"></div>'+
-      '<div style="width:16px;height:10px;background:'+gc+';border-radius:0 0 50% 50%"></div>'+
-      '<div style="width:60px;height:80px;background:linear-gradient(180deg,'+alp(cur.sc,0.07)+',transparent);margin-top:-2px"></div>'+
-      '<div style="width:3px;height:130px;background:'+lc+'"></div>';
+    var lc = drk(cur.bc, 1.4);   /* lighter than brick for contrast */
+    var gc = alp(cur.sc, 0.3);
+    var isL = side==='l';
+    /* lamp is: arm sticking out, then head, glow, cone, post */
+    el.innerHTML =
+      '<div style="display:flex;flex-direction:column;align-items:center;position:relative">' +
+        /* arm */
+        '<div style="position:absolute;top:0;'+(isL?'right':'left')+':100%;width:30px;height:3px;background:'+lc+';border-radius:'+(isL?'2px 0 0 2px':'0 2px 2px 0')+'"></div>' +
+        /* head */
+        '<div style="width:22px;height:7px;background:'+lc+';border-radius:3px 3px 0 0"></div>' +
+        /* glow bulb */
+        '<div style="width:16px;height:10px;background:'+gc+';border-radius:0 0 50% 50%;box-shadow:0 0 8px '+alp(cur.sc,0.6)+',0 0 20px '+alp(cur.sc,0.3)+'"></div>' +
+        /* light cone */
+        '<div style="width:64px;height:85px;background:linear-gradient(180deg,'+alp(cur.sc,0.08)+' 0%,transparent 100%);clip-path:polygon(20% 0%,80% 0%,100% 100%,0% 100%)"></div>' +
+        /* post */
+        '<div style="width:4px;height:120px;background:linear-gradient(180deg,'+lc+','+drk(lc,0.7)+');border-radius:2px;margin-top:-4px"></div>' +
+        /* base */
+        '<div style="width:12px;height:5px;background:'+lc+';border-radius:1px"></div>' +
+      '</div>';
   }
 
   function buildFringe(){
@@ -707,7 +718,7 @@
     document.querySelector('.sf-signbox').style.borderColor = drk(bc,0.55);
     var sign = document.getElementById('sfSign');
     sign.style.color = sc;
-    sign.style.textShadow = '0 0 8px '+alp(sc,0.8)+',0 0 20px '+alp(sc,0.4)+',0 0 40px '+alp(sc,0.2);
+    sign.style.textShadow = '0 0 6px #fff,0 0 14px '+alp(sc,1)+',0 0 30px '+alp(sc,0.8)+',0 0 60px '+alp(sc,0.4);
     var sub = document.getElementById('sfSignSub');
     sub.style.color = ac;
     sub.style.textShadow = '0 0 6px '+alp(ac,0.7);
