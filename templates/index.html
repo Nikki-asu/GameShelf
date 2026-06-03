@@ -612,21 +612,93 @@
 .sf-cp::-webkit-color-swatch { border: none; border-radius: 1px; }
 
 /* ─── RESPONSIVE ─────────────────────────────────────── */
+
+/* Tablet */
 @media (max-width: 900px) {
   .sf-building { width: 92vw; }
-  .sf-lamp--l { left: 10px; }
-  .sf-lamp--r { right: 10px; }
-  .sf-sidewall { width: 36px; }
+  .sf-lamp--l { left: calc(50% - 46vw - 80px); }
+  .sf-lamp--r { right: calc(50% - 46vw - 80px); }
+  .sf-sidewall { width: 40px; }
 }
+
+/* Mobile */
 @media (max-width: 600px) {
-  .sf-building { width: 96vw; }
-  .sf-doors-row { height: 130px; }
-  .sf-sign { font-size: clamp(11px, 4vw, 16px); }
+  /* Nav fix - stack or scroll */
+  header {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 8px 12px;
+    gap: 6px;
+  }
+  .logo { font-size: 0.85rem; }
+  .logo span { font-size: 0.6rem; }
+  .search-bar { max-width: 100%; order: 3; width: 100%; }
+  nav { gap: 0.2rem; flex-wrap: wrap; }
+  nav a, nav button { font-size: 0.65rem; padding: 0.25rem 0.5rem; }
+
+  /* Storefront */
+  .storefront-wrap {
+    min-height: auto;
+    padding-top: 10px;
+  }
+  .sf-building {
+    width: 96vw;
+    margin-bottom: 70px;
+  }
+
+  /* Shrink each section */
+  .sf-roofline { height: 12px; }
+  .sf-batt { height: 8px; }
+  .sf-brickband--tall { height: 16px; }
+  .sf-brickband--short { display: none; }
+
+  .sf-signbox { padding: 14px 12px 10px; }
+  .sf-sign { font-size: clamp(18px, 6vw, 26px); }
   .sf-signsub { display: none; }
-  .sf-dest-desc { display: none; }
-  .sf-interior-inner { width: 80%; }
-  .sf-lamp { display: none; }
+  .sf-neonstrip { margin-top: 8px; height: 2px; }
+
+  .sf-awning { height: 16px; }
+  .sf-awning-fringe { height: 6px; }
+
+  .sf-transom { height: 18px; }
   .sf-sidewall { display: none; }
+
+  .sf-doors-row { height: 160px; }
+  .sf-enter-btn { width: 44px; height: 44px; }
+  .sf-enter-lbl { font-size: 5px; }
+
+  /* Interior cards - horizontal row on mobile */
+  .sf-interior-inner { width: 90%; }
+  .sf-dest { padding: 6px 4px; gap: 4px; }
+  .sf-dest-name { font-size: clamp(5px, 2.5vw, 8px); }
+  .sf-dest-desc { font-size: clamp(7px, 2vw, 9px); }
+  .sf-vdivider { height: 40px; }
+
+  .sf-door-bot { height: 5px; }
+  .sf-curb { height: 6px; }
+  .sf-pavement { height: 14px; }
+
+  /* Street and sidewalk shorter */
+  .sf-street { height: 50px; }
+  .sf-sidewalk { height: 20px; bottom: 50px; }
+
+  /* Hide lamps on mobile */
+  .sf-lamp { display: none; }
+
+  /* Customize */
+  .sf-bottom-bar { padding: 5px 10px; }
+  .sf-cust-btn { font-size: 4.5px; padding: 4px 8px; }
+  .sf-cust-inner { padding: 8px 12px; gap: 8px; }
+  .sf-cust-label { font-size: 4px; min-width: 36px; }
+  .sf-swatch { width: 18px; height: 18px; }
+  .sf-cp { width: 18px; height: 18px; }
+}
+
+/* Small mobile */
+@media (max-width: 380px) {
+  .sf-sign { font-size: 16px; }
+  .sf-doors-row { height: 130px; }
+  .sf-dest-name { font-size: 5px; }
 }
 </style>
 
