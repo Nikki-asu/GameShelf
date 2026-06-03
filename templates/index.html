@@ -271,7 +271,7 @@
 
 .sf-roofline {
   height: 22px;
-  border: 2px solid var(--sf-roof-border, #2e3f55);
+  border: 2px solid var(--sf-roof-border, #4a6888);
   border-bottom: none;
   background: var(--sf-roof-bg, linear-gradient(180deg,#2e3f58,#22304a));
   display: flex; align-items: flex-end;
@@ -280,13 +280,13 @@
 .sf-batt {
   flex: 1; height: 14px;
   background: var(--sf-batt-bg, #253548);
-  border: 1px solid var(--sf-batt-border, #344a62);
+  border: 1px solid var(--sf-batt-border, #4a6888);
   border-bottom: none; border-radius: 1px 1px 0 0;
 }
 
 .sf-brickband {
-  border-left: 2px solid var(--sf-brick-border, #1a2535);
-  border-right: 2px solid var(--sf-brick-border, #1a2535);
+  border-left: 2px solid var(--sf-brick-border, #3a5878);
+  border-right: 2px solid var(--sf-brick-border, #3a5878);
   background: var(--sf-brick-bg, #0c1422);
   overflow: hidden;
 }
@@ -298,7 +298,7 @@
 
 .sf-signbox {
   background: var(--sf-sign-bg, linear-gradient(180deg,#030610,#020408));
-  border: 2px solid var(--sf-sign-border, #223450);
+  border: 2px solid var(--sf-sign-border, #3a5878);
   border-top: none; border-bottom: none;
   padding: 36px 24px 28px;
   text-align: center;
@@ -319,8 +319,8 @@
 
 .sf-awning {
   height: 30px; overflow: hidden; position: relative;
-  border-left: 2px solid var(--sf-sign-border, #1a2840);
-  border-right: 2px solid var(--sf-sign-border, #1a2840);
+  border-left: 2px solid var(--sf-sign-border, #3a5878);
+  border-right: 2px solid var(--sf-sign-border, #3a5878);
 }
 .sf-awning-stripes { width: 100%; height: 30px; }
 .sf-awning-fringe { position: absolute; bottom: 0; left: 0; right: 0; height: 8px; display: flex; }
@@ -330,7 +330,7 @@
 .sf-storebody {
   display: flex;
   flex-direction: row;
-  border: 2px solid var(--sf-sign-border, #223450);
+  border: 2px solid var(--sf-sign-border, #3a5878);
   border-top: none; border-bottom: none;
 }
 
@@ -339,7 +339,7 @@
   width: 64px;
   flex-shrink: 0;
   background: var(--sf-brick-bg, #0c1422);
-  border-right: 1px solid var(--sf-brick-border, #1a2535);
+  border-right: 1px solid var(--sf-brick-border, #3a5878);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -424,8 +424,8 @@
   background: var(--sf-door-bg, linear-gradient(170deg,#0e1c2e,#0a1420));
   transition: transform 0.9s cubic-bezier(0.4,0,0.2,1), background 0.4s, border-color 0.4s;
 }
-.sf-door--l { left: 0; transform-origin: left center; border-right: 2px solid var(--sf-door-border, #1c2c40); }
-.sf-door--r { right: 0; transform-origin: right center; border-left: 2px solid var(--sf-door-border, #1c2c40); }
+.sf-door--l { left: 0; transform-origin: left center; border-right: 2px solid var(--sf-door-border, #2e4460); }
+.sf-door--r { right: 0; transform-origin: right center; border-left: 2px solid var(--sf-door-border, #2e4460); }
 .sf-door--l.open { transform: perspective(600px) rotateY(-88deg); }
 .sf-door--r.open { transform: perspective(600px) rotateY(88deg); }
 .sf-door-glass { position: absolute; inset: 10px; background: var(--sf-glass-bg, rgba(0,229,255,0.06)); border: 1px solid var(--sf-glass-border, rgba(0,229,255,0.3)); }
@@ -795,7 +795,7 @@
     document.querySelector('.sf-signbox').style.borderColor = drk(bc,0.55);
     var sign = document.getElementById('sfSign');
     sign.style.color = sc;
-    sign.style.textShadow = '0 0 4px #fff,0 0 10px #fff,0 0 20px '+alp(sc,1)+',0 0 40px '+alp(sc,0.9)+',0 0 80px '+alp(sc,0.5);
+    sign.style.textShadow = '0 0 6px #fff,0 0 14px '+alp(sc,1)+',0 0 30px '+alp(sc,0.7)+',0 0 55px '+alp(sc,0.3);
     var sub = document.getElementById('sfSignSub');
     sub.style.color = ac;
     sub.style.textShadow = '0 0 6px '+alp(ac,0.7);
@@ -810,7 +810,7 @@
     /* storebody */
     var sb = document.getElementById('sfStorebody');
     sb.style.background = 'linear-gradient(180deg,'+drk(dc,0.6)+','+drk(dc,0.5)+')';
-    sb.style.borderColor = drk(bc,0.55);
+    sb.style.borderColor = drk(bc,0.45);
     var tr = document.getElementById('sfTransom');
     tr.style.background = drk(dc,0.55);
     tr.style.borderColor = drk(dc,0.45);
@@ -831,9 +831,9 @@
     var dBg = 'linear-gradient(170deg,'+dc+','+drk(dc,0.8)+')';
     var dBo = drk(dc,0.6);
     document.getElementById('sfDoorL').style.background = dBg;
-    document.getElementById('sfDoorL').style.borderColor = dBo;
+    var dBoBright = drk(dc,0.5); document.getElementById('sfDoorL').style.borderColor = dBoBright;
     document.getElementById('sfDoorR').style.background = dBg;
-    document.getElementById('sfDoorR').style.borderColor = dBo;
+    document.getElementById('sfDoorR').style.borderColor = dBoBright;
     document.querySelectorAll('.sf-door-glass').forEach(function(g){
       g.style.background = 'linear-gradient(135deg,'+alp(ac,0.04)+','+alp(sc,0.02)+')';
       g.style.borderColor = alp(ac,0.2);
