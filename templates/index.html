@@ -960,16 +960,38 @@
   });
 
   /* enter button */
-  document.getElementById('sfEnterWrap').addEventListener('click', function(){
+  function openDoors(){
     if(opened) return;
     opened = true;
     document.getElementById('sfDoorL').classList.add('open');
     document.getElementById('sfDoorR').classList.add('open');
     document.getElementById('sfSeam').classList.add('hidden');
-    this.style.opacity = '0';
-    this.style.pointerEvents = 'none';
-    setTimeout(function(){ document.getElementById('sfInner').classList.add('open'); }, 700);
-  });
+    var ew = document.getElementById('sfEnterWrap');
+    ew.style.opacity = '0';
+    ew.style.pointerEvents = 'none';
+    setTimeout(function(){
+      document.getElementById('sfInner').classList.add('open');
+      document.getElementById('sfCloseWrap').classList.add('visible');
+    }, 700);
+  }
+
+  function closeDoors(){
+    if(!opened) return;
+    opened = false;
+    document.getElementById('sfDoorL').classList.remove('open');
+    document.getElementById('sfDoorR').classList.remove('open');
+    document.getElementById('sfSeam').classList.remove('hidden');
+    document.getElementById('sfInner').classList.remove('open');
+    document.getElementById('sfCloseWrap').classList.remove('visible');
+    setTimeout(function(){
+      var ew = document.getElementById('sfEnterWrap');
+      ew.style.opacity = '1';
+      ew.style.pointerEvents = 'auto';
+    }, 500);
+  }
+
+  document.getElementById('sfEnterWrap').addEventListener('click', openDoors);
+  document.getElementById('sfCloseBtn').addEventListener('click', closeDoors);
 
   /* restore saved theme */
   buildStars();
