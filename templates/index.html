@@ -613,92 +613,108 @@
 
 /* ─── RESPONSIVE ─────────────────────────────────────── */
 
-/* Tablet */
 @media (max-width: 900px) {
   .sf-building { width: 92vw; }
-  .sf-lamp--l { left: calc(50% - 46vw - 80px); }
-  .sf-lamp--r { right: calc(50% - 46vw - 80px); }
+  .sf-lamp--l { left: calc(50% - 46vw - 60px); }
+  .sf-lamp--r { right: calc(50% - 46vw - 60px); }
   .sf-sidewall { width: 40px; }
 }
 
-/* Mobile */
 @media (max-width: 600px) {
-  /* Nav fix - stack or scroll */
+  /* ── NAV ── */
   header {
     flex-wrap: wrap;
     height: auto;
     padding: 8px 12px;
     gap: 6px;
+    position: relative;
   }
   .logo { font-size: 0.85rem; }
   .logo span { font-size: 0.6rem; }
   .search-bar { max-width: 100%; order: 3; width: 100%; }
-  nav { gap: 0.2rem; flex-wrap: wrap; }
-  nav a, nav button { font-size: 0.65rem; padding: 0.25rem 0.5rem; }
+  nav { gap: 0.15rem; flex-wrap: wrap; order: 2; }
+  nav a, nav button { font-size: 0.65rem; padding: 0.2rem 0.45rem; }
 
-  /* Storefront */
+  /* ── SCENE ── */
   .storefront-wrap {
-    min-height: auto;
-    padding-top: 10px;
+    min-height: 70vh;
+    padding-top: 6px;
+    justify-content: flex-end;
   }
+
+  /* ── BUILDING ── */
   .sf-building {
-    width: 96vw;
-    margin-bottom: 70px;
+    width: 98vw;
+    margin-bottom: 56px;
   }
 
-  /* Shrink each section */
-  .sf-roofline { height: 12px; }
-  .sf-batt { height: 8px; }
-  .sf-brickband--tall { height: 16px; }
-  .sf-brickband--short { display: none; }
+  .sf-roofline { height: 10px; }
+  .sf-batt { height: 7px; }
+  .sf-brickband--tall { height: 14px; }
+  .sf-brickband--short { height: 10px; }
 
-  .sf-signbox { padding: 14px 12px 10px; }
-  .sf-sign { font-size: clamp(18px, 6vw, 26px); }
+  .sf-signbox { padding: 12px 10px 8px; }
+  .sf-sign { font-size: clamp(20px, 7vw, 28px) !important; }
   .sf-signsub { display: none; }
-  .sf-neonstrip { margin-top: 8px; height: 2px; }
+  .sf-neonstrip { margin-top: 6px; height: 2px; }
 
-  .sf-awning { height: 16px; }
-  .sf-awning-fringe { height: 6px; }
+  .sf-awning { height: 14px; }
+  .sf-awning-fringe { height: 5px; }
+  .sf-transom { height: 16px; }
 
-  .sf-transom { height: 18px; }
+  /* hide sidewalls to give doors full width */
   .sf-sidewall { display: none; }
 
-  .sf-doors-row { height: 160px; }
-  .sf-enter-btn { width: 44px; height: 44px; }
+  /* ── DOORS ── */
+  .sf-doors-row { height: 180px; }
+  .sf-enter-btn { width: 46px; height: 46px; }
   .sf-enter-lbl { font-size: 5px; }
 
-  /* Interior cards - horizontal row on mobile */
-  .sf-interior-inner { width: 90%; }
-  .sf-dest { padding: 6px 4px; gap: 4px; }
-  .sf-dest-name { font-size: clamp(5px, 2.5vw, 8px); }
-  .sf-dest-desc { font-size: clamp(7px, 2vw, 9px); }
-  .sf-vdivider { height: 40px; }
+  /* interior cards */
+  .sf-interior-inner { width: 88%; }
+  .sf-dest { padding: 8px 4px; gap: 5px; }
+  .sf-dest-name { font-size: clamp(6px, 2.8vw, 9px) !important; }
+  .sf-dest-desc { font-size: clamp(8px, 2.2vw, 11px); }
+  .sf-vdivider { height: 45px; }
 
-  .sf-door-bot { height: 5px; }
+  .sf-close-btn { font-size: 5px; }
+
+  .sf-door-bot { height: 4px; }
+
+  /* ── GROUND ── */
   .sf-curb { height: 6px; }
-  .sf-pavement { height: 14px; }
+  .sf-pavement { height: 12px; }
+  .sf-street { height: 44px; }
+  .sf-sidewalk { height: 18px; bottom: 44px; }
 
-  /* Street and sidewalk shorter */
-  .sf-street { height: 50px; }
-  .sf-sidewalk { height: 20px; bottom: 50px; }
-
-  /* Hide lamps on mobile */
+  /* ── LAMPS ── */
   .sf-lamp { display: none; }
 
-  /* Customize */
-  .sf-bottom-bar { padding: 5px 10px; }
-  .sf-cust-btn { font-size: 4.5px; padding: 4px 8px; }
-  .sf-cust-inner { padding: 8px 12px; gap: 8px; }
-  .sf-cust-label { font-size: 4px; min-width: 36px; }
-  .sf-swatch { width: 18px; height: 18px; }
-  .sf-cp { width: 18px; height: 18px; }
+  /* ── CUSTOMIZE ── */
+  .sf-bottom-bar {
+    right: 0;
+    bottom: 56px;
+    padding: 4px 8px;
+  }
+  .sf-cust-btn { font-size: 4px; padding: 4px 7px; }
+  .sf-cust-panel {
+    bottom: 56px;
+    width: 100%;
+  }
+  .sf-cust-inner { padding: 8px 10px; gap: 6px; }
+  .sf-cust-label { font-size: 4px; min-width: 32px; }
+  .sf-swatch { width: 16px; height: 16px; }
+  .sf-cp { width: 16px; height: 16px; }
+  .sf-cp-wrap span { font-size: 3.5px; }
+
+  /* ── STARS ── */
+  .sf-skyline { display: none; }
 }
 
-/* Small mobile */
 @media (max-width: 380px) {
-  .sf-sign { font-size: 16px; }
-  .sf-doors-row { height: 130px; }
-  .sf-dest-name { font-size: 5px; }
+  .sf-sign { font-size: 18px !important; }
+  .sf-doors-row { height: 150px; }
+  .sf-dest-name { font-size: 5.5px !important; }
 }
 </style>
 
