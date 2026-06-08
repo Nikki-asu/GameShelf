@@ -23,10 +23,8 @@
     min-height: calc(100vh - 80px);
     background-color: #002222;
     background-image:
-        /* linoleum tile grid */
         repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(0,180,180,0.08) 59px, rgba(0,180,180,0.08) 60px),
         repeating-linear-gradient(90deg, transparent, transparent 59px, rgba(0,180,180,0.08) 59px, rgba(0,180,180,0.08) 60px),
-        /* subtle color variation in tiles */
         repeating-linear-gradient(0deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 30px, transparent 30px, transparent 60px),
         repeating-linear-gradient(90deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 30px, transparent 30px, transparent 60px);
     padding: 0;
@@ -152,42 +150,78 @@
     letter-spacing: 0.08em;
 }
 
-/* New releases rack on the right */
-.new-releases-rack {
-    width: 160px;
+/* ── SEARCH + NEW ARRIVALS PANEL (replaces rack) ── */
+.search-panel {
+    width: 220px;
     flex-shrink: 0;
     background: #001020;
     border-left: 2px solid #1a1c14;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     justify-content: center;
-    padding: 0.8rem;
-    gap: 0.3rem;
+    padding: 0.9rem 0.9rem;
+    gap: 0.6rem;
 }
-.rack-sign {
+
+#new-arrivals-btn {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 0.85rem;
     letter-spacing: 0.12em;
     color: #f5d800;
-    text-shadow: 0 0 8px rgba(245,216,0,0.5);
-    text-align: center;
     border: 1px solid #f5d800;
-    padding: 0.2rem 0.6rem;
+    background: transparent;
+    padding: 0.28rem 0.6rem;
     border-radius: 2px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
     width: 100%;
     text-align: center;
 }
-.rack-spines {
+#new-arrivals-btn:hover {
+    background: #1a1200;
+}
+#new-arrivals-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.aisle-search-row {
     display: flex;
-    gap: 3px;
-    align-items: flex-end;
-    margin-top: 0.3rem;
+    gap: 0;
 }
-.rack-spine {
-    border-radius: 1px;
-    opacity: 0.7;
+#aisle-search-input {
+    flex: 1;
+    min-width: 0;
+    background: #000d1a;
+    border: 1px solid #003a5a;
+    border-right: none;
+    color: #ccc;
+    padding: 0.3rem 0.5rem;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 0.88rem;
+    letter-spacing: 0.04em;
+    outline: none;
+    transition: border-color 0.15s;
 }
+#aisle-search-input::placeholder { color: #007070; }
+#aisle-search-input:focus { border-color: #00a8a8; }
+
+#aisle-search-btn {
+    background: #00a8a8;
+    border: none;
+    color: #000d1a;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+    flex-shrink: 0;
+}
+#aisle-search-btn:hover { background: #00c8c8; }
 
 /* ── STORE FLOOR CONTENT ── */
 .store-floor-content {
@@ -204,7 +238,6 @@
     align-items: stretch;
 }
 
-/* The aisle number label on the left */
 .aisle-number {
     width: 32px;
     flex-shrink: 0;
@@ -221,7 +254,6 @@
     padding-right: 0.3rem;
 }
 
-/* The shelf unit (top-down view) */
 .shelf-unit {
     flex: 1;
     background: #001a2a;
@@ -239,8 +271,6 @@
     border-color: var(--genre-color, #c49a4a);
     box-shadow: 0 0 20px rgba(0,0,0,0.5), 0 0 0 1px var(--genre-color, #c49a4a);
 }
-
-/* Wood grain on shelf top */
 .shelf-unit::before {
     content: '';
     position: absolute;
@@ -253,7 +283,6 @@
     pointer-events: none;
 }
 
-/* Overhead hanging sign */
 .genre-sign {
     position: absolute;
     top: -1px;
@@ -274,7 +303,6 @@
     box-shadow: 0 2px 12px rgba(0,0,0,0.4);
 }
 
-/* Game spines on the shelf surface */
 .shelf-spines {
     display: flex;
     gap: 2px;
@@ -289,7 +317,6 @@
     box-shadow: 1px 0 2px rgba(0,0,0,0.4);
 }
 
-/* Shelf divider lines (top-down rows) */
 .shelf-dividers {
     position: absolute;
     inset: 2.2rem 0 0 0;
@@ -359,7 +386,6 @@
     font-family: 'Barlow Condensed', sans-serif;
 }
 
-/* ── HOVER HELPER TEXT ── */
 .floor-help {
     text-align: center;
     font-family: 'Barlow Condensed', sans-serif;
@@ -381,7 +407,6 @@
     background: #000d1a;
 }
 
-/* VHS store aisle background */
 .aisle-bg {
     position: absolute;
     inset: 0;
@@ -400,7 +425,6 @@
     pointer-events: none;
 }
 
-/* Overhead light glow from above */
 .aisle-ceiling-light {
     position: absolute;
     top: 0;
@@ -435,7 +459,6 @@
     line-height: 1;
 }
 
-/* Overhead aisle sign */
 .aisle-overhead-sign {
     display: flex;
     flex-direction: column;
@@ -462,7 +485,6 @@
     text-shadow: 0 1px 6px rgba(0,0,0,0.5);
 }
 
-/* Aisle shelf scene */
 .aisle-scene-wrap {
     perspective: 600px;
     perspective-origin: 50% -10%;
@@ -474,7 +496,6 @@
     overflow: visible;
 }
 
-/* The actual shelf plank */
 .aisle-plank {
     background: #7a5228;
     background-image: repeating-linear-gradient(
@@ -512,7 +533,6 @@
 .aisle-games-row::-webkit-scrollbar { height: 3px; }
 .aisle-games-row::-webkit-scrollbar-thumb { background: #4a2e0e; border-radius: 2px; }
 
-/* Game case in aisle */
 .game-case-aisle {
     flex-shrink: 0;
     width: 100px;
@@ -576,11 +596,11 @@
 <div id="game-aisle-wrapper">
 <div id="store-floor-view">
 
-    <!-- CEILING LIGHTS -->
     <div class="ceiling-lights" id="ceiling-lights"></div>
 
     <!-- STORE HEADER -->
     <div class="store-header-zone">
+
         <div class="staff-window">
             <div class="staff-window-frame">
                 <span class="label">Members</span>
@@ -597,17 +617,18 @@
             <div class="store-tagline">Browse · Discover · Track</div>
         </div>
 
-        <div class="new-releases-rack">
-            <div class="rack-sign">New Arrivals</div>
-            <div class="rack-spines">
-                {% for c in ['#c03020','#6040c0','#20a060','#f0a000','#0090c0','#e05090'] %}
-                <div class="rack-spine" style="width:12px;height:{% if loop.index % 2 == 0 %}52px{% else %}44px{% endif %};background:{{ c }};border-radius:1px;"></div>
-                {% endfor %}
+        <!-- SEARCH + NEW ARRIVALS (replaces old rack) -->
+        <div class="search-panel">
+            <button id="new-arrivals-btn" onclick="loadNewArrivals()">✦ New Arrivals</button>
+            <div class="aisle-search-row">
+                <input id="aisle-search-input" type="text" placeholder="Search the Game Aisle..."
+                    onkeydown="if(event.key==='Enter') runAisleSearch()">
+                <button id="aisle-search-btn" onclick="runAisleSearch()">GO</button>
             </div>
         </div>
+
     </div>
 
-    <!-- FLOOR HELP -->
     <div class="floor-help">Click any aisle to browse games by genre</div>
 
     <!-- STORE FLOOR -->
@@ -716,7 +737,6 @@
 
     </div><!-- /store-floor-content -->
 
-    <!-- ENTRANCE -->
     <div class="store-entrance">
         <div class="entrance-sign">Entrance / Exit</div>
         <div class="entrance-arrows">↕ You Are Here</div>
@@ -734,7 +754,6 @@
             <div id="aisle-heading" class="aisle-heading" style="color:var(--accent);"></div>
         </div>
 
-        <!-- Overhead sign -->
         <div class="aisle-overhead-sign">
             <div class="sign-chain">
                 <div class="sign-chain-link"></div>
@@ -746,7 +765,6 @@
             <div id="aisle-sign-board" class="sign-board"></div>
         </div>
 
-        <!-- Shelf scene -->
         <div class="aisle-scene-wrap">
             <div class="aisle-shelf-tilt">
                 <div id="aisle-loading" class="aisle-loading-msg">Loading shelf...</div>
@@ -828,14 +846,16 @@ const IS_LOGGED_IN = {{ 'true' if session.get('username') else 'false' }};
 let currentPage = 1, currentGenre = '', currentGenreLabel = '';
 
 const GENRE_COLORS = {
-    action:    { bg:'#8b1a1a', border:'#ff4040', text:'white' },
-    rpg:       { bg:'#2a1a6b', border:'#9060ff', text:'white' },
-    horror:    { bg:'#0a0a0a', border:'#800000', text:'#cc8888' },
-    indie:     { bg:'#1a4a1a', border:'#40d080', text:'white' },
-    adventure: { bg:'#1a3a1a', border:'#60a040', text:'white' },
-    racing:    { bg:'#4a2a00', border:'#f0a000', text:'white' },
-    puzzle:    { bg:'#003a4a', border:'#00c0d0', text:'white' },
-    strategy:  { bg:'#2a2a00', border:'#a0a020', text:'white' },
+    action:       { bg:'#8b1a1a', border:'#ff4040', text:'white' },
+    rpg:          { bg:'#2a1a6b', border:'#9060ff', text:'white' },
+    horror:       { bg:'#0a0a0a', border:'#800000', text:'#cc8888' },
+    indie:        { bg:'#1a4a1a', border:'#40d080', text:'white' },
+    adventure:    { bg:'#1a3a1a', border:'#60a040', text:'white' },
+    racing:       { bg:'#4a2a00', border:'#f0a000', text:'white' },
+    puzzle:       { bg:'#003a4a', border:'#00c0d0', text:'white' },
+    strategy:     { bg:'#2a2a00', border:'#a0a020', text:'white' },
+    new_arrivals: { bg:'#1a1200', border:'#f5d800', text:'#f5d800' },
+    search:       { bg:'#001e3a', border:'#00a8a8', text:'white'  },
 };
 
 // Generate ceiling light strips
@@ -849,7 +869,7 @@ const GENRE_COLORS = {
     }
 })();
 
-// Shelf unit click
+// Shelf unit click → genre aisle
 document.querySelectorAll('.shelf-unit').forEach(el => {
     el.addEventListener('click', () => {
         openAisle(el.dataset.genre, el.dataset.label, 1);
@@ -862,24 +882,10 @@ document.getElementById('back-to-map').addEventListener('click', () => {
     window.scrollTo(0, 0);
 });
 
+// ── OPEN AISLE (genre browse) ──────────────────────────────────────
 async function openAisle(genre, label, page) {
     currentGenre = genre; currentGenreLabel = label; currentPage = page;
-    document.getElementById('store-floor-view').style.display = 'none';
-    document.getElementById('aisle-view').style.display = 'block';
-    window.scrollTo(0, 0);
-
-    const colors = GENRE_COLORS[genre] || { bg:'#2a2000', border:'#c49a4a', text:'white' };
-    document.getElementById('aisle-heading').textContent = label + ' AISLE';
-    document.getElementById('aisle-heading').style.color = colors.border;
-
-    const board = document.getElementById('aisle-sign-board');
-    board.textContent = label;
-    board.style.background = colors.bg;
-    board.style.borderTop = '3px solid ' + colors.border;
-    board.style.borderLeft = '1px solid ' + colors.border;
-    board.style.borderRight = '1px solid ' + colors.border;
-    board.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
-    board.style.color = colors.text;
+    showAisleView(genre, label);
 
     document.getElementById('aisle-loading').style.display = '';
     document.getElementById('aisle-shelf-wrap').style.display = 'none';
@@ -894,6 +900,70 @@ async function openAisle(genre, label, page) {
     }
 }
 
+// ── NEW ARRIVALS (rolling 6-month window from IGDB) ────────────────
+async function loadNewArrivals() {
+    const btn = document.getElementById('new-arrivals-btn');
+    btn.textContent = 'Loading...';
+    btn.disabled = true;
+
+    showAisleView('new_arrivals', 'NEW ARRIVALS');
+    document.getElementById('aisle-loading').style.display = '';
+    document.getElementById('aisle-shelf-wrap').style.display = 'none';
+    document.getElementById('aisle-pagination').innerHTML = '';
+
+    try {
+        const r = await fetch('/arcade/new_arrivals');
+        const data = await r.json();
+        renderAisle(data.results || [], data.total || 0, 1);
+    } catch(e) {
+        document.getElementById('aisle-loading').textContent = 'Could not load new arrivals.';
+    }
+
+    btn.textContent = '✦ New Arrivals';
+    btn.disabled = false;
+}
+
+// ── SEARCH THE AISLE ──────────────────────────────────────────────
+async function runAisleSearch() {
+    const q = document.getElementById('aisle-search-input').value.trim();
+    if (!q) return;
+
+    showAisleView('search', q.toUpperCase());
+    document.getElementById('aisle-loading').style.display = '';
+    document.getElementById('aisle-shelf-wrap').style.display = 'none';
+    document.getElementById('aisle-pagination').innerHTML = '';
+
+    try {
+        const r = await fetch(`/search?q=${encodeURIComponent(q)}&format=json`);
+        const data = await r.json();
+        renderAisle(data.results || [], data.total || 0, 1);
+    } catch(e) {
+        document.getElementById('aisle-loading').textContent = 'Search failed.';
+    }
+}
+
+// ── SHARED: switch to aisle view and set sign/heading ─────────────
+function showAisleView(colorKey, label) {
+    document.getElementById('store-floor-view').style.display = 'none';
+    document.getElementById('aisle-view').style.display = 'block';
+    window.scrollTo(0, 0);
+
+    const colors = GENRE_COLORS[colorKey] || { bg:'#2a2000', border:'#c49a4a', text:'white' };
+
+    document.getElementById('aisle-heading').textContent = label + ' AISLE';
+    document.getElementById('aisle-heading').style.color = colors.border;
+
+    const board = document.getElementById('aisle-sign-board');
+    board.textContent = label;
+    board.style.background = colors.bg;
+    board.style.borderTop = '3px solid ' + colors.border;
+    board.style.borderLeft = '1px solid ' + colors.border;
+    board.style.borderRight = '1px solid ' + colors.border;
+    board.style.borderBottom = '1px solid rgba(255,255,255,0.08)';
+    board.style.color = colors.text;
+}
+
+// ── RENDER RESULTS ONTO THE SHELF ─────────────────────────────────
 function renderAisle(games, total, page) {
     document.getElementById('aisle-loading').style.display = 'none';
     const wrap = document.getElementById('aisle-shelf-wrap');
@@ -915,30 +985,47 @@ function renderAisle(games, total, page) {
         });
     }
 
+    // Pagination (genre browse only)
     const pag = document.getElementById('aisle-pagination');
-    if (total > 12) {
-        if (page > 1) { const b = document.createElement('button'); b.className='btn btn-sm'; b.textContent='← Prev'; b.onclick=()=>openAisle(currentGenre,currentGenreLabel,page-1); pag.appendChild(b); }
-        const info = document.createElement('span'); info.style.cssText='padding:0.3rem 0.7rem;color:var(--text2);font-family:Barlow Condensed,sans-serif;font-size:0.85rem;'; info.textContent=`Page ${page}`; pag.appendChild(info);
-        if (games.length===12) { const b = document.createElement('button'); b.className='btn btn-sm'; b.textContent='Next →'; b.onclick=()=>openAisle(currentGenre,currentGenreLabel,page+1); pag.appendChild(b); }
+    if (currentGenre !== 'new_arrivals' && currentGenre !== 'search' && total > 12) {
+        if (page > 1) {
+            const b = document.createElement('button');
+            b.className = 'btn btn-sm'; b.textContent = '← Prev';
+            b.onclick = () => openAisle(currentGenre, currentGenreLabel, page - 1);
+            pag.appendChild(b);
+        }
+        const info = document.createElement('span');
+        info.style.cssText = 'padding:0.3rem 0.7rem;color:var(--text2);font-family:Barlow Condensed,sans-serif;font-size:0.85rem;';
+        info.textContent = `Page ${page}`;
+        pag.appendChild(info);
+        if (games.length === 12) {
+            const b = document.createElement('button');
+            b.className = 'btn btn-sm'; b.textContent = 'Next →';
+            b.onclick = () => openAisle(currentGenre, currentGenreLabel, page + 1);
+            pag.appendChild(b);
+        }
     }
 }
 
+// ── GAME MODAL ────────────────────────────────────────────────────
 function openGameModal(g) {
     document.getElementById('modal-title').textContent = g.title;
     const c = document.getElementById('modal-cover');
-    c.src = g.cover_url||''; c.style.display = g.cover_url?'':'none';
-    document.getElementById('modal-meta').textContent = [g.released,g.genres].filter(Boolean).join(' · ');
-    document.getElementById('modal-desc').textContent = g.description||'';
+    c.src = g.cover_url || ''; c.style.display = g.cover_url ? '' : 'none';
+    document.getElementById('modal-meta').textContent = [g.released, g.genres].filter(Boolean).join(' · ');
+    document.getElementById('modal-desc').textContent = g.description || '';
     document.getElementById('modal-game-title').value = g.title;
-    document.getElementById('modal-cover-url').value = g.cover_url||'';
+    document.getElementById('modal-cover-url').value = g.cover_url || '';
     document.getElementById('modal-form').action = `/game/${g.id}/add`;
     document.getElementById('modal-full-link').href = `/game/${g.id}`;
     document.getElementById('modal-logged-in').style.display = IS_LOGGED_IN ? '' : 'none';
     document.getElementById('modal-logged-out').style.display = IS_LOGGED_IN ? 'none' : '';
     document.getElementById('game-modal').style.display = 'flex';
 }
-function closeModal() { document.getElementById('game-modal').style.display='none'; }
+function closeModal() { document.getElementById('game-modal').style.display = 'none'; }
 function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-document.getElementById('game-modal').addEventListener('click',e=>{ if(e.target===document.getElementById('game-modal'))closeModal(); });
+document.getElementById('game-modal').addEventListener('click', e => {
+    if (e.target === document.getElementById('game-modal')) closeModal();
+});
 </script>
 {% endblock %}
