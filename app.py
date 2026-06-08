@@ -107,12 +107,13 @@ def igdb_search(query, page=1):
             if g.get('first_release_date'):
                 year = str(time.strftime('%Y', time.gmtime(g['first_release_date'])))
             results.append({
-                'id':        g['id'],
-                'title':     g['name'],
-                'cover_url': igdb_cover_url(g.get('cover', {}).get('image_id') if g.get('cover') else None),
-                'released':  year,
-                'rating':    round(g.get('aggregated_rating', 0) / 20, 1) if g.get('aggregated_rating') else 0,
-                'genres':    ', '.join(x['name'] for x in g.get('genres', [])[:2]),
+                'id':          g['id'],
+                'title':       g['name'],
+                'cover_url':   igdb_cover_url(g.get('cover', {}).get('image_id') if g.get('cover') else None),
+                'released':    year,
+                'rating':      round(g.get('aggregated_rating', 0) / 20, 1) if g.get('aggregated_rating') else 0,
+                'genres':      ', '.join(x['name'] for x in g.get('genres', [])[:2]),
+                'description': '',
             })
         return results, len(results)
     except Exception as ex:
@@ -164,9 +165,13 @@ def index():
 
 @app.route('/search')
 def search():
-    query = request.args.get('q', '').strip()
-    page  = int(request.args.get('page', 1))
+    query  = request.args.get('q', '').strip()
+    page   = int(request.args.get('page', 1))
+    fmt    = request.args.get('format', 'html')
     results, total = (igdb_search(query, page) if query else ([], 0))
+    # JSON mode — used by the Game Aisle search bar
+    if fmt == 'json':
+        return jsonify(results=results, total=total)
     return render_template('search.html', results=results,
                            query=query, page=page, total=total)
 
@@ -342,6 +347,44 @@ def arcade_genre():
     except Exception as ex:
         print(f'IGDB arcade error: {ex}')
         return jsonify({'results': [], 'total': 0, 'error': str(ex)})
+
+@app.route('/arcade/new_arrivals')
+def arcade_new_arrivals():
+    # Rolling 6-month window — computed fresh on every request
+    six_months_ago = int(time.time()) - (60 * 60 * 24 * 180)
+    try:
+        body = f'''
+            fields name, cover.image_id, first_release_date, genres.name,
+                   aggregated_rating, summary;
+            where first_release_date > {six_months_ago}
+                & cover != null
+                & version_parent = null
+                & aggregated_rating_count > 2;
+            sort first_release_date desc;
+            limit 24;
+        '''
+        r = http.post(f'{IGDB_BASE}/games', headers=igdb_headers(), data=body, timeout=8)
+        games = r.json()
+        results = []
+        for g in games:
+            if not isinstance(g, dict):
+                continue
+            year = ''
+            if g.get('first_release_date'):
+                year = str(time.strftime('%Y', time.gmtime(g['first_release_date'])))
+            results.append({
+                'id':          g['id'],
+                'title':       g['name'],
+                'cover_url':   igdb_cover_url(g.get('cover', {}).get('image_id') if g.get('cover') else None),
+                'released':    year,
+                'genres':      ', '.join(x['name'] for x in g.get('genres', [])[:2]),
+                'description': (g.get('summary') or '')[:200],
+                'rating':      round(g.get('aggregated_rating', 0) / 20, 1) if g.get('aggregated_rating') else 0,
+            })
+        return jsonify(results=results, total=len(results))
+    except Exception as ex:
+        print(f'IGDB new arrivals error: {ex}')
+        return jsonify(results=[], total=0, error=str(ex))
 
 @app.route('/board')
 def board():
