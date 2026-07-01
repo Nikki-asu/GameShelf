@@ -4,10 +4,12 @@ from functools import wraps
 import requests as http
 import os, time
 from hash_util import hash_password, check_password
-import xml_store as db
+import pg_store as db
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'gameshelf-secret-change-in-prod')
+
+db.init_db()  # creates tables on first run if they don't exist
 
 PLATFORMS = ['PC', 'PlayStation 5', 'PlayStation 4', 'Xbox Series X/S',
              'Xbox One', 'Nintendo Switch', 'Meta Quest', 'iOS', 'Android', 'Other']
